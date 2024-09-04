@@ -1,2 +1,2 @@
-# pp_neuronal_markers_corollary_discharge
+# neucodis
 Practical Project: Neuronal Marker of Corollary Discharge
