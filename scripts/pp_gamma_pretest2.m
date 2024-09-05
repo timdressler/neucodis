@@ -14,8 +14,8 @@ close all
 clc
 
 %variables to edit
-SUBJ = '132'; %122, 125 or 127 available
-CHAN = 'F7';
+SUBJ = '136'; %122, 125 or 127 available
+CHAN = 'Pz';
 EVENT = {'S 64'};
 EPO_FROM = -0.4;
 EPO_TILL = 0.6;
