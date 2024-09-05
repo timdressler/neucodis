@@ -31,7 +31,7 @@ TF_TILL = 500;
 %setup paths
 MAINPATH = "C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis";
 INPATH = fullfile(MAINPATH,['data/raw_data/pp_data_gamma_pretest_raw/P' SUBJ]);
-addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/functions")
+addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
 %start eeglab & load data
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;

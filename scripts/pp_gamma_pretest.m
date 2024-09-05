@@ -14,7 +14,7 @@ clc
 %setup paths
 MAINPATH = "C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis";
 INPATH = fullfile(MAINPATH,"data/proc_data/pp_data_gamma_pretest_proc");
-addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/functions")
+addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
 %variables to edit
 SUBJ = '125'; %122, 125 or 127 (500Hz); 132, 134 and 136 (1000Hz downsmapled to 500Hz)
