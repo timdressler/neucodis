@@ -28,6 +28,8 @@ BL_FROM = -400;
 BL_TILL= -200;
 TF_FROM = -400;
 TF_TILL = 500;
+TF_BL_FROM = -200;
+TF_BL_TILL = 100;
 THRESH = 50;
 SD_PROB = 2.5;
 
@@ -60,7 +62,7 @@ EEG = pop_subcomp( EEG, [], 0);
 
 %ERSP (Wavelet)
 figure; pop_newtimef( EEG, 1, chani, [TF_FROM  TF_TILL], [3         0.8] , 'topovec', chani, ...
-    'elocs', EEG.chanlocs, 'chaninfo', EEG.chaninfo, 'caption', CHAN, 'baseline',[-200 -100], ...
+    'elocs', EEG.chanlocs, 'chaninfo', EEG.chaninfo, 'caption', CHAN, 'baseline',[TF_BL_FROM TF_BL_TILL], ...
     'plotphase', 'off', 'scale', 'abs', 'padratio', 1, 'winsize', 200);
 
 %FastFFT (own function)
