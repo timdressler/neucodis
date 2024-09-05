@@ -17,7 +17,7 @@ INPATH = fullfile(MAINPATH,"data/proc_data/pp_data_gamma_pretest_proc");
 addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
 %variables to edit
-SUBJ = '125'; %122, 125 or 127 (500Hz); 132, 134 and 136 (1000Hz downsmapled to 500Hz)
+SUBJ = '136'; %122, 125 or 127 (500Hz); 132, 134 and 136 (1000Hz downsmapled to 500Hz)
 CHAN = 'Cz';
 EVENTS = {'S 1', 'S 2', 'S 3', 'S 4', 'S 5'};
 EPO_FROM = -0.4;
@@ -64,7 +64,7 @@ figure; pop_newtimef( EEG, 1, chani, [TF_FROM  TF_TILL], [3         0.8] , 'topo
     'plotphase', 'off', 'scale', 'abs', 'padratio', 1, 'winsize', 200);
 
 %FastFFT (own function)
-%%pp_fastfft_TD(EEG.data, EEG.srate, chani, 'wins', 0.8, 'overlap', 0.99, 'fig', 1, 'timevec', EEG.times, 'ylim_min', 15, 'ylim_max', 50)
+pp_fastfft_TD(EEG.data, EEG.srate, chani, 'wins', 0.8, 'overlap', 0.99, 'fig', 1, 'timevec', EEG.times, 'ylim_min', 15, 'ylim_max', 50)
 
 %%
 %TF-Topoplots
