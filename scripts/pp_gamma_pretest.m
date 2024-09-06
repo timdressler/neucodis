@@ -97,7 +97,7 @@ end
 %Topoplot
 figure;
 tftopo(allersp,alltimes(:,:,1),allfreqs(:,:,1), ...
-    'timefreqs', [45 35; 55 38], 'chanlocs', EEG.chanlocs, 'showchan', chani)
+    'timefreqs', [45 35; 55 38; 120 35; 90 35], 'chanlocs', EEG.chanlocs, 'showchan', chani)
 
 
 
