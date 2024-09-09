@@ -17,7 +17,7 @@ INPATH = fullfile(MAINPATH,"data/proc_data/pp_data_gamma_pretest_proc");
 addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
 %variables to edit
-SUBJ = '136'; %122, 125 or 127 (500Hz); 132, 134 and 136 (1000Hz downsmapled to 500Hz)
+SUBJ = '136'; %122, 125 or 127 (500Hz); 132, 134 and 136 (1000Hz downsampled to 500Hz)
 CHAN = 'Cz';
 EVENTS = {'S 1', 'S 2', 'S 3', 'S 4', 'S 5'};
 EPO_FROM = -0.4;
