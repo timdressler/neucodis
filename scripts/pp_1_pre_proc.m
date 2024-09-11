@@ -23,13 +23,12 @@ clear all; close all; clc;
 
 % DEFINE FOLDERS %CHECK: Adapt
 
-mainpath = 'C:\Users\short\Documents\ERPSamplingStudy'; % main path
-path_eeglab = [mainpath, '\EEGLAB']; % where eeglab is located
-path_chanloc = [mainpath, '\RecordingInfo']; % where chanloc struct is located
-path_rawdata = [mainpath, '\RawEEGData']; % where raw data is located
-path_preprocessed = [mainpath, '\PreprocessedData']; % where pre-processed data is saved
-path_condspecific = [mainpath, '\ConditionSpecificData']; % where condition specific datasets are saved
-path_StdDevImages = [mainpath, '\StdDevImages']; % where standard deviation maps are saved for each participant, used to identify bad channels
+MAINPATH = "C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis"; 
+CHANLOC_PATH = fullfile(MAINPATH, 'data/other'); %where chanloc struct is located
+path_rawdata = [MAINPATH, '\RawEEGData']; % where raw data is located
+path_preprocessed = [MAINPATH, '\PreprocessedData']; % where pre-processed data is saved
+%%path_condspecific = [MAINPATH, '\ConditionSpecificData']; % where condition specific datasets are saved
+%%path_StdDevImages = [MAINPATH, '\StdDevImages']; % where standard deviation maps are saved for each participant, used to identify bad channels
 
 % EXTRACT PARTICIPANT IDs & CREATE FOLDERS FOR EACH SUBJECT
 
@@ -43,7 +42,7 @@ end
 clear i;
 
 % Load participant IDs:
-load([mainpath, '\files.mat'], 'files');  % THE LIST AFTER THE EXCLUSION!
+load([MAINPATH, '\files.mat'], 'files');  % THE LIST AFTER THE EXCLUSION!
 
 % CREATE INDIVIDUAL FOLDERS FOR MAIN PATH %CHECK: Adapt
 
@@ -110,7 +109,6 @@ mast_2= 'A1'; % left mastoid
 
 for i = 1:length(files)
 
-    cd(path_eeglab);
     close all; clc;
     eeglab; % start eeglab (and restart it after every iteration of the loop)
 
@@ -128,7 +126,7 @@ for i = 1:length(files)
 
     % Add channel info
     % Load channel location file
-    load([path_chanloc, '\chanlocs.mat'])
+    load([CHANLOC_PATH, '\chanlocs.mat'])
 
     % Delete irrelevant channels:
     new_channel_irr_1 = numel(chanlocs) + 1; % the index for the new channel
@@ -232,7 +230,7 @@ for i = 1:length(files)
     %% Add RTs from the logfiles to EEG.event struct %CHECK: Adapt, not needed, I think
 
     Log_file = [];
-    Log_file =  dlmread([mainpath, '\RawEEGData\LogFiles\', files{i}(1:5), 'E4.txt'],'\t', 1, 0);
+    Log_file =  dlmread([MAINPATH, '\RawEEGData\LogFiles\', files{i}(1:5), 'E4.txt'],'\t', 1, 0);
 
     k = 1;
     for e = 1:2:length(EEG.event)
@@ -309,7 +307,6 @@ clear i;
 
 for i = 1:length(files)
 
-    cd(path_eeglab);
     close all; clc;
     eeglab; % start eeglab (and restart it after every iteration of the loop)
 
@@ -403,7 +400,6 @@ storepath = 'C:\Users\short\Documents\EEG_Active_Learning_Project\May2023\Analys
 % Iterate over participants
 for i = 1:length(files)
 
-    cd(path_eeglab);
     close all; clc;
     eeglab; % start eeglab (and restart it after every iteration of the loop)
 
