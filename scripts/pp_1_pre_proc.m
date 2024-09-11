@@ -1,16 +1,15 @@
 % pp_1_pre_proc.m
 %
-% Pretest with the goal of identifying the presence (or non-presence) of
-% gamma (and theta) activity. Using pre-processed data.
-% All Conditions merged
-% Only for one subject. 125 and 136 chosen for preliminary analysis
+% Preproccessing pipeline for eeg-data 1/3. 
+%CHECK: Complete description after adaption
 %
-% Tim Dressler, 12.08.2024
+% Originally by Dr. Cassie Short & Prof. Dr. Stefan Debener
+% Adapted from Tim Dressler, 11.09.2024
 
 
 %% Preparing Raw Data & Preprocessing up to and Including ICA
 
-% Events
+% Events %CHECK: Adapt
 
 % S 18 & S 19 > fear stimuli - collapsed and saved as 'fear' condition
 % S 28 & S 29 > renamed to 'anger'
@@ -22,7 +21,7 @@
 
 clear all; close all; clc;
 
-% DEFINE FOLDERS
+% DEFINE FOLDERS %CHECK: Adapt
 
 mainpath = 'C:\Users\short\Documents\ERPSamplingStudy'; % main path
 path_eeglab = [mainpath, '\EEGLAB']; % where eeglab is located
@@ -46,7 +45,7 @@ clear i;
 % Load participant IDs:
 load([mainpath, '\files.mat'], 'files');  % THE LIST AFTER THE EXCLUSION!
 
-% CREATE INDIVIDUAL FOLDERS FOR MAIN PATH
+% CREATE INDIVIDUAL FOLDERS FOR MAIN PATH %CHECK: Adapt
 
 % Create individual folders for primary path
 for i = 1:length(files)
@@ -60,7 +59,7 @@ for i = 1:length(files)
 end
 clear i;
 
-% CREATE INDIVIDUAL FOLDERS FOR FORKING PATHS
+% CREATE INDIVIDUAL FOLDERS FOR FORKING PATHS %CHECK: Adapt
 
 % Create individual folders where data processed with -100 ms baseline is to be saved:
 for i = 1:length(files)
@@ -86,7 +85,7 @@ for i = 1:length(files)
 end
 clear i;
 
-% DEFINE SOME PARAMETERS
+% DEFINE SOME PARAMETERS %CHECK: Adapt
 
 irr_1 = 'Corr'; % irrelevant channel 1
 irr_2 = 'Zyg'; % irrelevant channel 2
@@ -182,7 +181,7 @@ for i = 1:length(files)
 
     EEG = pop_saveset( EEG, 'filename',[files{i}, '_latenciesfixed', '.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]); % save the dataset
 
-    % Delete irrelevant markers so all markers match logfiles
+    % Delete irrelevant markers so all markers match logfiles %CHECK: Adapt
 
     EEG_event_type = {EEG.event.type};
     g = ismember(EEG_event_type, events)  | ismember(EEG_event_type, responses); % find the stimulus & response markers
@@ -230,7 +229,7 @@ for i = 1:length(files)
         EEG.event(1469) = []; % there is an extra response marker for this subject here (which is not present in the Log file)
     end
 
-    %% Add RTs from the logfiles to EEG.event struct
+    %% Add RTs from the logfiles to EEG.event struct %CHECK: Adapt, not needed, I think
 
     Log_file = [];
     Log_file =  dlmread([mainpath, '\RawEEGData\LogFiles\', files{i}(1:5), 'E4.txt'],'\t', 1, 0);
@@ -281,6 +280,7 @@ for i = 1:length(files)
     clear e; clear x;
 
     % Keep only participants who have markers present for all conditions
+    % %CHECK: Adapt, needed again from here
     markers_present = [];
     markers_present = {EEG.event.type};
 
@@ -380,7 +380,8 @@ for i = 1:length(files)
     close;
 end
 
-% Define the list of channels to be removed for each participant
+% Define the list of channels to be removed for each participant %CHECK:
+% Adapt, automate
 badChannels = {11, 39, {}, {}, 39, {}, {}, {}, 39, 39, [6, 10, 15, 18], {}, {}, {}, {}, {}, 15, {}, 39, {}, {}, 40, {}, {}, {}, {}, {}, {}, 39, {}, {}, {}, [18, 39], {}, {}, {}, {}, {}, {}, {}, {}, 39, 39, {}, {}, 39, {}, [6, 10, 14, 15, 18], {}, {}, {}, {}, {}, {}, 40, [39, 40], 39, {}, {}, 8, {}, {}, {}, {}, {}, 39, 39, {}, {}, [15, 39], {}, {}, 33, 39, {}, 39, {}, {}, 20, 39, {}, 40, {}, [19, 24], [6, 11, 15, 37, 39], {}, {}, {}, {}, [10, 11, 14, 15, 39], {}, {}, 39, {}, {}, 39, 39, {}, 39, 19, {}, {}};
 metrics_all = cell(length(files), 1);
 
@@ -454,7 +455,7 @@ for i = 1:length(files)
 
 end
 
-%% GAV peaks
+%% GAV peaks %CHECK: Adapt, not needed?
 %
 GAVpeaks = {'b-100rMas';'b-200rMas';'b-100rAvg';'b-200rAvg'}; % hardcoded for simplicity since b x r is only 2x2
 for g = 1:numel(GAVlist)

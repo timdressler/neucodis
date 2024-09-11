@@ -1,3 +1,12 @@
+% pp_3_pre_proc.m
+%
+% Preproccessing pipeline for eeg-data 3/3. 
+%CHECK: Complete description after adaption
+%
+% Originally by Dr. Cassie Short & Prof. Dr. Stefan Debener
+% Adapted from Tim Dressler, 11.09.2024
+
+
 clear all, close all, clc;
 %
 mainpath = 'C:\Users\short\Documents\ERPSamplingStudy\Analysis\fork1-2';

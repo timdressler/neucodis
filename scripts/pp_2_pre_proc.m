@@ -1,3 +1,10 @@
+% pp_2_pre_proc.m
+%
+% Preproccessing pipeline for eeg-data 2/3. 
+%CHECK: Complete description after adaption
+%
+% Originally by Dr. Cassie Short & Prof. Dr. Stefan Debener
+% Adapted from Tim Dressler, 11.09.2024
 
 mainpath = 'C:\Users\short\Documents\ERPSamplingStudy'; % main path
 path_eeglab = [mainpath, '\EEGLAB']; % where eeglab is located
