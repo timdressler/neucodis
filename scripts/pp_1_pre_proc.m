@@ -1,3 +1,13 @@
+% pp_1_pre_proc.m
+%
+% Pretest with the goal of identifying the presence (or non-presence) of
+% gamma (and theta) activity. Using pre-processed data.
+% All Conditions merged
+% Only for one subject. 125 and 136 chosen for preliminary analysis
+%
+% Tim Dressler, 12.08.2024
+
+
 %% Preparing Raw Data & Preprocessing up to and Including ICA
 
 % Events
