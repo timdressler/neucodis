@@ -25,15 +25,15 @@ clear all; close all; clc;
 
 MAINPATH = "C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis"; 
 CHANLOC_PATH = fullfile(MAINPATH, 'data/other'); %where chanloc struct is located
-path_rawdata = [MAINPATH, '\RawEEGData']; % where raw data is located
-path_preprocessed = [MAINPATH, '\PreprocessedData']; % where pre-processed data is saved
+RAW_PATH = fullfile(MAINPATH, 'data/raw_data/pp_main_data_raw'); %where raw data is located
+PROC_PATH = fullfile(MAINPATH, 'data/proc_data/pp_main_data_proc'); %where pre-processed data is saved
 %%path_condspecific = [MAINPATH, '\ConditionSpecificData']; % where condition specific datasets are saved
 %%path_StdDevImages = [MAINPATH, '\StdDevImages']; % where standard deviation maps are saved for each participant, used to identify bad channels
 
 % EXTRACT PARTICIPANT IDs & CREATE FOLDERS FOR EACH SUBJECT
 
 % Extract subject IDs:
-cd (path_rawdata)
+cd (RAW_PATH)
 files = dir('*.vhdr');
 files = {files.name}; % participant IDs are stored here
 for i = 1:length(files)
@@ -48,7 +48,7 @@ load([MAINPATH, '\files.mat'], 'files');  % THE LIST AFTER THE EXCLUSION!
 
 % Create individual folders for primary path
 for i = 1:length(files)
-    mkdir([path_preprocessed, '\', 'primary', '\', files{i}]);
+    mkdir([PROC_PATH, '\', 'primary', '\', files{i}]);
 end
 clear i;
 
@@ -62,7 +62,7 @@ clear i;
 
 % Create individual folders where data processed with -100 ms baseline is to be saved:
 for i = 1:length(files)
-    mkdir([path_preprocessed, '\', 'baseline_100', '\'  files{i}]);
+    mkdir([PROC_PATH, '\', 'baseline_100', '\'  files{i}]);
 end
 clear i;
 
@@ -113,16 +113,16 @@ for i = 1:length(files)
     eeglab; % start eeglab (and restart it after every iteration of the loop)
 
     % Import raw data (.vhdr):
-    EEG = pop_fileio([path_rawdata, '\' files{i}, '.vhdr']);
+    EEG = pop_fileio([RAW_PATH, '\' files{i}, '.vhdr']);
     EEG.setname = files{i};
 
     % Transform the data into a (.set) file:
-    EEG = pop_saveset( EEG, 'filename',[files{i},'.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]); % save the data
+    EEG = pop_saveset( EEG, 'filename',[files{i},'.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]); % save the data
     close all; clc;
     eeglab; % restart eeglab
 
     % Load the (.set) file:
-    EEG = pop_loadset('filename',[files{i},'.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]);
+    EEG = pop_loadset('filename',[files{i},'.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]);
 
     % Add channel info
     % Load channel location file
@@ -165,7 +165,7 @@ for i = 1:length(files)
     EEG.nbchan = size(EEG.data,1); % update the number of channels
     EEG = eeg_checkset(EEG);
 
-    EEG = pop_saveset( EEG, 'filename',[files{i}, '_chanlocsadded', '.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]); % save the dataset
+    EEG = pop_saveset( EEG, 'filename',[files{i}, '_chanlocsadded', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]); % save the dataset
 
     % Fixing the latency (150ms delay) of stimulus markers
     for e = 1:length(EEG.event)
@@ -177,7 +177,7 @@ for i = 1:length(files)
 
     eeglab redraw;
 
-    EEG = pop_saveset( EEG, 'filename',[files{i}, '_latenciesfixed', '.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]); % save the dataset
+    EEG = pop_saveset( EEG, 'filename',[files{i}, '_latenciesfixed', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]); % save the dataset
 
     % Delete irrelevant markers so all markers match logfiles %CHECK: Adapt
 
@@ -255,7 +255,7 @@ for i = 1:length(files)
     end
     if exist('incorr')
         EEG.event(incorr) = []; % delete those markers
-        xlswrite([path_preprocessed, '\primary\' files{i}, '\incorrect_trials.xlsx'], incorr); % save the incorrect trials
+        xlswrite([PROC_PATH, '\primary\' files{i}, '\incorrect_trials.xlsx'], incorr); % save the incorrect trials
         clear incorr;
     end
 
@@ -271,7 +271,7 @@ for i = 1:length(files)
     end
     if exist('fast_rt')
         EEG.event(fast_rt) = []; % delete those markers
-        xlswrite([path_preprocessed, '\primary\' files{i}, '\trials_with_fast_RTs.xlsx'], fast_rt) % save the trials with fast RTs.
+        xlswrite([PROC_PATH, '\primary\' files{i}, '\trials_with_fast_RTs.xlsx'], fast_rt) % save the trials with fast RTs.
         clear fast_rt;
     end
 
@@ -295,7 +295,7 @@ for i = 1:length(files)
     end
 
     clear markers_present;
-    EEG = pop_saveset( EEG, 'filename',[files{i}, '_rtincorrremoved', '.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]); % save the dataset
+    EEG = pop_saveset( EEG, 'filename',[files{i}, '_rtincorrremoved', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]); % save the dataset
 end
 
 if exist('removeParticipants')
@@ -310,7 +310,7 @@ for i = 1:length(files)
     close all; clc;
     eeglab; % start eeglab (and restart it after every iteration of the loop)
 
-    EEG = pop_loadset('filename',[files{i}, '_rtincorrremoved', '.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]);
+    EEG = pop_loadset('filename',[files{i}, '_rtincorrremoved', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]);
 
     % Resample:
     EEG = pop_resample( EEG, resamp);
@@ -319,7 +319,7 @@ for i = 1:length(files)
     EEG = pop_reref( EEG, find(strcmpi(ref_1,{EEG.chanlocs.labels})));
 
     % Save the dataset with both resampled and rereferenced data:
-    EEG = pop_saveset(EEG, 'filename', [files{i}, '_resampled_rereferenced.set'], 'filepath', [path_preprocessed, '\primary\', files{i}]);
+    EEG = pop_saveset(EEG, 'filename', [files{i}, '_resampled_rereferenced.set'], 'filepath', [PROC_PATH, '\primary\', files{i}]);
 
     % High-pass filter data for SD maps
 
@@ -404,7 +404,7 @@ for i = 1:length(files)
     eeglab; % start eeglab (and restart it after every iteration of the loop)
 
     % Load the EEG data for the current participant
-    EEG = pop_loadset('filename',[files{i}, '_resampled_rereferenced', '.set'],'filepath',[path_preprocessed, '\', 'primary', '\', files{i}]);
+    EEG = pop_loadset('filename',[files{i}, '_resampled_rereferenced', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]);
 
     % Define the list of channels to be marked as bad for the current participant
     participantBadChannels = badChannels{i};
@@ -447,7 +447,7 @@ for i = 1:length(files)
     end
 
     % save as post ICA and interpolated.
-    EEG = pop_saveset(EEG, 'filename', [files{i}, '_postICA_interpolated.set'], 'filepath', [path_preprocessed, '\primary\', files{i}]);
+    EEG = pop_saveset(EEG, 'filename', [files{i}, '_postICA_interpolated.set'], 'filepath', [PROC_PATH, '\primary\', files{i}]);
 
 end
 
