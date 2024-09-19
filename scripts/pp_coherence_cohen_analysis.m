@@ -12,6 +12,8 @@
 close all
 clc
 
+addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
+
 chanlocs = EEG.chanlocs;
 srate = EEG.srate;
 time = EEG.times;
@@ -24,12 +26,12 @@ baselinetimerange = [ -400 -200 ];
 ntime  = length(time);
 nchans = length(chanlocs);
 
-centfreq = 10;
+centfreq = 30;
 
 %% pick electrodes
 
 % in electrode labels
-electrodes2use = { 'F7';'T7' };
+electrodes2use = { 'Fz';'Pz' };
 
 % convert channel labels to indices
 elecs2use = zeros(size(electrodes2use));
@@ -201,8 +203,8 @@ contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,1))),4
 set(gca,'clim',[0 clim])
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-plot(times2save,toplot*30+10,'w','linew',2)
-plot(get(gca,'xlim'),[10 10],'w--')
+plot(times2save,toplot*30+30,'w','linew',2)
+plot(get(gca,'xlim'),[30 30],'w--')
 colorbar;
 
 subplot(224)
@@ -210,8 +212,8 @@ contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,2))),4
 set(gca,'clim',[0 clim])
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,2)),4));
-plot(times2save,toplot*30+10,'w','linew',2)
-plot(get(gca,'xlim'),[10 10],'w--')
+plot(times2save,toplot*30+30,'w','linew',2)
+plot(get(gca,'xlim'),[30 30],'w--')
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
 colorbar;
 sgtitle('ISPC')
@@ -230,8 +232,8 @@ subplot(223)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,1))),40,'linecolor','none')
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-plot(times2save,toplot*30+10,'w','linew',2)
-plot(get(gca,'xlim'),[10 10],'w--')
+plot(times2save,toplot*30+30,'w','linew',2)
+plot(get(gca,'xlim'),[30 30],'w--')
 set(gca,'clim',[0 clim])
 colorbar;
 
@@ -239,8 +241,8 @@ subplot(224)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,2))),40,'linecolor','none')
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-plot(times2save,toplot*30+10,'w','linew',2)
-plot(get(gca,'xlim'),[10 10],'w--')
+plot(times2save,toplot*30+30,'w','linew',2)
+plot(get(gca,'xlim'),[30 30],'w--')
 set(gca,'clim',[0 clim])
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
 colorbar;

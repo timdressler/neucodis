@@ -1,6 +1,7 @@
 % pp_wPLI_analysis.m
 %
-% Calculation and plotting of phase coherence as indexed by the wPLI (Vinck et al., 2015)
+% Data simulation for sanity-check of coherence analysis
+% Data can be only noise or contain simulated coherence 
 %
 % Originally by Dr. Micheal X Cohen
 % Cohen, MX (2014). Effects of time lag and frequency matching on
@@ -11,6 +12,8 @@
 clear
 close all
 clc
+
+addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
 noise_yn = 1; %0 for noise data, 1 for simulated coherence at 10Hz
 
@@ -146,6 +149,15 @@ end
 simulatedLap = laplacian_perrinX(simulatedEEG,[chanlocs.X],[chanlocs.Y],[chanlocs.Z]);
 % average reref (leadfield assumes average reference)
 simulatedEEG = bsxfun(@minus,simulatedEEG,mean(simulatedEEG,1));
+
+%convert simulated data to eeglab format
+
+EEG.data = simulatedEEG;
+EEG.times = time;
+EEG.srate = srate;
+EEG.chanlocs = chanlocs;
+
+clearvars -except EEG
 
 %% end data simulation part of script
 
