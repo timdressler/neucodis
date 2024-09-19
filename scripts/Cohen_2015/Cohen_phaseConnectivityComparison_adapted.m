@@ -12,7 +12,7 @@ clear
 close all
 clc
 
-noise_yn = 0; %0 for noise data, 1 for simulated coherence at 10Hz
+noise_yn = 1; %0 for noise data, 1 for simulated coherence at 10Hz
 
 %% easily modifiable parameters
 
