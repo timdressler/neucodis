@@ -10,7 +10,7 @@ close all
 clc
 
 %time 
-time  = (-1:1/EEG.srate:2)*1000;
+time  = EEG.times;
 
 %time points to save from final results, and baseline for power normalization
 times2save = -300:50:500; %in ms
