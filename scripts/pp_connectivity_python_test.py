@@ -8,7 +8,7 @@ from mne_connectivity import spectral_connectivity_epochs
 
 
 
-mat = scipy.io.loadmat('file.mat')
+mat = scipy.io.loadmat('C:\Users\timdr\OneDrive\Uni_Oldenburg\3_Semester\Module\Pratical_Project\Analysis\data\sandbox\testdata.mat')
 
 
 

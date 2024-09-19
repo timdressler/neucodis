@@ -104,7 +104,10 @@ tftopo(allersp,alltimes(:,:,1),allfreqs(:,:,1), ...
 
 %%
 dat = EEG.data;
-srate = EEG.srate
+srate = EEG.srate;
+
+save(fullfile(MAINPATH,'data/sandbox/testdata.m'), 'dat', 'srate')
+
 
 %%
 eeglab rebuild
