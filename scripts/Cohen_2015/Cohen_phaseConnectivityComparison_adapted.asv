@@ -104,10 +104,10 @@ end %end channel loop
 
 for chanx=1:length(electrodes4seeded_synch)
     %ISPC (average reference)
-    synchOverTrials(1,chanx,:,:,:,1) = mean(exp(1i* bsxfun(@minus,angle(allphasevals(strcmpi(electrodes4seeded_synch{chanx},{EEG.chanlocs.labels}),:,:,:,1)),angle(allphasevals(:,:,:,:,1))) ),4);
+    synchOverTrials(1,chanx,:,:,:,1) = mean(exp(1i* bsxfun(@minus,angle(allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,1)),angle(allphasevals(:,:,:,:,1))) ),4);
     
     %wPLI (average reference)
-    cdd = bsxfun(@times,allphasevals(strcmpi(electrodes4seeded_synch{chanx},{EEG.chanlocs.labels}),:,:,:,1),conj(allphasevals(:,:,:,:,1)));
+    cdd = bsxfun(@times,allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,1),conj(allphasevals(:,:,:,:,1)));
     cdi = imag(cdd);
     synchOverTrials(2,chanx,:,:,:,1) = mean( abs( mean( abs(cdi).*sign(cdi) ,4) )./mean(abs(cdi),4) ,4);
 end
@@ -116,10 +116,12 @@ end
 synchOverTrials(isnan(synchOverTrials))=0;
 
 %% plot data
-centfreq = 25;
 
 %% 
 %figure 1
+
+centfreq = 10;
+
 times2plot = dsearchn(times2save',[200 800]');
 freq2plot  = dsearchn(frex',centfreq);
 
@@ -127,7 +129,7 @@ clim = .8;
 
 figure(1), clf, colormap hot
 subplot(211)
-topoplot(squeeze(mean(mean(abs(synchOverTrials(1,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),EEG.chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
+topoplot(squeeze(mean(mean(abs(synchOverTrials(1,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
 title('seeded connectivity, average reference')
 
 
@@ -143,11 +145,11 @@ plot(get(gca,'xlim'),[10 10],'w--')
 %figure 2
 
 figure(2), clf, colormap hot
-subplot(211)
-topoplot(squeeze(mean(mean(abs(synchOverTrials(2,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),EEG.chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
+subplot(221)
+topoplot(squeeze(mean(mean(abs(synchOverTrials(2,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
 title('seeded connectivity, average reference')
 
-subplot(212)
+subplot(223)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,1))),40,'linecolor','none')
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
@@ -155,5 +157,13 @@ plot(times2save,toplot*30+10,'w','linew',2)
 plot(get(gca,'xlim'),[10 10],'w--')
 set(gca,'clim',[0 clim])
 
+subplot(224)
+contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,2))),40,'linecolor','none')
+hold on
+toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
+plot(times2save,toplot*30+10,'w','linew',2)
+plot(get(gca,'xlim'),[10 10],'w--')
+set(gca,'clim',[0 clim])
+xlabel('Time (ms)'), ylabel('Frequency (Hz)')
 
  
