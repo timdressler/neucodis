@@ -106,7 +106,7 @@ tftopo(allersp,alltimes(:,:,1),allfreqs(:,:,1), ...
 dat = EEG.data;
 srate = EEG.srate;
 
-save(fullfile(MAINPATH,'data/sandbox/testdata.m'), 'dat', 'srate')
+save(fullfile(MAINPATH,'data/sandbox/testdata.mat'), 'dat', 'srate')
 
 
 %%
