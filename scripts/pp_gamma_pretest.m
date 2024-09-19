@@ -68,8 +68,7 @@ figure; pop_newtimef( EEG, 1, chani, [TF_FROM  TF_TILL], [3         0.8] , 'topo
 %FastFFT (own function)
 %%pp_fastfft_TD(EEG.data, EEG.srate, chani, 'wins', 0.8, 'overlap', 0.99, 'fig', 1, 'timevec', EEG.times, 'ylim_min', 15, 'ylim_max', 50)
 
-%%
-%TF-Topoplots
+%% TF-Topoplots
 
 for elec = 1:EEG.nbchan
     [ersp,itc,powbase,times,freqs,erspboot,itcboot] = pop_newtimef(EEG, ...

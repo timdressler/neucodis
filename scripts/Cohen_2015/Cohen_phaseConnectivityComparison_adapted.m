@@ -5,12 +5,26 @@
 % Originally by Dr. Mike Cohen
 % Adapted from Tim Dressler, 19.09.2024
 
-clear
+%%clear
 close all
 clc
 
+%time 
+time  = (-1:1/EEG.srate:2)*1000;
+
+%time points to save from final results, and baseline for power normalization
+times2save = -300:50:500; % in ms
+baselinetimerange = [ -300 -200 ];
+
 %select electrodes for the analysis
 electrodes2use = { 'Fz';'Pz' };
+ntime = size(EEG.data,2);
+ntrials = size(EEG.data,3);
+nchans = size(EEG.data,1);
+
+%setup time indexing
+times2saveidx = dsearchn(time',times2save');
+baseidx = dsearchn(time',baselinetimerange');
 
 %convert channel labels to indices
 elecs2use = zeros(size(electrodes2use));
@@ -19,7 +33,7 @@ for i=1:length(electrodes2use)
 end
 
 %seeded phase synchronization (set to empty ("{}") for no analyses)
-electrodes4seeded_synch = { chanlocs(elecs2use(1)).labels , chanlocs(elecs2use(2)).labels };
+electrodes4seeded_synch = { EEG.chanlocs(elecs2use(1)).labels , EEG.chanlocs(elecs2use(2)).labels };
 
 %wavelet parameters
 min_freq =  2;
@@ -46,24 +60,18 @@ for fi=1:num_frex
 end
 
 %initialize output and hidden-layer TF matrices
-tf    = zeros(nchans+2,num_frex,length(times2saveidx),2);
-allphasevals = zeros(nchans,num_frex,length(times2save),ntrials,2);
-synchOverTrials = zeros(2,length(electrodes4seeded_synch),nchans,num_frex,length(times2saveidx),2);
-allAS = zeros(2,num_frex,ntime,ntrials,2);
+%%tf    = zeros(nchans+2,num_frex,length(times2saveidx),2);
+%%allphasevals = zeros(nchans,num_frex,length(times2save),ntrials,2);
+%%synchOverTrials = zeros(2,length(electrodes4seeded_synch),nchans,num_frex,length(times2saveidx),2);
+%%allAS = zeros(2,num_frex,ntime,ntrials,2);
 
 %run convolution
 % loop around channels
 for chani=1:nchans+2
     
     %fft of data (channel or true dipoles)
-    if chani<=nchans
-        EEGfft = fft(reshape(EEG.data(chani,:,:),1,[]),Lconv);
-        Lapfft = fft(reshape(simulatedLap(chani,:,:),1,[]),Lconv);
-    else
-        [EEGfft,Lapfft] = deal(fft(reshape(sourceTimeSeries(:,mod(chani,nchans),:),1,[]),Lconv));
-    end
-        
-    
+    EEGfft = fft(reshape(EEG.data(chani,:,:),1,[]),Lconv);
+
     %loop over frequencies and complete convolution
     for fi=1:num_frex
         
@@ -88,29 +96,7 @@ for chani=1:nchans+2
         elseif chani==elecs2use(2)
             allAS(2,fi,:,:,1) = as;
         end
-        
-        %Laplacian
-        %convolve and get analytic signal (as)
-        as = ifft(Lapfft.*fft(wavelets(fi,:),Lconv),Lconv);
-        as = as(1:Lconv1);
-        as = reshape(as(floor((Ltapr-1)/2):end-1-ceil((Ltapr-1)/2)),ntime,ntrials);
-        
-        %enter into TF matrix
-        temppow = mean(abs(as).^2,2);
-        tf(chani,fi,:,2) = 10*log10( temppow(times2saveidx)/mean(temppow(baseidx(1):baseidx(2))) );
-        
-        %save phase values
-        if chani<=nchans
-            allphasevals(chani,fi,:,:,2) = as(times2saveidx,:);
-        end
-        
-        %all values from all time points
-        if chani==elecs2use(1)
-            allAS(1,fi,:,:,2) = as;
-        elseif chani==elecs2use(2)
-            allAS(2,fi,:,:,2) = as;
-        end
-        
+               
     end %end frequency loop
 end %end channel loop
 
