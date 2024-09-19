@@ -2,7 +2,7 @@
 %
 % Calculation and plotting of phase coherence as indexed by the wPLI (Vinck et al., 2015) 
 %
-% Originally by Dr. Mike Cohen
+% Originally by Dr. Micheal X Cohen
 % Adapted from Tim Dressler, 19.09.2024
 
 %%clear
@@ -13,8 +13,8 @@ clc
 time  = (-1:1/EEG.srate:2)*1000;
 
 %time points to save from final results, and baseline for power normalization
-times2save = -300:50:500; % in ms
-baselinetimerange = [ -300 -200 ];
+times2save = -300:50:500; %in ms
+baselinetimerange = [ -300 -200 ]; %in ms
 
 %select electrodes for the analysis
 electrodes2use = { 'Fz';'Pz' };
@@ -60,10 +60,10 @@ for fi=1:num_frex
 end
 
 %initialize output and hidden-layer TF matrices
-%%tf    = zeros(nchans+2,num_frex,length(times2saveidx),2);
-%%allphasevals = zeros(nchans,num_frex,length(times2save),ntrials,2);
-%%synchOverTrials = zeros(2,length(electrodes4seeded_synch),nchans,num_frex,length(times2saveidx),2);
-%%allAS = zeros(2,num_frex,ntime,ntrials,2);
+tf    = zeros(nchans+2,num_frex,length(times2saveidx),2);
+allphasevals = zeros(nchans,num_frex,length(times2save),ntrials,2);
+synchOverTrials = zeros(2,length(electrodes4seeded_synch),nchans,num_frex,length(times2saveidx),2);
+allAS = zeros(2,num_frex,ntime,ntrials,2);
 
 %run convolution
 % loop around channels
