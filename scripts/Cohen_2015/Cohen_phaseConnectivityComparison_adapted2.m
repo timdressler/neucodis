@@ -66,7 +66,7 @@ electrodes4seeded_synch = { chanlocs(elecs2use(1)).labels , chanlocs(elecs2use(2
 
 % wavelet parameters
 min_freq =  2;
-max_freq = 40;
+max_freq = 50;
 num_frex = 25;
 wavelet_cycle_range = [ 3 12 ];
 
@@ -203,6 +203,7 @@ hold on
 toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
 plot(times2save,toplot*30+10,'w','linew',2)
 plot(get(gca,'xlim'),[10 10],'w--')
+colorbar;
 
 subplot(224)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,2))),40,'linecolor','none')
@@ -212,6 +213,7 @@ toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot
 plot(times2save,toplot*30+10,'w','linew',2)
 plot(get(gca,'xlim'),[10 10],'w--')
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
+colorbar;
 sgtitle('ISPC')
 
 
@@ -231,6 +233,7 @@ toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot
 plot(times2save,toplot*30+10,'w','linew',2)
 plot(get(gca,'xlim'),[10 10],'w--')
 set(gca,'clim',[0 clim])
+colorbar;
 
 subplot(224)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,2))),40,'linecolor','none')
@@ -240,4 +243,5 @@ plot(times2save,toplot*30+10,'w','linew',2)
 plot(get(gca,'xlim'),[10 10],'w--')
 set(gca,'clim',[0 clim])
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
+colorbar;
 sgtitle('wPLI')
