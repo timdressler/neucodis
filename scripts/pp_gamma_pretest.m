@@ -38,6 +38,9 @@ SD_PROB = 2.5;
 load(fullfile(INPATH, ['Prep3_P' SUBJ '_ICA_rejected.mat']));
 chani = find(strcmp({EEG.chanlocs.labels}, CHAN));
 
+%remove not needed channel
+EEG = pop_select( EEG, 'rmchannel',{'Lip'});
+
 %filter
 EEG = pop_eegfiltnew(EEG, 'locutoff',LCF);
 EEG = pop_eegfiltnew(EEG, 'hicutoff',HCF);
