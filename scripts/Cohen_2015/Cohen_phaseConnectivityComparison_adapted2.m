@@ -24,12 +24,12 @@ baselinetimerange = [ -400 -200 ];
 ntime  = length(time);
 nchans = length(chanlocs);
 
-centfreq = 20;
+centfreq = 10;
 
 %% pick electrodes
 
-% in electrode labels; see {chanlocs.labels}
-electrodes2use = { 'Fz';'Pz' };
+% in electrode labels
+electrodes2use = { 'F7';'T7' };
 
 % convert channel labels to indices
 elecs2use = zeros(size(electrodes2use));
