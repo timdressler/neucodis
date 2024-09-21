@@ -14,6 +14,7 @@ clc
 
 addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
+
 chanlocs = EEG.chanlocs;
 srate = EEG.srate;
 time = EEG.times;
