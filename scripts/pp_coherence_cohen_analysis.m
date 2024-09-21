@@ -17,7 +17,7 @@ addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Projec
 %select electrodes
 electrodes2use = { 'Fz';'Pz' };
 %set frequency of interest (only relevant for plotting)
-centfreq = 30;
+centfreq = 10;
 %time points to save from final results, and baseline for power normalization
 times2save = -400:50:600; %ms
 baselinetimerange = [ -400 -200 ]; %ms
@@ -179,7 +179,7 @@ freq2plot  = dsearchn(frex',centfreq);
 clim = .8;
 
 %ISPC
-figure(1), clf, colormap hot
+figure(), clf, colormap hot
 subplot(221)
 topoplot(squeeze(mean(mean(abs(synchOverTrials(1,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
 title('seeded connectivity, average reference')
@@ -193,8 +193,8 @@ contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,1))),4
 set(gca,'clim',[0 clim])
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-plot(times2save,toplot*30+30,'w','linew',2)
-plot(get(gca,'xlim'),[30 30],'w--')
+plot(times2save,toplot*30+centfreq,'w','linew',2)
+plot(get(gca,'xlim'),[centfreq centfreq],'w--')
 colorbar;
 
 subplot(224)
@@ -202,14 +202,14 @@ contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,2))),4
 set(gca,'clim',[0 clim])
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,2)),4));
-plot(times2save,toplot*30+30,'w','linew',2)
-plot(get(gca,'xlim'),[30 30],'w--')
+plot(times2save,toplot*30+centfreq,'w','linew',2)
+plot(get(gca,'xlim'),[centfreq centfreq],'w--')
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
 colorbar;
 sgtitle('ISPC')
 
 %wPLI
-figure(2), clf, colormap hot
+figure(), clf, colormap hot
 subplot(221)
 topoplot(squeeze(mean(mean(abs(synchOverTrials(2,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
 title('seeded connectivity, average reference')
@@ -222,8 +222,8 @@ subplot(223)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,1))),40,'linecolor','none')
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-plot(times2save,toplot*30+30,'w','linew',2)
-plot(get(gca,'xlim'),[30 30],'w--')
+plot(times2save,toplot*30+centfreq,'w','linew',2)
+plot(get(gca,'xlim'),[centfreq centfreq],'w--')
 set(gca,'clim',[0 clim])
 colorbar;
 
@@ -231,8 +231,8 @@ subplot(224)
 contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,2))),40,'linecolor','none')
 hold on
 toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-plot(times2save,toplot*30+30,'w','linew',2)
-plot(get(gca,'xlim'),[30 30],'w--')
+plot(times2save,toplot*30+centfreq,'w','linew',2)
+plot(get(gca,'xlim'),[centfreq centfreq],'w--')
 set(gca,'clim',[0 clim])
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
 colorbar;
