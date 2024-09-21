@@ -8,33 +8,32 @@
 %
 % Adapted from Tim Dressler, 19.09.2024
 
-%%clear
 close all
 clc
 
+%add function path
 addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
+%select electrodes
+electrodes2use = { 'Fz';'Pz' };
+%set frequency of interest (only relevant for plotting)
+centfreq = 30;
+%time points to save from final results, and baseline for power normalization
+times2save = -400:50:600; %ms
+baselinetimerange = [ -400 -200 ]; %ms
 
+%% start analysis
+
+%preprocessing
+%convert field to variables for easier handling
 chanlocs = EEG.chanlocs;
 srate = EEG.srate;
 time = EEG.times;
 ntrials = size(EEG.data,3);
-
-%time points to save from final results, and baseline for power normalization
-times2save = -400:50:600; % in ms
-baselinetimerange = [ -400 -200 ];
-
 ntime  = length(time);
 nchans = length(chanlocs);
 
-centfreq = 30;
-
-%% pick electrodes
-
-% in electrode labels
-electrodes2use = { 'Fz';'Pz' };
-
-% convert channel labels to indices
+%convert channel labels to indices
 elecs2use = zeros(size(electrodes2use));
 for i=1:length(electrodes2use)
     elecs2use(i) = find(strcmpi(electrodes2use{i},{chanlocs.labels}));
@@ -51,23 +50,13 @@ simulatedLap = laplacian_perrinX(EEG.data,[chanlocs.X],[chanlocs.Y],[chanlocs.Z]
 % average reref (leadfield assumes average reference)
 EEG.data = bsxfun(@minus,EEG.data,mean(EEG.data,1));
 
+%begin wavelet convolution part of script
+%initial parameters for time-frequency analysis
 
-
-
-
-
-%% begin wavelet convolution part of script
-
-
-
-
-
-%% initial parameters for time-frequency analysis
-
-% seeded phase synchronization (set to empty ("{}") for no analyses)
+%seeded phase synchronization (set to empty ("{}") for no analyses)
 electrodes4seeded_synch = { chanlocs(elecs2use(1)).labels , chanlocs(elecs2use(2)).labels };
 
-% wavelet parameters
+%wavelet parameters
 min_freq =  2;
 max_freq = 50;
 num_frex = 25;
@@ -76,11 +65,11 @@ wavelet_cycle_range = [ 3 12 ];
 frex = logspace(log10(min_freq),log10(max_freq),num_frex);
 
 
-% gaussian width and time
+%gaussian width and time
 s = logspace(log10(wavelet_cycle_range(1)),log10(wavelet_cycle_range(2)),num_frex)./(2*pi.*frex);
 t = -2:1/srate:2;
 
-% fft and convolution details
+%fft and convolution details
 Ltapr  =  length(t);
 Ldata  =  prod(ntime*ntrials);
 Lconv1 =  Ldata+Ltapr-1;
@@ -91,18 +80,17 @@ for fi=1:num_frex
     wavelets(fi,:) = exp(2*1i*pi*frex(fi).*t).*exp(-t.^2./(2*s(fi)^2));
 end
 
-% initialize output and hidden-layer TF matrices
+%initialize output and hidden-layer TF matrices
 tf    = zeros(nchans+2,num_frex,length(times2saveidx),2);
 allphasevals = zeros(nchans,num_frex,length(times2save),ntrials,2);
 synchOverTrials = zeros(2,length(electrodes4seeded_synch),nchans,num_frex,length(times2saveidx),2);
 allAS = zeros(2,num_frex,ntime,ntrials,2);
 
-%% run convolution
-
-% loop around channels
+%run convolution
+%loop around channels
 for chani=1:nchans+2
 
-    % FFT of data (channel or true dipoles)
+    %fft of data (channel or true dipoles)
     if chani<=nchans
         EEGfft = fft(reshape(EEG.data(chani,:,:),1,[]),Lconv);
         Lapfft = fft(reshape(simulatedLap(chani,:,:),1,[]),Lconv);
@@ -111,66 +99,66 @@ for chani=1:nchans+2
     end
 
 
-    % loop over frequencies and complete convolution
+    %loop over frequencies and complete convolution
     for fi=1:num_frex
 
-        % Average reference
-        % convolve and get analytic signal (as)
+        %average reference
+        %convolve and get analytic signal (as)
         as = ifft(EEGfft.*fft(wavelets(fi,:),Lconv),Lconv);
         as = as(1:Lconv1);
         as = reshape(as(floor((Ltapr-1)/2):end-1-ceil((Ltapr-1)/2)),ntime,ntrials);
 
-        % enter into TF matrix
+        %enter into TF matrix
         temppow = mean(abs(as).^2,2);
         tf(chani,fi,:,1) = 10*log10( temppow(times2saveidx)/mean(temppow(baseidx(1):baseidx(2))) );
 
-        % save phase values
+        %save phase values
         if chani<=nchans
             allphasevals(chani,fi,:,:,1) = as(times2saveidx,:);
         end
 
-        % all values from all time points
+        %all values from all time points
         if chani==elecs2use(1)
             allAS(1,fi,:,:,1) = as;
         elseif chani==elecs2use(2)
             allAS(2,fi,:,:,1) = as;
         end
 
-        % Laplacian
-        % convolve and get analytic signal (as)
+        %laplacian
+        %convolve and get analytic signal (as)
         as = ifft(Lapfft.*fft(wavelets(fi,:),Lconv),Lconv);
         as = as(1:Lconv1);
         as = reshape(as(floor((Ltapr-1)/2):end-1-ceil((Ltapr-1)/2)),ntime,ntrials);
 
-        % enter into TF matrix
+        %enter into TF matrix
         temppow = mean(abs(as).^2,2);
         tf(chani,fi,:,2) = 10*log10( temppow(times2saveidx)/mean(temppow(baseidx(1):baseidx(2))) );
 
-        % save phase values
+        %save phase values
         if chani<=nchans
             allphasevals(chani,fi,:,:,2) = as(times2saveidx,:);
         end
 
-        % all values from all time points
+        %all values from all time points
         if chani==elecs2use(1)
             allAS(1,fi,:,:,2) = as;
         elseif chani==elecs2use(2)
             allAS(2,fi,:,:,2) = as;
         end
 
-    end % end frequency loop
-end % end channel loop
+    end %end frequency loop
+end %end channel loop
 
 %% compute phase connectivity over trials
 
 for chanx=1:length(electrodes4seeded_synch)
 
-    % ISPC (average reference and laplacian)
+    %ISPC (average reference and laplacian)
     synchOverTrials(1,chanx,:,:,:,1) = mean(exp(1i* bsxfun(@minus,angle(allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,1)),angle(allphasevals(:,:,:,:,1))) ),4);
     synchOverTrials(1,chanx,:,:,:,2) = mean(exp(1i* bsxfun(@minus,angle(allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,2)),angle(allphasevals(:,:,:,:,2))) ),4);
 
 
-    % wPLI (average reference and laplacian)
+    %wPLI (average reference and laplacian)
     cdd = bsxfun(@times,allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,1),conj(allphasevals(:,:,:,:,1)));
     cdi = imag(cdd);
     synchOverTrials(2,chanx,:,:,:,1) = mean( abs( mean( abs(cdi).*sign(cdi) ,4) )./mean(abs(cdi),4) ,4);
@@ -180,7 +168,7 @@ for chanx=1:length(electrodes4seeded_synch)
     synchOverTrials(2,chanx,:,:,:,2) = mean( abs( mean( abs(cdi).*sign(cdi) ,4) )./mean(abs(cdi),4) ,4);
 end
 
-% NaN's cause electrode data shifts in the eeglab topoplot function
+%NaN's cause electrode data shifts in the eeglab topoplot function
 synchOverTrials(isnan(synchOverTrials))=0;
 
 %% plot data
@@ -190,6 +178,7 @@ freq2plot  = dsearchn(frex',centfreq);
 
 clim = .8;
 
+%ISPC
 figure(1), clf, colormap hot
 subplot(221)
 topoplot(squeeze(mean(mean(abs(synchOverTrials(1,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
@@ -219,7 +208,7 @@ xlabel('Time (ms)'), ylabel('Frequency (Hz)')
 colorbar;
 sgtitle('ISPC')
 
-
+%wPLI
 figure(2), clf, colormap hot
 subplot(221)
 topoplot(squeeze(mean(mean(abs(synchOverTrials(2,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
