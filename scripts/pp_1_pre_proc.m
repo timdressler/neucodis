@@ -167,7 +167,7 @@ for i = 1:length(files)
 
     EEG = pop_saveset( EEG, 'filename',[files{i}, '_chanlocsadded', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]); % save the dataset
 
-    % Fixing the latency (150ms delay) of stimulus markers
+    % Fixing the latency (150ms delay) of stimulus markers %CHECK remove?
     for e = 1:length(EEG.event)
         if ismember(EEG.event(e).type, events)
             EEG.event(e).latency = EEG.event(e).latency+150;
@@ -179,7 +179,8 @@ for i = 1:length(files)
 
     EEG = pop_saveset( EEG, 'filename',[files{i}, '_latenciesfixed', '.set'],'filepath',[PROC_PATH, '\', 'primary', '\', files{i}]); % save the dataset
 
-    % Delete irrelevant markers so all markers match logfiles %CHECK: Adapt
+    % Delete irrelevant markers so all markers match logfiles %CHECK:
+    % Adapt/Remove?
 
     EEG_event_type = {EEG.event.type};
     g = ismember(EEG_event_type, events)  | ismember(EEG_event_type, responses); % find the stimulus & response markers
