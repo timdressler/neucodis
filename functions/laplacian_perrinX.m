@@ -43,9 +43,11 @@ else
     m=4; leg_order=10;
 end
 
-if numel(varargin)>0 && ~isempty(varargin{1})
-    leg_order=varargin{1};
-end
+%EDITED
+%%if numel(varargin)>0 && ~isempty(varargin{1})
+    %%leg_order=varargin{1};
+%%end
+%EDITED
 
 % scale XYZ coordinates to unit sphere
 [junk,junk,spherical_radii] = cart2sph(x,y,z);
