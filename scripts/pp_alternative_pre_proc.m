@@ -5,7 +5,7 @@
 % Adapted from Moon et al. (2023)
 % Tim Dressler, 11.09.2024
 
-clear 
+clear
 close all
 clc
 
@@ -23,6 +23,22 @@ addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Projec
 EEG = pop_loadbv(fullfile(INPATH, 'P136'), 'av_P136_C_0001.vhdr', [], []);
 %remove not needed channels
 EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
+%rename events
+for s = 2:length(EEG.event)
+    if s < length(EEG.event)
+        if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64') && ~strcmp(EEG.event(s+1).type, 'S 64')
+            EEG.event(s).type = 'talk';
+        else
+            continue
+        end
+    elseif s == length(EEG.event)
+        if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64')
+            EEG.event(s).type = 'talk';
+        else
+            continue
+        end
+    end
+end
 %1-60Hz bandpass
 EEG = pop_eegfiltnew(EEG, 'locutoff',1,'hicutoff',60,'plotfreqz',0);
 %run PREP pipeline
@@ -56,6 +72,22 @@ lineNoiseIn.tau = lineNoiseIn.tau.value;
 EEG = pop_loadbv(fullfile(INPATH, 'P136'), 'av_P136_C_0001.vhdr', [], []);
 %remove not needed channels
 EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
+%rename events
+for s = 2:length(EEG.event)
+    if s < length(EEG.event)
+        if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64') && ~strcmp(EEG.event(s+1).type, 'S 64')
+            EEG.event(s).type = 'listen';
+        else
+            continue
+        end
+    elseif s == length(EEG.event)
+        if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64')
+            EEG.event(s).type = 'listen';
+        else
+            continue
+        end
+    end
+end
 %1-60Hz bandpass
 EEG = pop_eegfiltnew(EEG, 'locutoff',1,'hicutoff',60,'plotfreqz',0);
 %run PREP pipeline
@@ -86,10 +118,10 @@ lineNoiseIn.tau = lineNoiseIn.tau.value;
 
 %preprocessing on merged datasets
 %merge datasets
-EEG = pop_mergeset( ALLEEG, [1], 0);
+EEG = pop_mergeset( ALLEEG, [1 2], 0);
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 %run ICA
-
+EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
 %label ICA components with IC Label Plugin
 EEG = pop_iclabel(EEG, 'default');
 EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
@@ -99,24 +131,20 @@ EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z
 %20-55Hz bandpass
 EEG = pop_eegfiltnew(EEG, 'locutoff',20,'hicutoff',55,'plotfreqz',0);
 %epoching
-EEG = pop_epoch( EEG, {  'S 64'  }, [-0.8         0.7], 'epochinfo', 'yes');
+EEG = pop_epoch( EEG, {  'talk'  }, [-0.8         0.7], 'epochinfo', 'yes');
 %baseline removal
 EEG = pop_rmbase( EEG, [-800 -400] ,[]);
 %threshold removal
-EEG = pop_eegthresh(EEG,1,[1:60] ,-100,100,-0.8,0.699,2,1);
+EEG = pop_eegthresh(EEG,1,[1:60] ,-50,50,-0.8,0.699,2,1); %CHECK %changed from +/- 100 to +/- 50
 %probability-based removal
 EEG = pop_jointprob(EEG,1,[1:60] ,3,3,0,1,0,[],0);
 EEG = pop_rejkurt(EEG,1,[1:60] ,3,3,0,1,0,[],0);
 
 %end of preprocessiing
 
-
-
-
-
-
-
-
-
-
 eeglab redraw
+
+
+
+
+
