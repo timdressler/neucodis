@@ -35,15 +35,15 @@ SD_PROB = 3;
 dircont_subj = dir(fullfile(INPATH, 'P*'));
 
 %initialize marked subjects variable
-MARKED_SUBJ = [];
+MARKED_SUBJ = {};
 
 %% load and merge data
 for subj = 1:length(dircont_subj)
     %get current ID
     SUBJ = dircont_subj(subj).name;
     %check number of condition files
-    dircont_cond1 = dir(fullfile(INPATH, [SUBJ '/*C_0001.vhdr']));
-    dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005.vhdr']));
+    dircont_cond1 = dir(fullfile(INPATH, [SUBJ '/*C_0001*.vhdr']));
+    dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005*.vhdr']));
     if length(dircont_cond1) == 1 && length(dircont_cond2) == 1
         %start eeglab
         [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -174,7 +174,7 @@ for subj = 1:length(dircont_subj)
         %end of preprocessing
 
     else
-        MARKED_SUBJ(end+1) = SUBJ;
+        MARKED_SUBJ{end+1} = SUBJ;
     end
 end
 
