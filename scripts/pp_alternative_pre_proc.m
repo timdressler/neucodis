@@ -12,6 +12,7 @@ clc
 %setup paths
 MAINPATH = "C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis";
 INPATH = fullfile(MAINPATH,"data/raw_data/pp_main_data_raw/");
+OUTPATH = fullfile(MAINPATH, 'data\\proc_data\\pp_main_data_proc\\pp_main_data_after_preproc_proc\\');
 addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
 
 %variables to edit
@@ -172,6 +173,10 @@ for subj = 1:length(dircont_subj)
         EEG = eeg_rejsuperpose( EEG, 1, 1, 1, 1, 1, 1, 1, 1);
         EEG = pop_rejepoch( EEG, EEG.reject.rejglobal ,0);
         %end of preprocessing
+
+        %save dataset
+        EEG = pop_saveset( EEG, 'filename',[SUBJ '_after_preproc_proc.set','filepath',OUTPATH);
+
 
     else
         MARKED_SUBJ{end+1} = SUBJ;
