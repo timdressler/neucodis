@@ -147,7 +147,7 @@ for subj = 1:length(dircont_subj)
         %end of preprocessing
 
         %save dataset
-        EEG = pop_saveset( EEG, 'filename',[SUBJ '_after_preproc_proc.set','filepath',OUTPATH);
+        EEG = pop_saveset(EEG, 'filename',[SUBJ '_after_preproc_proc.set'],'filepath',OUTPATH);
 
 
     else
