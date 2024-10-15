@@ -72,28 +72,14 @@ for subj = 1:length(dircont_subj)
         %1-60Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF,'hicutoff',HCF,'plotfreqz',0);
         %run PREP pipeline
-        %detrend
-        [EEG, ~] = removeTrend(EEG);
-        %line noise removal
-        lineNoiseIn = getPrepDefaults(EEG, 'linenoise');
-
-        lineNoiseIn.fPassBand = lineNoiseIn.fPassBand.value;
-        lineNoiseIn.Fs = lineNoiseIn.Fs.value;
-        lineNoiseIn.fScanBandWidth = lineNoiseIn.fScanBandWidth.value;
-        lineNoiseIn.lineFrequencies = 50:50:EEG.srate/2;
-        lineNoiseIn.lineNoiseChannels = lineNoiseIn.lineNoiseChannels.value;
-        lineNoiseIn.lineNoiseMethod = lineNoiseIn.lineNoiseMethod.value;
-        lineNoiseIn.maximumIterations = lineNoiseIn.maximumIterations.value;
-        lineNoiseIn.p = lineNoiseIn.p.value;
-        lineNoiseIn.pad = lineNoiseIn.pad.value;
-        lineNoiseIn.taperBandWidth = lineNoiseIn.taperBandWidth.value;
-        lineNoiseIn.taperWindowSize = lineNoiseIn.taperWindowSize.value;
-        lineNoiseIn.taperWindowStep = lineNoiseIn.taperWindowStep.value;
-        lineNoiseIn.tau = lineNoiseIn.tau.value;
-
-        [EEG, lineNoiseOut] = cleanLineNoise(EEG, lineNoiseIn);
-        %robust rereferencing
-        [EEG, referenceOut] = performReference(EEG);
+        %settings
+        params = struct();
+        params.lineFrequencies = 50:50:EEG.srate/2-50; %set line noise to 50Hz
+        params.ignoreBoundaryEvents = true;  %ingore boundary events
+        params.reportMode = 'skipReport';  %suppress report
+        params.keepFiltered = true; %remove trend 
+        %run
+        EEG = pop_prepPipeline(EEG, params);
         %store dataset C_0001
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
@@ -121,28 +107,14 @@ for subj = 1:length(dircont_subj)
         %1-60Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF,'hicutoff',HCF,'plotfreqz',0);
         %run PREP pipeline
-        %detrend
-        [EEG, ~] = removeTrend(EEG);
-        %line noise removal
-        lineNoiseIn = getPrepDefaults(EEG, 'linenoise');
-
-        lineNoiseIn.fPassBand = lineNoiseIn.fPassBand.value;
-        lineNoiseIn.Fs = lineNoiseIn.Fs.value;
-        lineNoiseIn.fScanBandWidth = lineNoiseIn.fScanBandWidth.value;
-        lineNoiseIn.lineFrequencies = 50:50:EEG.srate/2;
-        lineNoiseIn.lineNoiseChannels = lineNoiseIn.lineNoiseChannels.value;
-        lineNoiseIn.lineNoiseMethod = lineNoiseIn.lineNoiseMethod.value;
-        lineNoiseIn.maximumIterations = lineNoiseIn.maximumIterations.value;
-        lineNoiseIn.p = lineNoiseIn.p.value;
-        lineNoiseIn.pad = lineNoiseIn.pad.value;
-        lineNoiseIn.taperBandWidth = lineNoiseIn.taperBandWidth.value;
-        lineNoiseIn.taperWindowSize = lineNoiseIn.taperWindowSize.value;
-        lineNoiseIn.taperWindowStep = lineNoiseIn.taperWindowStep.value;
-        lineNoiseIn.tau = lineNoiseIn.tau.value;
-
-        [EEG, lineNoiseOut] = cleanLineNoise(EEG, lineNoiseIn);
-        %robust rereferencing
-        [EEG, referenceOut] = performReference(EEG);
+        %settings
+        params = struct();
+        params.lineFrequencies = 50:50:EEG.srate/2-50; %set line noise to 50Hz
+        params.ignoreBoundaryEvents = true;  %ingore boundary events
+        params.reportMode = 'skipReport';  %suppress report
+        params.keepFiltered = true; %remove trend 
+        %run
+        EEG = pop_prepPipeline(EEG, params);
         %store dataset C_0005
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
