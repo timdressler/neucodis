@@ -10,10 +10,10 @@ close all
 clc
 
 %setup paths
-MAINPATH = "C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis";
+MAINPATH = 'C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis';
 INPATH = fullfile(MAINPATH,"data/raw_data/pp_main_data_raw/");
-OUTPATH = fullfile(MAINPATH, 'data\\proc_data\\pp_main_data_proc\\pp_main_data_after_preproc_proc\\');
-addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
+OUTPATH = fullfile(MAINPATH, '/data/proc_data/pp_main_data_proc/pp_main_data_after_preproc_proc/');
+addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester/Module/Pratical_Project/Analysis/neucodis/functions")
 
 %variables to edit
 EVENTS = {'talk', 'listen'};
@@ -123,15 +123,15 @@ for subj = 1:length(dircont_subj)
         EEG = pop_mergeset( ALLEEG, [1 2], 0);
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %run ICA
-        EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
-        %label ICA components with IC Label Plugin
-        EEG = pop_iclabel(EEG, 'default');
-        EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
-        EEG = pop_subcomp( EEG, [], 0);
+        % % EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
+        % % %label ICA components with IC Label Plugin
+        % % EEG = pop_iclabel(EEG, 'default');
+        % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
+        % % EEG = pop_subcomp( EEG, [], 0);
         %compute surface laplacian
         EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z);
         %20-55Hz bandpass
-        EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',LCF_2,'plotfreqz',0);
+        EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %epoching
         EEG = pop_epoch( EEG, {  'talk'  }, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');
         %baseline removal
@@ -147,7 +147,7 @@ for subj = 1:length(dircont_subj)
         %end of preprocessing
 
         %save dataset
-        EEG = pop_saveset(EEG, 'filename',[SUBJ '_after_preproc_proc.set'],'filepath',OUTPATH);
+        EEG = pop_saveset(EEG, 'filename',[SUBJ '_after_preproc_proc.set'],'filepath', OUTPATH);
 
 
     else
@@ -156,6 +156,7 @@ for subj = 1:length(dircont_subj)
 end
 
 eeglab redraw
+
 
 
 
