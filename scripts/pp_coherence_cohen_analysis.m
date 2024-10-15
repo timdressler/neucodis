@@ -17,7 +17,7 @@ addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Projec
 %select electrodes
 electrodes2use = { 'Fz';'Pz' };
 %set frequency of interest (only relevant for plotting)
-centfreq = 10;
+centfreq = 30;
 %time points to save from final results, and baseline for power normalization
 times2save = -400:50:600; %ms
 baselinetimerange = [ -400 -200 ]; %ms
