@@ -10,10 +10,18 @@ close all
 clc
 
 %setup paths
-MAINPATH = 'C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis';
-INPATH = fullfile(MAINPATH,"data/raw_data/pp_main_data_raw/");
-OUTPATH = fullfile(MAINPATH, '/data/proc_data/pp_main_data_proc/pp_main_data_after_preproc_proc/');
-addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester/Module/Pratical_Project/Analysis/neucodis/functions")
+SCRIPTPATH = cd;
+%check if correct path is openend
+if regexp(SCRIPTPATH, regexptranslate('wildcard','*neucodis\scripts')) == 1
+    disp('Path OK')
+else
+    error('Path not OK')
+end
+MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
+INPATH = fullfile(MAINPATH,"data\raw_data\pp_main_data_raw"); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_main_data_proc\pp_main_data_after_preproc_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
+addpath(FUNPATH);
 
 %variables to edit
 EVENTS = {'talk', 'listen'};
@@ -23,6 +31,8 @@ LCF = 1;
 HCF = 60;
 LCF_2 = 20;
 HCF_2 = 55;
+LCF_ICA = 1;
+HCF_ICA = 30;
 BL_FROM = -800;
 BL_TILL= -400;
 TF_FROM = -800;
@@ -31,6 +41,8 @@ TF_BL_FROM = -600;
 TF_BL_TILL = -400;
 THRESH = 100;
 SD_PROB = 3;
+RESAM_ICA = 250;
+EVENTS = {'talk', 'listen'};
 
 %get directory content
 dircont_subj = dir(fullfile(INPATH, 'P*'));
@@ -47,7 +59,7 @@ for subj = 1:length(dircont_subj)
     dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005*.vhdr']));
     if length(dircont_cond1) == 1 && length(dircont_cond2) == 1
         %start eeglab
-        [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
+        eeglab nogui
         %preprocessing dataset C_0001
         %load raw dataset (C_0001)
         EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); %CHECK %channel locations already there
@@ -71,16 +83,17 @@ for subj = 1:length(dircont_subj)
         end
         %1-60Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF,'hicutoff',HCF,'plotfreqz',0);
-        %run PREP pipeline
+        %run PREP pipeline (Bigdely-Shamlo et al., 2015)
         %settings
         params = struct();
         params.lineFrequencies = 50:50:EEG.srate/2-50; %set line noise to 50Hz
         params.ignoreBoundaryEvents = true;  %ingore boundary events
         params.reportMode = 'skipReport';  %suppress report
-        params.keepFiltered = true; %remove trend 
+        params.keepFiltered = true; %remove trend
         %run
         EEG = pop_prepPipeline(EEG, params);
         %store dataset C_0001
+        EEG.setname = [SUBJ '_talk_after_PREP'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
         %preprocessing dataset C_0005
@@ -106,34 +119,59 @@ for subj = 1:length(dircont_subj)
         end
         %1-60Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF,'hicutoff',HCF,'plotfreqz',0);
-        %run PREP pipeline
+        %run PREP pipeline (Bigdely-Shamlo et al., 2015)
         %settings
         params = struct();
         params.lineFrequencies = 50:50:EEG.srate/2-50; %set line noise to 50Hz
         params.ignoreBoundaryEvents = true;  %ingore boundary events
         params.reportMode = 'skipReport';  %suppress report
-        params.keepFiltered = true; %remove trend 
+        params.keepFiltered = true; %remove trend
         %run
         EEG = pop_prepPipeline(EEG, params);
         %store dataset C_0005
+        EEG.setname = [SUBJ '_listen_after_PREP'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
         %preprocessing on merged datasets
         %merge datasets
         EEG = pop_mergeset( ALLEEG, [1 2], 0);
+        EEG.setname = [SUBJ '_merged_after_PREP'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
-        %run ICA
+
+        %ICA preprocessing 
+        %1-30Hz bandpass
+        EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_ICA,'hicutoff',HCF_ICA,'plotfreqz',0);
+        %remove 1 second-epochs which exceeded a joint probability of 3 standard deviations from the mean
+
+        %resample to 250Hz
+        EEG = pop_resample( EEG, RESAM_ICA);
+
+
+        EEG.setname = [SUBJ '_ICA_after_preproc'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+
+
+
+
+        % % %run ICA
         % % EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
-        % % %label ICA components with IC Label Plugin
+        % % 
+        % % %attach ICA weight to main data
+        % % 
+        % % %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
         % % EEG = pop_iclabel(EEG, 'default');
         % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
         % % EEG = pop_subcomp( EEG, [], 0);
+
+
+
+
         %compute surface laplacian
         EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z);
-        %20-55Hz bandpass
+        %20-55Hz bandpass 
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %epoching
-        EEG = pop_epoch( EEG, {  'talk'  }, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');
+        EEG = pop_epoch( EEG, EVENTS, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');
         %baseline removal
         EEG = pop_rmbase( EEG, [BL_FROM BL_TILL] ,[]);
         %threshold removal
@@ -148,8 +186,6 @@ for subj = 1:length(dircont_subj)
 
         %save dataset
         EEG = pop_saveset(EEG, 'filename',[SUBJ '_after_preproc_proc.set'],'filepath', OUTPATH);
-
-
     else
         MARKED_SUBJ{end+1} = SUBJ;
     end
