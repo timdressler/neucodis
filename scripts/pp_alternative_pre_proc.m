@@ -59,7 +59,7 @@ for subj = 1:length(dircont_subj)
     dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005*.vhdr']));
     if length(dircont_cond1) == 1 && length(dircont_cond2) == 1
         %start eeglab
-        eeglab nogui
+        [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
         %preprocessing dataset C_0001
         %load raw dataset (C_0001)
         EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); %CHECK %channel locations already there
@@ -102,19 +102,11 @@ for subj = 1:length(dircont_subj)
         %remove not needed channels
         EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
         %rename events
-        for s = 2:length(EEG.event)
-            if s < length(EEG.event)
-                if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64') && ~strcmp(EEG.event(s+1).type, 'S 64')
-                    EEG.event(s).type = 'listen';
-                else
-                    continue
-                end
-            elseif s == length(EEG.event)
-                if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64')
-                    EEG.event(s).type = 'listen';
-                else
-                    continue
-                end
+        for s = 1:length(EEG.event)
+            if strcmp(EEG.event(s).type, 'S 64')
+                EEG.event(s).type = 'listen';
+            else
+                continue
             end
         end
         %1-60Hz bandpass
@@ -138,26 +130,26 @@ for subj = 1:length(dircont_subj)
         EEG.setname = [SUBJ '_merged_after_PREP'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
-        %ICA preprocessing 
-        %1-30Hz bandpass
-        EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_ICA,'hicutoff',HCF_ICA,'plotfreqz',0);
-        %remove 1 second-epochs which exceeded a joint probability of 3 standard deviations from the mean
-
-        %resample to 250Hz
-        EEG = pop_resample( EEG, RESAM_ICA);
-
-
-        EEG.setname = [SUBJ '_ICA_after_preproc'];
-        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        % % %ICA preprocessing
+        % % %1-30Hz bandpass
+        % % EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_ICA,'hicutoff',HCF_ICA,'plotfreqz',0);
+        % % %remove 1 second-epochs which exceeded a joint probability of 3 standard deviations from the mean
+        % %
+        % % %resample to 250Hz
+        % % EEG = pop_resample( EEG, RESAM_ICA);
+        % %
+        % %
+        % % EEG.setname = [SUBJ '_ICA_after_preproc'];
+        % % [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
 
 
 
         % % %run ICA
         % % EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
-        % % 
+        % %
         % % %attach ICA weight to main data
-        % % 
+        % %
         % % %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
         % % EEG = pop_iclabel(EEG, 'default');
         % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
@@ -168,7 +160,7 @@ for subj = 1:length(dircont_subj)
 
         %compute surface laplacian
         EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z);
-        %20-55Hz bandpass 
+        %20-55Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %epoching
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');

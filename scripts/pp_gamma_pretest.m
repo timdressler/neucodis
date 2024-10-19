@@ -18,7 +18,7 @@ addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Projec
 
 %variables to edit
 SUBJ = '136'; %122, 125 or 127 (500Hz); 132, 134 and 136 (1000Hz downsampled to 500Hz)
-CHAN = 'Cz';
+CHAN = 'T7';
 EVENTS = {'S 1', 'S 2', 'S 3', 'S 4', 'S 5'};
 EPO_FROM = -0.4;
 EPO_TILL = 0.6;
@@ -41,6 +41,11 @@ chani = find(strcmp({EEG.chanlocs.labels}, CHAN));
 %remove not needed channel
 EEG = pop_select( EEG, 'rmchannel',{'Lip'});
 
+%automatic ICA rejection
+EEG = pop_iclabel(EEG, 'default');
+EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
+EEG = pop_subcomp( EEG, [], 0);
+
 %filter
 EEG = pop_eegfiltnew(EEG, 'locutoff',LCF);
 EEG = pop_eegfiltnew(EEG, 'hicutoff',HCF);
@@ -57,11 +62,6 @@ EEG = pop_jointprob(EEG,1,[1:EEG.nbchan] ,SD_PROB,0,0,0,[],0);
 EEG = pop_rejkurt(EEG,1,[1:EEG.nbchan] ,SD_PROB,0,0,0,[],0);
 EEG = eeg_rejsuperpose( EEG, 1, 1, 1, 1, 1, 1, 1, 1);
 EEG = pop_rejepoch( EEG, EEG.reject.rejglobal ,0);
-
-%automatic ICA rejection
-EEG = pop_iclabel(EEG, 'default');
-EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
-EEG = pop_subcomp( EEG, [], 0);
 
 %ERSP (Wavelet)
 figure; pop_newtimef( EEG, 1, chani, [TF_FROM  TF_TILL], [3         0.8] , 'topovec', chani, ...
@@ -99,7 +99,7 @@ end
 %Topoplot
 figure;
 tftopo(allersp,alltimes(:,:,1),allfreqs(:,:,1), ...
-    'timefreqs', [45 35; 55 38; 120 35; -75 42], 'chanlocs', EEG.chanlocs, 'showchan', chani)
+    'timefreqs', [-88 28; 120 35; 57 38; 50 34], 'chanlocs', EEG.chanlocs, 'showchan', chani)
 
 
 %%
