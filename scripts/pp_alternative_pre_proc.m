@@ -34,12 +34,12 @@ HCF_2 = 55;
 LCF_ICA = 1;
 HCF_ICA = 30;
 BL_FROM = -800;
-BL_TILL= -400;
+BL_TILL= -600;
 TF_FROM = -800;
 TF_TILL = 600;
 TF_BL_FROM = -600;
 TF_BL_TILL = -400;
-THRESH = 100;
+THRESH = 75;
 SD_PROB = 3;
 RESAM_ICA = 250;
 EVENTS = {'talk', 'listen'};
@@ -130,34 +130,36 @@ for subj = 1:length(dircont_subj)
         EEG.setname = [SUBJ '_merged_after_PREP'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
-        % % %ICA preprocessing
-        % % %1-30Hz bandpass
-        % % EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_ICA,'hicutoff',HCF_ICA,'plotfreqz',0);
-        % % %remove 1 second-epochs which exceeded a joint probability of 3 standard deviations from the mean
-        % %
-        % % %resample to 250Hz
-        % % EEG = pop_resample( EEG, RESAM_ICA);
-        % %
-        % %
-        % % EEG.setname = [SUBJ '_ICA_after_preproc'];
-        % % [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        %ICA preprocessing
+        %reload and merge raw data
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); %CHECK %channel locations already there
+        EEG.setname = [SUBJ '_talk_raw_before_ICA'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); %CHECK %channel locations already there
+        EEG.setname = [SUBJ '_listen_raw_before_ICA'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        EEG = pop_mergeset( ALLEEG, [1 2], 0);
+        EEG.setname = [SUBJ '_merged_raw_before_ICA'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        %1-30Hz bandpass
+        EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_ICA,'hicutoff',HCF_ICA,'plotfreqz',0);
+        %resample to 250Hz
+        EEG = pop_resample( EEG, RESAM_ICA);
+        EEG.setname = [SUBJ '_ICA_after_preproc'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        %run ICA
+        EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
+        EEG.setname = [SUBJ '_ICA_after_ICA'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
-
-
-
-        % % %run ICA
-        % % EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
-        % %
-        % % %attach ICA weight to main data
-        % %
-        % % %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
-        % % EEG = pop_iclabel(EEG, 'default');
-        % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
-        % % EEG = pop_subcomp( EEG, [], 0);
-
-
-
-
+        %attach ICA weight to main data
+        EEG = ALLEEG(3);
+        CURRENTSET = 3;
+        EEG = pop_editset(EEG,'run', [], 'icaweights','ALLEEG(8).icaweights', 'icasphere','ALLEEG(8).icasphere');
+        %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
+        EEG = pop_iclabel(EEG, 'default');
+        EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
+        EEG = pop_subcomp( EEG, [], 0);
         %compute surface laplacian
         EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z);
         %20-55Hz bandpass
