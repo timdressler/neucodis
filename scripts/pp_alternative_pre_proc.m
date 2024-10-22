@@ -148,18 +148,18 @@ for subj = 1:length(dircont_subj)
         EEG.setname = [SUBJ '_ICA_after_preproc'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %run ICA
-        EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
+        % % EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
         EEG.setname = [SUBJ '_ICA_after_ICA'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
         %attach ICA weight to main data
         EEG = ALLEEG(3);
         CURRENTSET = 3;
-        EEG = pop_editset(EEG,'run', [], 'icaweights','ALLEEG(8).icaweights', 'icasphere','ALLEEG(8).icasphere');
-        %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
-        EEG = pop_iclabel(EEG, 'default');
-        EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
-        EEG = pop_subcomp( EEG, [], 0);
+        % % EEG = pop_editset(EEG,'run', [], 'icaweights','ALLEEG(8).icaweights', 'icasphere','ALLEEG(8).icasphere');
+        % % %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
+        % % EEG = pop_iclabel(EEG, 'default');
+        % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
+        % % EEG = pop_subcomp( EEG, [], 0);
         %compute surface laplacian
         EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z);
         %20-55Hz bandpass
@@ -169,8 +169,7 @@ for subj = 1:length(dircont_subj)
         %baseline removal
         EEG = pop_rmbase( EEG, [BL_FROM BL_TILL] ,[]);
         %threshold removal
-        EEG = pop_eegthresh(EEG,1,[1:EEG.nbchan] ,-THRESH,THRESH,-0.8,0.699,2,1);
-        EEG = pop_eegthresh(EEG,1,[1:EEG.nbchan] ,-THRESH,THRESH,-0.8,0.699,2,0);
+        EEG = pop_eegthresh(EEG,1,[1:EEG.nbchan] ,-THRESH,THRESH,EPO_FROM,EPO_TILL,0,0);
         %probability-based removal
         EEG = pop_jointprob(EEG,1,[1:EEG.nbchan] ,SD_PROB,0,0,0,[],0);
         EEG = pop_rejkurt(EEG,1,[1:EEG.nbchan] ,SD_PROB,0,0,0,[],0);
@@ -184,6 +183,8 @@ for subj = 1:length(dircont_subj)
         MARKED_SUBJ{end+1} = SUBJ;
     end
 end
+
+CHECK_DONE = 'done';
 
 eeglab redraw
 

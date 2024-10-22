@@ -73,49 +73,41 @@ for subj = 1:length(dircont_subj)
     EEG = pop_loadset('filename',dircont_subj(subj).name,'filepath',INPATH);
     %convert data to fieldtrip format
     data = eeglab2fieldtrip(EEG, 'raw');
-
-
-
-
-    
+    %create datasets for each condition
+    EEG = pop_selectevent( EEG, 'latency','-2<=2','type',{'listen'},'deleteevents','off','deleteepochs','on','invertepochs','off');
+    data_talk = eeglab2fieldtrip(EEG, 'raw');
+    EEG = pop_selectevent( ALLEEG(1), 'latency','-2<=2','type',{'talk'},'deleteevents','off','deleteepochs','on','invertepochs','off');
+    data_listen = eeglab2fieldtrip(EEG, 'raw');
 
     %main analysis
-%% Frequenzanalyse zur Berechnung der Kreuzspektraldichte
-cfg_freq = [];
-cfg_freq.method = 'mtmconvol';               % Zeit-Frequenz-Analyse verwenden
-cfg_freq.output = 'powandcsd';               % Power und Kreuzspektraldichte berechnen
-cfg_freq.channel = {'F7', 'T7'};             % Die gewünschten Kanäle
-cfg_freq.keeptrials = 'yes';                 % Trials beibehalten
-cfg_freq.taper = 'dpss';                      % DPSS-Taper verwenden
-cfg_freq.tapsmofrq = 7.5;                       % Glättungsparameter anpassen
-cfg_freq.foi = 1:1:50;                        % Frequenzen von 1 Hz bis 30 Hz, um die Datenlänge nicht zu überschreiten
-cfg_freq.t_ftimwin = 5 ./ cfg_freq.foi;      % Zeitfenster für jede Frequenz
-cfg_freq.toi = data.time{1};                  % Zeitpunkte basierend auf den Epochen
-freq_data = ft_freqanalysis(cfg_freq, data);  % Frequenzanalyse durchführen
+    %TF transform via wavelets
+    %setup
+    cfg_freq = [];
+    cfg_freq.method = 'wavelet';
+    cfg_freq.output = 'powandcsd';
+    cfg_freq.channel = {'F7', 'T7'};
+    cfg_freq.keeptrials = 'yes';
+    cfg_freq.foi = 25:1:50;
+    cfg_freq.toi = -0.4:0.01:0.2;
+    cfg_freq.width = 6;
+    
+    %TF analysis for talk condition
+    freq_talk = ft_freqanalysis(cfg_freq, data_talk);
+    %TF analysis for talk condition
+    freq_listen = ft_freqanalysis(cfg_freq, data_listen);
 
-%% WPLI-Analyse
-cfg_conn = [];
-cfg_conn.method = 'wpli_debiased';            % Debiased wPLI verwenden
-cfg_conn.keeptrials = 'yes';                  % Trials beibehalten
-cfg_conn.channelcmb = {'F7', 'T7'};           % Kanal-Kombination
-wpli = ft_connectivityanalysis(cfg_conn, freq_data); % WPLI berechnen
+    %connectivity analysis via debiased wPLI
+    %setup
+    cfg_conn = [];
+    cfg_conn.method = 'wpli_debiased';
+    cfg_conn.keeptrials = 'yes';
 
-%% Plotten der wPLI-Werte
-%% Heatmap der wPLI-Werte
-figure;
+    %connectivity analysis for talk condition
+    wpli_talk = ft_connectivityanalysis(cfg_conn, freq_talk);
+    %connectivity analysis for listen condition
+    wpli_listen = ft_connectivityanalysis(cfg_conn, freq_listen);
 
-% Zeit- und Frequenzvektoren
-time_vector = wpli.time;  % Zeitpunkte für den Plot
-freq_vector = wpli.freq;   % Frequenzen
 
-% Heatmap der wPLI-Werte
-imagesc(time_vector, freq_vector, squeeze(mean(wpli.wpli_debiasedspctrm, 1))); 
-axis xy; % Achse umkehren
-xlabel('Zeit (s)');
-ylabel('Frequenz (Hz)');
-title('wPLI Heatmap über Zeit und Frequenz');
-colorbar; % Farbskala anzeigen
-caxis([0, max(max(squeeze(mean(wpli.wpli_debiasedspctrm, 1))))]); % Farbskala anpassen
 
 
 
@@ -123,61 +115,5 @@ caxis([0, max(max(squeeze(mean(wpli.wpli_debiasedspctrm, 1))))]); % Farbskala an
 end
 
 eeglab redraw
-
-
-
-%% Frequenzanalyse zur Berechnung der Kreuzspektraldichte mit Wavelet-Transformation
-cfg_freq = [];
-cfg_freq.method = 'wavelet';                % Wavelet-Transformation verwenden
-cfg_freq.output = 'powandcsd';              % Power und Kreuzspektraldichte berechnen
-cfg_freq.channel = {'F7', 'T7'};            % Die gewünschten Kanäle
-cfg_freq.keeptrials = 'yes';                % Trials beibehalten
-cfg_freq.foi = 25:1:50;                     % Frequenzen von 25 Hz bis 50 Hz
-cfg_freq.toi = -0.4:0.01:0.2;               % Zeitpunkte von -400 ms bis 200 ms
-cfg_freq.width = 6;                         % Breite des Morlet-Wavelets
-freq_data = ft_freqanalysis(cfg_freq, data); % Frequenzanalyse durchführen
-
-%% WPLI-Analyse
-cfg_conn = [];
-cfg_conn.method = 'wpli_debiased';          % Debiased wPLI verwenden
-cfg_conn.keeptrials = 'yes';                % Trials beibehalten
-cfg_conn.channelcmb = {'F7', 'T7'};         % Kanal-Kombination
-wpli = ft_connectivityanalysis(cfg_conn, freq_data); % WPLI berechnen
-
-%% Baseline-Zeitfenster definieren (z.B. -400 bis -200 ms)
-baseline_time = [-0.4 -0.2];               % Definierte Baseline von -400 ms bis -200 ms
-baseline_idx = find(wpli.time >= baseline_time(1) & wpli.time <= baseline_time(2)); % Index für Baseline-Zeiten
-
-%% Z-Wert Berechnung für wPLI-Werte relativ zur Baseline für jede Frequenz
-z_wpli = zeros(size(wpli.wpli_debiasedspctrm));  % Initialisiere Z-Wert-Matrix
-
-% Berechnung des Mittelwerts und der Standardabweichung für jede Frequenz separat
-for freq_idx = 1:length(wpli.freq)
-    % Berechnung des Mittelwerts und der Standardabweichung in der Baseline für die aktuelle Frequenz
-    baseline_mean = mean(wpli.wpli_debiasedspctrm(:, freq_idx, baseline_idx), 3);
-    baseline_std = std(wpli.wpli_debiasedspctrm(:, freq_idx, baseline_idx), 0, 3);
-    
-    % Z-Wert Berechnung für jede Zeit für die aktuelle Frequenz
-    z_wpli(:, freq_idx, :) = (wpli.wpli_debiasedspctrm(:, freq_idx, :) - baseline_mean) ./ baseline_std;
-end
-
-%% Heatmap der Z-transformierten wPLI-Werte
-figure;
-
-% Zeit- und Frequenzvektoren
-time_vector = wpli.time;  % Zeitpunkte für den Plot
-freq_vector = wpli.freq;  % Frequenzen
-
-% Heatmap der Z-Werte der wPLI
-imagesc(time_vector, freq_vector, squeeze(mean(z_wpli, 1)));  % Z-transformierte wPLI
-axis xy; % Achse umkehren
-xlabel('Zeit (s)');
-ylabel('Frequenz (Hz)');
-title('Z-transformierte wPLI Heatmap über Zeit und Frequenz (Wavelet)');
-colorbar; % Farbskala anzeigen
-caxis([-3, 3]); % Farbskala für Z-Werte anpassen, optional
-
-
-
 
 
