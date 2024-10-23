@@ -58,6 +58,7 @@ for subj = 1:length(dircont_subj)
     dircont_cond1 = dir(fullfile(INPATH, [SUBJ '/*C_0001*.vhdr']));
     dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005*.vhdr']));
     if length(dircont_cond1) == 1 && length(dircont_cond2) == 1
+        tic;
         %start eeglab
         [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
         %preprocessing dataset C_0001
@@ -156,7 +157,7 @@ for subj = 1:length(dircont_subj)
         EEG = ALLEEG(3);
         CURRENTSET = 3;
         % % EEG = pop_editset(EEG,'run', [], 'icaweights','ALLEEG(8).icaweights', 'icasphere','ALLEEG(8).icasphere');
-        % % %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
+        %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
         % % EEG = pop_iclabel(EEG, 'default');
         % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
         % % EEG = pop_subcomp( EEG, [], 0);
@@ -178,18 +179,23 @@ for subj = 1:length(dircont_subj)
         %end of preprocessing
 
         %save dataset
+        EEG.setname = [SUBJ '_PREPROCESSED'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         EEG = pop_saveset(EEG, 'filename',[SUBJ '_after_preproc_proc.set'],'filepath', OUTPATH);
+
+        subj_time = toc;
+        OK_SUBJ{subj,1} = SUBJ;
+        OK_SUBJ{subj,2} = subj_time;
+
     else
         MARKED_SUBJ{end+1} = SUBJ;
     end
 end
 
 CHECK_DONE = 'done';
+MARKED_SUBJ
 
 eeglab redraw
-
-
-
 
 
 

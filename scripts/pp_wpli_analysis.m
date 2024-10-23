@@ -104,6 +104,7 @@ for subj = 1:length(dircont_subj)
 
     %connectivity analysis for talk condition
     wpli_talk = ft_connectivityanalysis(cfg_conn, freq_talk);
+    wpli_talk_extracted = squeeze(wpli_talk.wpli_debiasedspctrm);
     %connectivity analysis for listen condition
     wpli_listen = ft_connectivityanalysis(cfg_conn, freq_listen);
 
