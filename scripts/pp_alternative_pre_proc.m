@@ -19,26 +19,24 @@ else
 end
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH,"data\raw_data\pp_main_data_raw"); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_main_data_proc\pp_main_data_after_preproc_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
+OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_main_data_proc\pp_main_data_PREPROCESSED'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+FUNPATH = fullfile(MAINPATH, 'neucodis\functions');
 addpath(FUNPATH);
 
 %variables to edit
 EVENTS = {'talk', 'listen'};
 EPO_FROM = -0.8;
 EPO_TILL = 0.7;
+EPO_FROM_BL = -2;
+EPO_TILL_BL = 1;
 LCF = 1;
 HCF = 60;
 LCF_2 = 20;
 HCF_2 = 55;
 LCF_ICA = 1;
 HCF_ICA = 30;
-BL_FROM = -800;
-BL_TILL= -600;
-TF_FROM = -800;
-TF_TILL = 600;
-TF_BL_FROM = -600;
-TF_BL_TILL = -400;
+BL_FROM = -1750;
+BL_TILL= -1500;
 THRESH = 75;
 SD_PROB = 3;
 RESAM_ICA = 250;
@@ -165,10 +163,12 @@ for subj = 1:length(dircont_subj)
         EEG.data=laplacian_perrinX(EEG.data,EEG.chanlocs.X,EEG.chanlocs.Y,EEG.chanlocs.Z);
         %20-55Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
-        %epoching
-        EEG = pop_epoch( EEG, EVENTS, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');
+        %baseline epoching 
+        EEG = pop_epoch( EEG, EVENTS, [EPO_FROM_BL        EPO_TILL_BL], 'epochinfo', 'yes');
         %baseline removal
         EEG = pop_rmbase( EEG, [BL_FROM BL_TILL] ,[]);
+        %epoching
+        EEG = pop_epoch( EEG, EVENTS, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');
         %threshold removal
         EEG = pop_eegthresh(EEG,1,[1:EEG.nbchan] ,-THRESH,THRESH,EPO_FROM,EPO_TILL,0,0);
         %probability-based removal
@@ -181,7 +181,7 @@ for subj = 1:length(dircont_subj)
         %save dataset
         EEG.setname = [SUBJ '_PREPROCESSED'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
-        EEG = pop_saveset(EEG, 'filename',[SUBJ '_after_preproc_proc.set'],'filepath', OUTPATH);
+        EEG = pop_saveset(EEG, 'filename',[SUBJ '_PREPROCESSED.set'],'filepath', OUTPATH);
 
         subj_time = toc;
         OK_SUBJ{subj,1} = SUBJ;
@@ -196,6 +196,3 @@ CHECK_DONE = 'done';
 MARKED_SUBJ
 
 eeglab redraw
-
-
-
