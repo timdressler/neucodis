@@ -18,13 +18,12 @@ else
     error('Path not OK')
 end
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
-INPATH = fullfile(MAINPATH,"data\raw_data\pp_main_data_raw"); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_main_data_proc\pp_main_data_PREPROCESSED'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+INPATH = fullfile(MAINPATH,'data\raw_data\pp_data_main_raw'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions');
 addpath(FUNPATH);
 
 %variables to edit
-EVENTS = {'talk', 'listen'};
 EPO_FROM = -0.8;
 EPO_TILL = 0.7;
 EPO_FROM_BL = -2;
@@ -35,8 +34,7 @@ LCF_2 = 20;
 HCF_2 = 55;
 LCF_ICA = 1;
 HCF_ICA = 30;
-BL_FROM = -1750;
-BL_TILL= -1500;
+BL_FROM = -250;
 THRESH = 75;
 SD_PROB = 3;
 RESAM_ICA = 250;
@@ -45,10 +43,13 @@ EVENTS = {'talk', 'listen'};
 %get directory content
 dircont_subj = dir(fullfile(INPATH, 'P*'));
 
-%initialize marked subjects variable
-MARKED_SUBJ = {};
+%initialize sanity check variables
+marked_subj = {};
+ok_subj = {};
+all_epo_lats_OK_ALL = [];
 
 %% load and merge data
+clear subj
 for subj = 1:length(dircont_subj)
     %get current ID
     SUBJ = dircont_subj(subj).name;
@@ -65,16 +66,17 @@ for subj = 1:length(dircont_subj)
         %remove not needed channels
         EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
         %rename events
-        for s = 2:length(EEG.event)
-            if s < length(EEG.event)
-                if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64') && ~strcmp(EEG.event(s+1).type, 'S 64')
-                    EEG.event(s).type = 'talk';
+        clear event
+        for event = 2:length(EEG.event)
+            if event < length(EEG.event)
+                if strcmp(EEG.event(event).type, 'S 64') && ~strcmp(EEG.event(event-1).type, 'S 64') && ~strcmp(EEG.event(event+1).type, 'S 64')
+                    EEG.event(event).type = 'talk';
                 else
                     continue
                 end
-            elseif s == length(EEG.event)
-                if strcmp(EEG.event(s).type, 'S 64') && ~strcmp(EEG.event(s-1).type, 'S 64')
-                    EEG.event(s).type = 'talk';
+            elseif event == length(EEG.event)
+                if strcmp(EEG.event(event).type, 'S 64') && ~strcmp(EEG.event(event-1).type, 'S 64')
+                    EEG.event(event).type = 'talk';
                 else
                     continue
                 end
@@ -101,9 +103,10 @@ for subj = 1:length(dircont_subj)
         %remove not needed channels
         EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
         %rename events
-        for s = 1:length(EEG.event)
-            if strcmp(EEG.event(s).type, 'S 64')
-                EEG.event(s).type = 'listen';
+        clear event
+        for event = 1:length(EEG.event)
+            if strcmp(EEG.event(event).type, 'S 64')
+                EEG.event(event).type = 'listen';
             else
                 continue
             end
@@ -165,8 +168,41 @@ for subj = 1:length(dircont_subj)
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %baseline epoching 
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM_BL        EPO_TILL_BL], 'epochinfo', 'yes');
-        %baseline removal
-        EEG = pop_rmbase( EEG, [BL_FROM BL_TILL] ,[]);
+    
+        %sanity checks before baseline removal
+        %check whether all events contain two (fixation cross + speech
+        %onset) events (for talk) or one (playback onset) event (for
+        %listen)
+        %check whether the second (for talk) or the first (for listen)
+        %event latency is zero
+        clear epo all_epo_lats_OK epo_lats
+        epo_lats = {EEG.epoch.eventlatency};
+        all_epo_lats_OK = all(cellfun(@(epo) (isequal(size(epo), [1, 1]) && epo{1} == 0) || ...
+            (isequal(size(epo), [1, 2]) && epo{2} == 0) && epo{1} < epo{2} && epo{1} > -2000, epo_lats));
+        switch all_epo_lats_OK
+            case true
+                disp('epoch latency variable OK')
+            case false
+                error('ERROR: problem with epoch latency variable, more that 2 or less than one event per epoch')
+        end
+
+        %baseline removal 
+        %remove baseline from BL_FROM until trial onset
+        %trial onset for talk = fixation cross
+        %trial onset for listen = playback onset
+        clear epo
+        for epo = 1:length(EEG.epoch)
+            %get latencies
+            trial_onset = EEG.epoch(epo).eventlatency{1};
+            bl_start_lat = trial_onset+BL_FROM;
+            bl_end_lat = trial_onset;
+            %convert latencies to samples
+            [~, bl_start_sam] = min(abs(EEG.times-bl_start_lat));
+            [~, bl_end_sam] = min(abs(EEG.times-bl_end_lat));
+            %get and subtract baseline
+            bl = mean(EEG.data(:,bl_start_sam:bl_end_sam,epo), 2);
+            EEG.data(:,:,epo) = EEG.data(:,:,epo) - bl;
+        end
         %epoching
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM        EPO_TILL], 'epochinfo', 'yes');
         %threshold removal
@@ -179,20 +215,25 @@ for subj = 1:length(dircont_subj)
         %end of preprocessing
 
         %save dataset
-        EEG.setname = [SUBJ '_PREPROCESSED'];
+        EEG.setname = [SUBJ '_coherence_preprocessed'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
-        EEG = pop_saveset(EEG, 'filename',[SUBJ '_PREPROCESSED.set'],'filepath', OUTPATH);
-
+        EEG = pop_saveset(EEG, 'filename',[SUBJ '_coherence_preprocessed.set'],'filepath', OUTPATH);
+        
+        %sanity check variables
         subj_time = toc;
-        OK_SUBJ{subj,1} = SUBJ;
-        OK_SUBJ{subj,2} = subj_time;
-
+        ok_subj{subj,1} = SUBJ;
+        ok_subj{subj,2} = subj_time;
     else
-        MARKED_SUBJ{end+1} = SUBJ;
+        marked_subj{end+1} = SUBJ;
     end
+    all_epo_lats_OK_ALL(end+1) = all_epo_lats_OK;
 end
 
-CHECK_DONE = 'done';
-MARKED_SUBJ
+%display sanity check variables
+marked_subj
+ok_subj
+all(all_epo_lats_OK_ALL)
+check_done = 'OK'
 
-eeglab redraw
+
+%%eeglab redraw

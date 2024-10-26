@@ -17,8 +17,8 @@ else
     error('Path not OK')
 end
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
-INPATH = fullfile(MAINPATH, 'data\proc_data\pp_main_data_proc\pp_main_data_PREPROCESSED\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_main_data_proc\pp_main_analysis data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
@@ -34,7 +34,7 @@ OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
 switch length(FRONTAL_L) == length(TEMPORAL_L) && length(FRONTAL_L) == length(OCCIPITAL_L)
     case true
         disp('Electrodes OK')
-        NUM_ELE = length(FRONTAL_L);
+        num_ele = length(FRONTAL_L);
     otherwise
         error('Electrodes not OK')
 end
@@ -44,8 +44,8 @@ PAIRS_L = {};
 
 %generate electrode pairings (left)
 r = 1;
-for s = 1:NUM_ELE
-    for v = 1:NUM_ELE
+for s = 1:num_ele
+    for v = 1:num_ele
         PAIRS_L{r, 1} = FRONTAL_L{s};
         PAIRS_L{r, 2} = TEMPORAL_L{v};
         r = r+1;
@@ -57,25 +57,30 @@ PAIRS_L_CONTROL = {};
 
 %generate electrode pairings (control, left)
 r = 1;
-for s = 1:NUM_ELE
-    for v = 1:NUM_ELE
+for s = 1:num_ele
+    for v = 1:num_ele
         PAIRS_L_CONTROL{r, 1} = FRONTAL_L{s};
         PAIRS_L_CONTROL{r, 2} = OCCIPITAL_L{v};
         r = r+1;
     end
 end
 
+%initialize sanity check variables
+marked_subj = {};
+ok_subj = {};
+
+clear subj 
 for subj = 1:length(dircont_subj)
     tic;
     %get current ID
-    SUBJ = erase(dircont_subj(subj).name, '_PREPROCESSED.set');
+    SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
     %import data
     %start eeglab
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
     %import dataset
     EEG = pop_loadset('filename',dircont_subj(subj).name,'filepath',INPATH);
     %check if ID matches dataset
-    SUBJ_CHECK = strcmp(SUBJ, erase(EEG.setname, '_PREPROCESSED'));
+    SUBJ_CHECK = strcmp(SUBJ, erase(EEG.setname, '_coherence_preprocessed'));
     %rename dataset
     EEG.setname = [SUBJ '_talk_listen'];
     [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
@@ -92,6 +97,7 @@ for subj = 1:length(dircont_subj)
     data_talk = eeglab2fieldtrip(EEG, 'raw');
 
     %main analysis
+    clear elec_pair
     for elec_pair = 1:length(PAIRS_L) %loop over electrode pairs
         clear freq_talk freq_listen wpli_talk wpli_listen
         %TF transform via wavelets
@@ -146,12 +152,10 @@ for subj = 1:length(dircont_subj)
 
     %sanity checks
     subj_time = toc;
-    OK_SUBJ{subj,1} = SUBJ;
-    OK_SUBJ{subj,2} = SUBJ_CHECK;
-    OK_SUBJ{subj,3} = subj_time;
+    ok_subj{subj,1} = SUBJ;
+    ok_subj{subj,2} = SUBJ_CHECK;
+    ok_subj{subj,3} = subj_time;
 end
-
-OK_SUBJ
 
 %get grand mean over all subjects
 cfg = [];
@@ -160,6 +164,30 @@ cfg.parameter = 'wpli_debiasedspctrm';
 wpli_talk_GRANDAVERAGE = ft_freqgrandaverage(cfg, wpli_talk_AVERAGE_ALL_SUBJ{:});
 wpli_listen_GRANDAVERAGE = ft_freqgrandaverage(cfg, wpli_listen_AVERAGE_ALL_SUBJ{:});
 
+%display sanity check variables
+ok_subj
+check_done = 'OK';
 
+%% Plot wPLI
+time_vector = wpli_listen.time;  
+freq_vector = wpli_listen.freq;  
+figure;
+imagesc(time_vector, freq_vector, squeeze(mean(wpli_listen.wpli_debiasedspctrm, 1))); 
+axis xy; 
+xlabel('Zeit (s)');
+ylabel('Frequenz (Hz)');
+title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (listen)');
+colorbar; 
+caxis([0, max(max(squeeze(mean(wpli_listen.wpli_debiasedspctrm, 1))))]);
 
+time_vector = wpli_talk.time;  
+freq_vector = wpli_talk.freq;  
+figure;
+imagesc(time_vector, freq_vector, squeeze(mean(wpli_talk.wpli_debiasedspctrm, 1))); 
+axis xy; 
+xlabel('Zeit (s)');
+ylabel('Frequenz (Hz)');
+title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (talk)');
+colorbar; 
+caxis([0, max(max(squeeze(mean(wpli_talk.wpli_debiasedspctrm, 1))))]);
 
