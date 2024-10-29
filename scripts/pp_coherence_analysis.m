@@ -10,26 +10,32 @@ clc
 
 %setup paths
 SCRIPTPATH = cd;
-%check if correct path is openend
+
+%sanity check 
+%check if paths are correct
 if regexp(SCRIPTPATH, regexptranslate('wildcard','*neucodis\scripts')) == 1
     disp('Path OK')
 else
     error('Path not OK')
 end
+
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
-%get directory content
-dircont_subj = dir(fullfile(INPATH, 'P*'));
-
+%variables to edit
 %selection of electrodes (left)
 FRONTAL_L = {'F3', 'F5', 'F7', 'Fp1'};
 TEMPORAL_L = {'T7', 'TP7', 'P7', 'FC5'};
 OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
+%selection of electrodes (right)
+FRONTAL_R = {'F2', 'F6', 'F8', 'Fp2'};
+TEMPORAL_R = {'T8', 'TP8', 'P8', 'FC6'};
+OCCIPITAL_R = {'PO8', 'POz', 'Oz', 'O2'};
 
+%sanity check 
 %check if number of electrodes is the same for each lobe (left)
 switch length(FRONTAL_L) == length(TEMPORAL_L) && length(FRONTAL_L) == length(OCCIPITAL_L)
     case true
@@ -64,6 +70,9 @@ for s = 1:num_ele
         r = r+1;
     end
 end
+
+%get directory content
+dircont_subj = dir(fullfile(INPATH, 'P*'));
 
 %initialize sanity check variables
 marked_subj = {};
@@ -156,6 +165,18 @@ for subj = 1:length(dircont_subj)
     ok_subj{subj,2} = SUBJ_CHECK;
     ok_subj{subj,3} = subj_time;
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 %get grand mean over all subjects
 cfg = [];

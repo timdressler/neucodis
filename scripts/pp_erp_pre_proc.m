@@ -11,12 +11,15 @@ clc
 
 %setup paths
 SCRIPTPATH = cd;
-%check if correct path is openend
+
+%sanity check 
+%check if paths are correct
 if regexp(SCRIPTPATH, regexptranslate('wildcard','*neucodis\scripts')) == 1
     disp('Path OK')
 else
     error('Path not OK')
 end
+
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH,'data\raw_data\pp_data_main_raw'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_erp_proc'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
