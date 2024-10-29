@@ -139,9 +139,13 @@ for pairs = 1:length(all_pairs) %loop over electode pair-sets
 
             %connectivity analysis for talk condition
             wpli_talk = ft_connectivityanalysis(cfg_conn, freq_talk);
+            %baseline correction
+
             wpli_talk_extracted = squeeze(wpli_talk.wpli_debiasedspctrm);
             %connectivity analysis for listen condition
             wpli_listen = ft_connectivityanalysis(cfg_conn, freq_listen);
+            %baseline correction
+            
             wpli_listen_extracted = squeeze(wpli_listen.wpli_debiasedspctrm);
 
             %store wPLI values over all pairs
@@ -154,11 +158,14 @@ for pairs = 1:length(all_pairs) %loop over electode pair-sets
         wpli_listen_extracted_AVERAGE_PAIRS = mean(wpli_listen_extracted_ALL_PAIRS,3);
         %store the average values in original structure
         wpli_talk_AVERAGE = wpli_listen;
-        wpli_talk_AVERAGE.wpli_debiasedspctrm = wpli_talk_extracted_AVERAGE_PAIRS;
+        wpli_talk_AVERAGE.wpli_debiasedspctrm(1,:,:) = wpli_talk_extracted_AVERAGE_PAIRS;
         wpli_talk_AVERAGE.label = {all_pairs(pairs).name};
+        wpli_talk_AVERAGE.dimord = 'chan_freq_time';
         wpli_listen_AVERAGE = wpli_listen;
-        wpli_listen_AVERAGE.wpli_debiasedspctrm = wpli_listen_extracted_AVERAGE_PAIRS;
+        wpli_listen_AVERAGE.wpli_debiasedspctrm(1,:,:) = wpli_listen_extracted_AVERAGE_PAIRS;
         wpli_listen_AVERAGE.label = {all_pairs(pairs).name};
+        wpli_listen_AVERAGE.dimord = 'chan_freq_time';
+
 
         %store structures in cell
         wpli_talk_AVERAGE_ALL_SUBJ{subj} = wpli_talk_AVERAGE;
@@ -180,20 +187,29 @@ for pairs = 1:length(all_pairs) %loop over electode pair-sets
     cfg = [];
     cfg.keepindividual = 'yes';
     cfg.parameter = 'wpli_debiasedspctrm';
-    % % wpli_talk_GRANDAVERAGE = ft_freqgrandaverage(cfg, all_wpli.talk{:});
-    % % wpli_listen_GRANDAVERAGE = ft_freqgrandaverage(cfg, all_wpli.listen{:});
+    wpli_talk_GRANDAVERAGE = ft_freqgrandaverage(cfg, wpli_talk_AVERAGE_ALL_SUBJ{:});
+    wpli_listen_GRANDAVERAGE = ft_freqgrandaverage(cfg, wpli_listen_AVERAGE_ALL_SUBJ{:});
 
     %store cells in structure
     all_wpli(pairs).name = {all_pairs(pairs).name};
-    % % all_wpli(pairs).talk = wpli_talk_GRANDAVERAGE;
-    % % all_wpli(pairs).listen = wpli_listen_GRANDAVERAGE;
-    % % all_wpli(pairs).comparison = ft_freqstatistics();
-    all_wpli(pairs).talk = wpli_talk_AVERAGE_ALL_SUBJ; %WATCHOUT %only for testing
-    all_wpli(pairs).listen = wpli_listen_AVERAGE_ALL_SUBJ; %WATCHOUT %only for testing
+    all_wpli(pairs).talk_GA = wpli_talk_GRANDAVERAGE;
+    all_wpli(pairs).listen_GA = wpli_listen_GRANDAVERAGE;
+
+    % % cfg = [];
+    % % cfg.method           = 'montecarlo';
+    % % cfg.statistic        = 'ft_statfun_depsamplesT';
+    % % cfg.correctm         = 'cluster';
+    % % cfg.clusteralpha     = 0.05;
+    % % cfg.clusterstatistic = 'maxsum';
+    % % cfg.alpha            = 0.025;
+    % % cfg.numrandomization = 500;
+
+    % % all_wpli(pairs).comparison = ft_freqstatistics(cfg,all_wpli(pairs).talk_GA,all_wpli(pairs).listen_GA);
+
 
     %sanity checks
     for temp = r_start:r_end
-        ok_subj{temp,4} = all_wpli(pairs).name;
+        ok_subj{temp,4} = all_wpli(pairs).name{1};
     end
 end
 
