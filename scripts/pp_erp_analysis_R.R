@@ -1,4 +1,3 @@
-#supervised by Kaja Loock, M.Sc. & Prof. Dr. Thomas Bäumer
 #Practical Project Tim Dreßler
 #supervised by Prof. Dr. Herrmann & Prof. Dr. Hildebrandt
 
