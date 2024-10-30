@@ -99,7 +99,6 @@ for subj = 1:length(dircont_subj)
         %store dataset C_0001
         EEG.setname = [SUBJ '_talk_after_PREP'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
-
         %preprocessing dataset C_0005
         %load raw dataset (C_0005)
         EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); %CHECK %channel locations already there

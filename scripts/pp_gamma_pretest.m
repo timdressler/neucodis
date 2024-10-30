@@ -45,6 +45,7 @@ SD_PROB = 2.5;
 %start eeglab & load data
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 load(fullfile(INPATH, ['Prep3_P' SUBJ '_ICA_rejected.mat']));
+%get channel ID
 chani = find(strcmp({EEG.chanlocs.labels}, CHAN));
 %remove not needed channel
 EEG = pop_select( EEG, 'rmchannel',{'Lip'});

@@ -98,6 +98,10 @@ for pairs = 1:length(all_pairs) %loop over electode pair-sets
         %rename dataset
         EEG.setname = [SUBJ '_talk_listen'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+        
+        %rename dataset
+        EEG.setname = [SUBJ '_talk_listen'];
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %convert full data to fieldtrip format
         data = eeglab2fieldtrip(EEG, 'raw');
         %create datasets for each condition
