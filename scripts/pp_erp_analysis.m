@@ -35,7 +35,6 @@ EVENTS = {'talk', 'listen'};
 dircont_subj = dir(fullfile(INPATH, 'P*'));
 
 %initialize sanity check variables
-marked_subj = {};
 ok_subj = {};
 
 r = 1;
@@ -98,6 +97,8 @@ for subj = 1:length(dircont_subj) %loop over subjects
 end
 
 %get grandaverage ERP
+grandaverage_ERP_talk = mean(all_ERP_talk,3);
+grandaverage_ERP_listen = mean(all_ERP_listen,3);
 
 
 %store variable in table
@@ -107,8 +108,16 @@ all_ERP_table = table(all_ERP(:,6),all_ERP(:,1), all_ERP(:,2), all_ERP(:,3), ...
 %export table
 writetable(all_ERP_table,fullfile(OUTPATH, 'erp_analysis.csv'))
 
-
 ok_subj
+check_done = 'OK'
+
+%% Plot 
+figure;
+plot(EEG.times, grandaverage_ERP_talk)
+hold on
+plot(EEG.times, grandaverage_ERP_listen)
+legend
+hold off
 
 
 
