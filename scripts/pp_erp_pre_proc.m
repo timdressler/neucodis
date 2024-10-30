@@ -168,7 +168,7 @@ for subj = 1:length(dircont_subj)
         %20-55Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %rereference to average of mastoids
-        EEG = pop_reref( EEG, [31 32] ); %CHECK %schon average?
+        % % EEG = pop_reref( EEG, [31 32] ); %CHECK %schon average?
         %baseline epoching 
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM_BL        EPO_TILL_BL], 'epochinfo', 'yes');
     
