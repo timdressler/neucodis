@@ -104,15 +104,14 @@ end
 all_ERP_table = table(all_ERP(:,6),all_ERP(:,1), all_ERP(:,2), all_ERP(:,3), ...
     all_ERP(:,4), all_ERP(:,5), 'VariableNames',{'subj','erp_from', 'erp_till', 'erp_amp', 'erp_lat', 'cond'})
 
+%export table
+writetable(all_ERP_table,fullfile(OUTPATH, 'erp_analysis.csv'))
+
 
 ok_subj
 
 
-plot(EEG.times, all_ERP_listen(18,:,1))
-hold on
-plot(EEG.times, all_ERP_talk(18,:,1))
-legend
-hold off 
+
 
 
 
