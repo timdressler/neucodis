@@ -153,18 +153,18 @@ for subj = 1:length(dircont_subj)
         EEG.setname = [SUBJ '_ICA_after_preproc'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %run ICA
-        % % EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
+        EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'interrupt','on');
         EEG.setname = [SUBJ '_ICA_after_ICA'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 
         %attach ICA weight to main data
         EEG = ALLEEG(3);
         CURRENTSET = 3;
-        % % EEG = pop_editset(EEG,'run', [], 'icaweights','ALLEEG(8).icaweights', 'icasphere','ALLEEG(8).icasphere');
+        EEG = pop_editset(EEG,'run', [], 'icaweights','ALLEEG(8).icaweights', 'icasphere','ALLEEG(8).icasphere');
         %label ICA components with IC Label Plugin (Pion-Tonachini et al., 2019)
-        % % EEG = pop_iclabel(EEG, 'default');
-        % % EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
-        % % EEG = pop_subcomp( EEG, [], 0);
+        EEG = pop_iclabel(EEG, 'default');
+        EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
+        EEG = pop_subcomp( EEG, [], 0);
         %20-55Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %rereference to average of mastoids
