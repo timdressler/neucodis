@@ -65,7 +65,7 @@ for subj = 1:length(dircont_subj) %loop over subjects
         ERP = mean(EEG.data, 3);
         %setup ERP analysis
         [~,win_start] = min(abs(EEG.times-ERP_FROM));
-        [~,win_end] = min(abs(EEG.times-ERP_FROM));
+        [~,win_end] = min(abs(EEG.times-ERP_TILL));
         [~,t_zero] = min(abs(EEG.times));
         %get N100 amplitude
         maxERPamp = min(ERP(chani,win_start:win_end));
@@ -108,9 +108,9 @@ all_ERP_table = table(all_ERP(:,6),all_ERP(:,1), all_ERP(:,2), all_ERP(:,3), ...
 ok_subj
 
 
-plot(EEG.times, mean(all_ERP_listen(18,:,:),3))
+plot(EEG.times, all_ERP_listen(18,:,1))
 hold on
-plot(EEG.times, mean(all_ERP_talk(18,:,:),3))
+plot(EEG.times, all_ERP_talk(18,:,1))
 legend
 hold off 
 
