@@ -113,7 +113,7 @@ check_done = 'OK'
 
 %% Plot 
 figure;
-plot(EEG.times, grandaverage_ERP_talk(chani),:)
+plot(EEG.times, grandaverage_ERP_talk(chani,:))
 hold on
 plot(EEG.times, grandaverage_ERP_listen(chani,:))
 legend
