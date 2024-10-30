@@ -111,8 +111,8 @@ ok_subj
 plot(EEG.times, mean(all_ERP_listen(18,:,:),3))
 hold on
 plot(EEG.times, mean(all_ERP_talk(18,:,:),3))
-
-
+legend
+hold off 
 
 
 
