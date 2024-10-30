@@ -1,7 +1,8 @@
-#Bachelor Thesis Analysis Tim Dreßler
 #supervised by Kaja Loock, M.Sc. & Prof. Dr. Thomas Bäumer
+#Practical Project Tim Dreßler
+#supervised by Prof. Dr. Herrmann & Prof. Dr. Hildebrandt
 
-#Time-dependency of mechanisms involved in episodic memory modulation induced by prediction errors
+#Neuronal Marker of Corollary Discharge
 
 #Feb23
 
@@ -53,7 +54,17 @@ library(MoMAColors)
 #clean WS
 rm(list=ls())
 
-options(scipen = 999)
+options(scipen = 999)get
 
 #set WS
-setwd("C:/Users/timdr/OneDrive/Dokumente/_Microsoft Office & Dokumente/_Dateien/HFT Stuttgart/6. Semester/Bachelor Thesis/Data")
+setwd("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester/Module/Pratical_Project/Analysis/neucodis")
+
+
+
+
+
+
+
+
+
+
