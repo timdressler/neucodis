@@ -96,7 +96,7 @@ end
 %topoplot
 figure;
 tftopo(allersp,alltimes(:,:,1),allfreqs(:,:,1), ...
-    'timefreqs', [58 36; 70 48; 70 38], 'chanlocs', EEG.chanlocs, 'showchan', chani)
+    'timefreqs', [58 36; 70 48; 70 38; 60 43], 'chanlocs', EEG.chanlocs, 'showchan', chani)
 
 %display sanity check variables
 check_done = 'OK'
