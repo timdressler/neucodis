@@ -1,16 +1,14 @@
 #Practical Project Tim Dreßler
 #supervised by Prof. Dr. Herrmann & Prof. Dr. Hildebrandt
 
-#Neuronal Marker of Corollary Discharge
+#Neuronal Markers of Corollary Discharge
 
 #Oct24
-
-#TO DO:
 
 #-------------------------------------Set up------------------------------------
 #load packages
 library(tidyr) 
-library(RVAideMemoire) #for Shapiro-Tests
+library(RVAideMemoire) 
 library(readxl)
 library(car) 
 library(corrplot) 
@@ -19,13 +17,7 @@ library(rstudioapi)
 library(ez)
 library(ggplot2)
 library(ggstatsplot)
-library(lme4)
-library(lmerTest)
-library(flexplot)
-##library(apaTables) 
 library(DescTools)
-library(emmeans)
-##library(nlme)
 library(ggpubr)
 library(sjmisc)
 library(sjlabelled)
@@ -33,32 +25,113 @@ library(sjPlot)
 library(sjstats)
 library(ggeffects)
 library(jtools)
-##library(interactions) #very bad performance
-##library(reghelper)
-##library(rockchalk) #does not work for GLMMs
-##library(arsenal) #for comparing df's, not used
 library(rstatix)
-##library(PairedData) #for paired plots
-library(cowplot) #for merging plots
+library(cowplot) 
 library(tidyverse)
 library(devtools)
 library(smplot2)
 library(glmmTMB)
-##library(lsr)
 library(rmcorr)
 library(psych)
-library(simr) #for power analysis
 library(MoMAColors)
 
 #clean WS
 rm(list=ls())
 
-options(scipen = 999)get
+options(scipen = 999)
 
-#set WS
-setwd("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester/Module/Pratical_Project/Analysis/neucodis")
+#set costum colors
+colors <- list()
+colors$csap <- "#00425A"
+colors$csbp <- "#FC7300"
+colors$csm <- "#BFDB38"
+colors$UI <- "grey"
 
+#setup paths
+SCRIPTPATH <- dirname(rstudioapi::getSourceEditorContext()$path)
+if (grepl("neucodis/scripts", SCRIPTPATH)) {
+  cat("Path OK\n") 
+} else {
+  stop("Path not OK")  
+}
+MAINPATH <- gsub("neucodis/scripts", "", SCRIPTPATH)
+INPATH <- file.path(MAINPATH, "data", "analysis_data")
+OUTPATH <- file.path(MAINPATH, "data", "analysis_data")
 
+setwd(INPATH)
+
+#---------------------------------N100 Analysis---------------------------------
+
+#load data
+df_erp <- read.csv(file.path(INPATH, "erp_analysis.csv"))
+
+#ERP1.0
+#T Test (N100 Amplitude ~ Condition)
+#check if condition (talk/no talk) has an effect on the N100 amplitude
+t.test(data = df_erp, erp_amp ~ cond, paired = TRUE) #
+df_erp %>% 
+  cohens_d(erp_amp ~ cond, paired = TRUE) 
+
+group_by(df_erp, cond) %>%
+  summarise(
+    count = n(),
+    mean = mean(erp_amp, na.rm = TRUE),
+    sd = sd(erp_amp, na.rm = TRUE)
+  )
+
+#PLOT: N100 amplitude by condition
+P1 <- df_erp %>%
+  ggplot(aes(x = cond, y = erp_amp, fill = cond)) +
+  sm_raincloud(boxplot.params = list(fill = "white", outlier.shape = NA), violin.params = list(alpha = .6)
+               , point.params = list(), legends = F) +
+  scale_fill_manual(values = c(colors$csap, colors$csbp)) +
+  scale_x_discrete(labels = c('talk' = 'talk', 'listen' = 'listen')) +
+  scale_y_continuous(n.breaks = 15) +
+  labs(x = NULL, y = "Amplitude") +
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 12)) +
+  theme(axis.text.y = element_text(size = 12)) +
+  theme(axis.title.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12)) +
+  theme(legend.position="none") +
+  geom_signif(comparisons=list(c("talk", "listen")), annotations="WATCHOUT",
+              y_position = 1, tip_length = 0.02,  vjust=0.4) 
+P1
+
+#ERP1.1
+#T Test (N100 Latency ~ Condition)
+#check if condition (talk/no talk) has an effect on the N100 amplitude
+t.test(data = df_erp, erp_lat ~ cond, paired = TRUE) #
+df_erp %>% 
+  cohens_d(erp_lat ~ cond, paired = TRUE) 
+
+group_by(df_erp, cond) %>%
+  summarise(
+    count = n(),
+    mean = mean(erp_lat, na.rm = TRUE),
+    sd = sd(erp_lat, na.rm = TRUE)
+  )
+
+#PLOT: N100 latency by condition
+P2 <- df_erp %>%
+  ggplot(aes(x = cond, y = erp_lat, fill = cond)) +
+  sm_raincloud(boxplot.params = list(fill = "white", outlier.shape = NA), violin.params = list(alpha = .6)
+               , point.params = list(), legends = F) +
+  scale_fill_manual(values = c(colors$csap, colors$csbp)) +
+  scale_x_discrete(labels = c('talk' = 'talk', 'listen' = 'listen')) +
+  scale_y_continuous(n.breaks = 10, limits = c(50,150)) +
+  labs(x = NULL, y = "Latency [ms]") +
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 12)) +
+  theme(axis.text.y = element_text(size = 12)) +
+  theme(axis.title.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12)) +
+  theme(legend.position="none") +
+  geom_signif(comparisons=list(c("talk", "listen")), annotations="WATCHOUT",
+              y_position = 130, tip_length = 0.02,  vjust=0.4) 
+P2
+
+#--------------------------------Sample_analysis--------------------------------
 
 
 
