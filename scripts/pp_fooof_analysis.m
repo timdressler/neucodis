@@ -1,6 +1,6 @@
 % pp_fooof_analysis.m
 %
-% Description
+% add Description
 %
 % Tim Dressler, 11.09.2024
 
