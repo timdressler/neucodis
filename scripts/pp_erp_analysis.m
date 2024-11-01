@@ -119,22 +119,23 @@ y_lim_lower = max([max(all_ERP_talk(chani,:,:), [], 'all') max(all_ERP_listen(ch
 
 close all
 figure;
-p(1) = plot(EEG.times, grandaverage_ERP_talk(chani,:), 'r', 'LineWidth',2);
+p(1:1+size(all_ERP_listen,3)-1) = ...
+    plot(EEG.times, squeeze(all_ERP_talk(18,:,:)).', ...
+    'linestyle','--','color','r','linewidth',0.01);
 hold on
-p(2) = plot(EEG.times, grandaverage_ERP_listen(chani,:), 'b', 'LineWidth',2);
+p(1+size(all_ERP_listen,3): 1+size(all_ERP_listen,3)+size(all_ERP_talk,3)-1) = ...
+    plot(EEG.times, squeeze(all_ERP_listen(18,:,:)).', ...
+    'linestyle','--','color','b','linewidth',0.01);
+p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)) = plot(EEG.times, grandaverage_ERP_talk(chani,:), 'r', 'LineWidth',2);
+p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)+1) = plot(EEG.times, grandaverage_ERP_listen(chani,:), 'b', 'LineWidth',2);
 xlim([-250 750])
 ylim([y_lim_upper y_lim_lower])
 xlabel('Time [ms]')
 title('ERPs for all Conditions')
 ylabel('Amplitude []')
-p(3) = fill([50 150 150 50], [y_lim_upper y_lim_upper y_lim_lower y_lim_lower], 'r', 'FaceAlpha',0.1, 'EdgeColor','none');
-p(4:4+size(all_ERP_listen,3)-1) = ...
-    plot(EEG.times, squeeze(all_ERP_talk(18,:,:)).', ...
-    'linestyle','--','color','b','linewidth',0.1);
-p(4+size(all_ERP_listen,3): 4+size(all_ERP_listen,3)+size(all_ERP_talk,3)-1) = ...
-    plot(EEG.times, squeeze(all_ERP_listen(18,:,:)).', ...
-    'linestyle','--','color','r','linewidth',0.1);
-legend(p([1:2 4 end]), 'talk - grandaverage', 'listen - grandaverage', 'talk - indiviual', 'listen - individual')
+p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)+2) = ...
+    fill([50 150 150 50], [y_lim_upper y_lim_upper y_lim_lower y_lim_lower], 'r', 'FaceAlpha',0.1, 'EdgeColor','none');
+legend(p([1 end-3 end-2 end-1]), 'talk - indiviual', 'listen - individual', 'talk - grandaverage', 'listen - grandaverage')
 hold off
 
 set(gca,'XTick',-250:50:750)
