@@ -42,9 +42,11 @@ options(scipen = 999)
 
 #set costum colors
 colors <- list()
-colors$csap <- "#00425A"
-colors$csbp <- "#FC7300"
-colors$csm <- "#BFDB38"
+colors$main_blue <- "#004F9F"
+colors$main_red <- "#D53D0E"
+colors$main_green <- "#00786B"
+colors$light_blue <- "#5BC5F2"
+colors$main_yellow <- "#FDC300"
 colors$UI <- "grey"
 
 #setup paths
@@ -78,9 +80,9 @@ psych::describeBy(df_erp$erp_amp,
 #PLOT: N100 amplitude by condition
 P1 <- df_erp %>%
   ggplot(aes(x = cond, y = erp_amp, fill = cond)) +
-  sm_raincloud(boxplot.params = list(fill = "white", outlier.shape = NA), violin.params = list(alpha = .6)
+  sm_raincloud(boxplot.params = list(fill = "white", outlier.shape = NA), violin.params = list(alpha = 1)
                , point.params = list(), legends = F) +
-  scale_fill_manual(values = c(colors$csap, colors$csbp)) +
+  scale_fill_manual(values = c(colors$main_blue, colors$main_red)) +
   scale_x_discrete(labels = c('talk' = 'talk', 'listen' = 'listen')) +
   scale_y_continuous(n.breaks = 15) +
   labs(x = NULL, y = "Amplitude") +
@@ -107,9 +109,9 @@ psych::describeBy(df_erp$erp_lat,
 #PLOT: N100 latency by condition
 P2 <- df_erp %>%
   ggplot(aes(x = cond, y = erp_lat, fill = cond)) +
-  sm_raincloud(boxplot.params = list(fill = "white", outlier.shape = NA), violin.params = list(alpha = .6)
+  sm_raincloud(boxplot.params = list(fill = "white", outlier.shape = NA), violin.params = list(alpha = 1)
                , point.params = list(), legends = F) +
-  scale_fill_manual(values = c(colors$csap, colors$csbp)) +
+  scale_fill_manual(values = c(colors$main_blue, colors$main_red)) +
   scale_x_discrete(labels = c('talk' = 'talk', 'listen' = 'listen')) +
   scale_y_continuous(n.breaks = 10, limits = c(50,150)) +
   labs(x = NULL, y = "Latency [ms]") +

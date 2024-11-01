@@ -113,28 +113,42 @@ check_done = 'OK'
 
 %% Plot 
 
+%set colors 
+main_blue = '#004F9F';
+main_blue = sscanf(main_blue(2:end),'%2x%2x%2x',[1 3])/255;
+main_red = '#D53D0E';
+main_red = sscanf(main_red(2:end),'%2x%2x%2x',[1 3])/255;
+main_green = '#00786B';
+main_green = sscanf(main_green(2:end),'%2x%2x%2x',[1 3])/255;
+light_blue = '#5BC5F2';
+light_blue = sscanf(light_blue(2:end),'%2x%2x%2x',[1 3])/255;
+main_yellow = '#FDC300';
+main_yellow = sscanf(main_yellow(2:end),'%2x%2x%2x',[1 3])/255;
+
+%get values for dynamic plot limits
 y_lim_upper = min([min(all_ERP_talk(chani,:,:), [], 'all') min(all_ERP_listen(chani,:,:), [], 'all')])-0.4;
 y_lim_lower = max([max(all_ERP_talk(chani,:,:), [], 'all') max(all_ERP_listen(chani,:,:), [], 'all')])+0.4;
 
 
+%plot
 close all
 figure;
 p(1:1+size(all_ERP_listen,3)-1) = ...
     plot(EEG.times, squeeze(all_ERP_talk(18,:,:)).', ...
-    'linestyle','--','color','r','linewidth',0.01);
+    'linestyle','--','color',main_red,'linewidth',0.01);
 hold on
 p(1+size(all_ERP_listen,3): 1+size(all_ERP_listen,3)+size(all_ERP_talk,3)-1) = ...
     plot(EEG.times, squeeze(all_ERP_listen(18,:,:)).', ...
-    'linestyle','--','color','b','linewidth',0.01);
-p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)) = plot(EEG.times, grandaverage_ERP_talk(chani,:), 'r', 'LineWidth',2);
-p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)+1) = plot(EEG.times, grandaverage_ERP_listen(chani,:), 'b', 'LineWidth',2);
+    'linestyle','--','color',main_blue,'linewidth',0.01);
+p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)) = plot(EEG.times, grandaverage_ERP_talk(chani,:),'color', main_red, 'LineWidth',2);
+p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)+1) = plot(EEG.times, grandaverage_ERP_listen(chani,:),'color', main_blue, 'LineWidth',2);
 xlim([-250 750])
 ylim([y_lim_upper y_lim_lower])
 xlabel('Time [ms]')
 title('ERPs for all Conditions')
 ylabel('Amplitude []')
 p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)+2) = ...
-    fill([50 150 150 50], [y_lim_upper y_lim_upper y_lim_lower y_lim_lower], 'r', 'FaceAlpha',0.1, 'EdgeColor','none');
+    fill([50 150 150 50], [y_lim_upper y_lim_upper y_lim_lower y_lim_lower], light_blue, 'FaceAlpha',0.1, 'EdgeColor','none');
 legend(p([1 end-3 end-2 end-1]), 'talk - indiviual', 'listen - individual', 'talk - grandaverage', 'listen - grandaverage')
 hold off
 
