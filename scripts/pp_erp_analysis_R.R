@@ -72,12 +72,8 @@ t.test(data = df_erp, erp_amp ~ cond, paired = TRUE) #
 df_erp %>% 
   cohens_d(erp_amp ~ cond, paired = TRUE) 
 
-group_by(df_erp, cond) %>%
-  summarise(
-    count = n(),
-    mean = mean(erp_amp, na.rm = TRUE),
-    sd = sd(erp_amp, na.rm = TRUE)
-  )
+psych::describeBy(df_erp$erp_amp,
+                  group = df_erp$cond)
 
 #PLOT: N100 amplitude by condition
 P1 <- df_erp %>%
@@ -105,12 +101,8 @@ t.test(data = df_erp, erp_lat ~ cond, paired = TRUE) #
 df_erp %>% 
   cohens_d(erp_lat ~ cond, paired = TRUE) 
 
-group_by(df_erp, cond) %>%
-  summarise(
-    count = n(),
-    mean = mean(erp_lat, na.rm = TRUE),
-    sd = sd(erp_lat, na.rm = TRUE)
-  )
+psych::describeBy(df_erp$erp_lat,
+                  group = df_erp$cond)
 
 #PLOT: N100 latency by condition
 P2 <- df_erp %>%
