@@ -187,7 +187,7 @@ for pairs = 1:length(all_pairs) %loop over electode pair-sets
     end
 
 
-    %get grand mean over all subjects
+    %get grand average over all subjects
     cfg = [];
     cfg.keepindividual = 'yes';
     cfg.parameter = 'wpli_debiasedspctrm';

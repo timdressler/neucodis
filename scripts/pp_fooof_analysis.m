@@ -90,7 +90,7 @@ for subj = 1:length(dircont_subj)
         EEG.setname = [SUBJ '_listen_raw'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %merge datasets
-        EEG = pop_mergeset( ALLEEG, [1 2], 0);   
+        EEG = pop_mergeset( ALLEEG, [1 2], 0);
         %epoching
         EEG = pop_epoch( EEG, {  }, [EPO_FROM  EPO_TILL], 'newname', 'Merged datasets epochs', 'epochinfo', 'yes');
         EEG.setname = [SUBJ '_talk_listen_raw'];
@@ -117,13 +117,16 @@ for subj = 1:length(dircont_subj)
         cfg.operation     = 'x2 - x1';
         oscillatory = ft_math(cfg, fractal, original);
 
-        % Alternative definition of oscillatory component
+        % original implementation by Donoghue et al. 2020 operates through the semilog-power
+        % (linear frequency, log10-power) space and transformed back into linear-linear space.
+        % thus defining an alternative expression for the oscillatory component as the quotient of
+        % the power spectrum and the fractal component
         cfg               = [];
         cfg.parameter     = 'powspctrm';
         cfg.operation     = 'x2 ./ x1';  % equivalent to 10^(log10(x2) - log10(x1))
         oscillatory_alt = ft_math(cfg, fractal, original);
 
-        % Display the spectra on a linear frequency scale with limits set to [20 60]
+        %plot FOOOF analsis for each subject
         figure();
         subplot(1,2,1); hold on;
         plot(original.freq, log(original.powspctrm), 'k');
@@ -131,7 +134,7 @@ for subj = 1:length(dircont_subj)
         plot(oscillatory.freq, log(oscillatory.powspctrm));
         xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
         xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
-        legend({'original', 'fractal', 'oscillatory = spectrum - fractal'}, 'location', 'southwest');
+        legend({'original', 'fractal', 'oscillatory = spectrum - fractal'}, 'location', 'best');
         title('mixed signal');
 
         subplot(1,2,2); hold on;
@@ -140,8 +143,20 @@ for subj = 1:length(dircont_subj)
         plot(oscillatory_alt.freq, log(oscillatory_alt.powspctrm));
         xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
         xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
-        legend({'original', 'fractal', 'oscillatory = spectrum / fractal'}, 'location', 'southwest');
+        legend({'original', 'fractal', 'oscillatory = spectrum / fractal'}, 'location', 'best');
         title('oscillatory = spectrum / fractal');
+
+        sgtitle(['FOOOF Analysis for Subject ' SUBJ])
+
+        %store values
+        all_original_freq(:,:,subj) = original.freq;
+        all_original_powspctrm(:,:,subj) = original.powspctrm;
+        all_fractal_freq(:,:,subj) = fractal.freq;
+        all_fractal_powspctrm(:,:,subj) = fractal.powspctrm;
+        all_oscillatory_freq(:,:,subj) = oscillatory.freq;
+        all_oscillatory_powspctrm(:,:,subj) = oscillatory.powspctrm;
+        all_oscillatory_alt_freq(:,:,subj) = oscillatory_alt.freq;
+        all_oscillatory_alt_powspctrm(:,:,subj) = oscillatory_alt.powspctrm;
 
         %sanity check variables
         subj_time = toc;
@@ -151,6 +166,41 @@ for subj = 1:length(dircont_subj)
         marked_subj{end+1} = SUBJ;
     end
 end
+
+%get grand average over all subjects
+orignial_freq_GRANDAVERAGE = mean(all_original_freq, 3);
+original_powspctrm_GRANDAVERAGE = mean(all_original_powspctrm, 3);
+fractal_freq_GRANDAVERAGE = mean(all_fractal_freq, 3);
+fractal_powspctrm_GRANDAVERAGE = mean(all_fractal_powspctrm, 3);
+oscillatory_freq_GRANDAVERAGE = mean(all_oscillatory_freq, 3);
+oscillatory_powspctrm_GRANDAVERAGE = mean(all_oscillatory_powspctrm, 3);
+oscillatory_alt_freq_GRANDAVERAGE = mean(all_oscillatory_alt_freq, 3);
+oscillatory_alt_powspctrm_GRANDAVERAGE = mean(all_oscillatory_alt_powspctrm, 3);
+
+%plot grand average FOOOF analysis
+figure();
+subplot(1,2,1); hold on;
+plot(orignial_freq_GRANDAVERAGE, log(original_powspctrm_GRANDAVERAGE), 'k');
+plot(fractal_freq_GRANDAVERAGE, log(fractal_powspctrm_GRANDAVERAGE));
+plot(oscillatory_freq_GRANDAVERAGE, log(oscillatory_powspctrm_GRANDAVERAGE));
+xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
+xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
+legend({'original', 'fractal', 'oscillatory = spectrum - fractal'}, 'location', 'best');
+
+title('mixed signal');
+
+subplot(1,2,2); hold on;
+plot(orignial_freq_GRANDAVERAGE, log(original_powspctrm_GRANDAVERAGE), 'k');
+plot(fractal_freq_GRANDAVERAGE, log(fractal_powspctrm_GRANDAVERAGE));
+plot(oscillatory_alt_freq_GRANDAVERAGE, log(oscillatory_alt_powspctrm_GRANDAVERAGE));
+xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
+xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
+legend({'original', 'fractal', 'oscillatory = spectrum / fractal'}, 'location', 'best');
+
+title('oscillatory = spectrum / fractal');
+
+sgtitle('Grand Average FOOOF Analysis')
+
 
 %display sanity check variables
 marked_subj

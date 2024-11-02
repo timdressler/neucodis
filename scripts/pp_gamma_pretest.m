@@ -2,8 +2,9 @@
 %
 % Pretest with the goal of identifying the presence (or non-presence) of
 % gamma (and theta) activity. Using pre-processed data.
+% ICA preprocessing done by Suong Welp.
 % All Conditions merged
-% Only for one subject. 125 and 136 chosen for preliminary analysis
+% Only for one subject. 125 and 136 chosen for preliminary analysis.
 %
 % Tim Dressler, 12.08.2024
 
@@ -100,5 +101,3 @@ tftopo(allersp,alltimes(:,:,1),allfreqs(:,:,1), ...
 
 %display sanity check variables
 check_done = 'OK'
-
-%%eeglab rebuild
