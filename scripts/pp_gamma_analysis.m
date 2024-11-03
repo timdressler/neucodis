@@ -69,6 +69,8 @@ for subj = 1:length(dircont_subj) %loop over subjects
     %plot ERSP for each subject
     figure;
     imagesc(ersp_times, ersp_freqs, ersp);
+    xlim([-400 300])
+    ylim([15 60])
     axis xy;
     colorbar;
     xlabel('Time (ms)');
@@ -118,6 +120,8 @@ allersp_GRANDAVERAGE = mean(all_allersp,4);
 figure;
 imagesc(ersp_times, ersp_freqs, ersp_GRANDAVERAGE);
 axis xy;
+xlim([-400 300])
+ylim([15 60])
 colorbar;
 xlabel('Time (ms)');
 ylabel('Frequency (Hz)');

@@ -92,7 +92,7 @@ for subj = 1:length(dircont_subj)
         %merge datasets
         EEG = pop_mergeset( ALLEEG, [1 2], 0);
         %epoching
-        EEG = pop_epoch( EEG, {  }, [EPO_FROM  EPO_TILL], 'newname', 'Merged datasets epochs', 'epochinfo', 'yes');
+        EEG = pop_epoch( EEG, EVENTS, [EPO_FROM  EPO_TILL], 'newname', 'Merged datasets epochs', 'epochinfo', 'yes');
         EEG.setname = [SUBJ '_talk_listen_raw'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %convert full data to fieldtrip format
