@@ -241,12 +241,25 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
     cfg.uvar     = 1;
     cfg.ivar     = 2;
     % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    %sanity check
+    %check dimensions of wPLI structure
+    clear ok_dim
+    switch all(size(all_wpli(pairs).talk_GA.wpli_debiasedspctrm) == size(all_wpli(pairs).listen_GA.wpli_debiasedspctrm),'all')
+        case true
+            ok_dim = 1;
+        otherwise
+            ok_dim = 0;
+    end
+
+    %cluster test
     all_wpli(pairs).comparison = ft_freqstatistics(cfg,all_wpli(pairs).talk_GA,all_wpli(pairs).listen_GA);
 
-
     %sanity checks
+    clear temp
     for temp = r_start:r_end
         ok_subj{temp,4} = all_wpli(pairs).name{1};
+        ok_subj{temp,5} = ok_dim;
     end
 end
 
