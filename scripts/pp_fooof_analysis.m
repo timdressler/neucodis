@@ -91,6 +91,8 @@ for subj = 1:length(dircont_subj)
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %merge datasets
         EEG = pop_mergeset( ALLEEG, [1 2], 0);
+        %1Hz highpass
+
         %epoching
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM  EPO_TILL], 'newname', 'Merged datasets epochs', 'epochinfo', 'yes');
         EEG.setname = [SUBJ '_talk_listen_raw'];
@@ -106,6 +108,10 @@ for subj = 1:length(dircont_subj)
         cfg.tapsmofrq     = 2;
         cfg.method        = 'mtmfft';
         cfg.output        = 'fooof_aperiodic';
+        cfg.fooof.freq_range = [3,50]; cfg.fooof.peak_width_limits =[1,8];
+        cfg.fooof.max_peaks =20;
+        cfg.fooof.min_peak_height =0.15;
+
         fractal = ft_freqanalysis(cfg, data);
 
         cfg.output        = 'pow';
@@ -132,7 +138,7 @@ for subj = 1:length(dircont_subj)
         plot(original.freq, log(original.powspctrm), 'k');
         plot(fractal.freq, log(fractal.powspctrm));
         plot(oscillatory.freq, log(oscillatory.powspctrm));
-        xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
+        xlim([20 50]);  % limit x-axis to frequencies between 20 and 60 Hz
         xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
         legend({'original', 'fractal', 'oscillatory = spectrum - fractal'}, 'location', 'best');
         title('mixed signal');
@@ -141,7 +147,7 @@ for subj = 1:length(dircont_subj)
         plot(original.freq, log(original.powspctrm), 'k');
         plot(fractal.freq, log(fractal.powspctrm));
         plot(oscillatory_alt.freq, log(oscillatory_alt.powspctrm));
-        xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
+        xlim([20 50]);  % limit x-axis to frequencies between 20 and 60 Hz
         xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
         legend({'original', 'fractal', 'oscillatory = spectrum / fractal'}, 'location', 'best');
         title('oscillatory = spectrum / fractal');
@@ -183,7 +189,7 @@ subplot(1,2,1); hold on;
 plot(orignial_freq_GRANDAVERAGE, log(original_powspctrm_GRANDAVERAGE), 'k');
 plot(fractal_freq_GRANDAVERAGE, log(fractal_powspctrm_GRANDAVERAGE));
 plot(oscillatory_freq_GRANDAVERAGE, log(oscillatory_powspctrm_GRANDAVERAGE));
-xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
+xlim([20 50]);  % limit x-axis to frequencies between 20 and 60 Hz
 xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
 legend({'original', 'fractal', 'oscillatory = spectrum - fractal'}, 'location', 'best');
 
@@ -193,7 +199,7 @@ subplot(1,2,2); hold on;
 plot(orignial_freq_GRANDAVERAGE, log(original_powspctrm_GRANDAVERAGE), 'k');
 plot(fractal_freq_GRANDAVERAGE, log(fractal_powspctrm_GRANDAVERAGE));
 plot(oscillatory_alt_freq_GRANDAVERAGE, log(oscillatory_alt_powspctrm_GRANDAVERAGE));
-xlim([20 60]);  % limit x-axis to frequencies between 20 and 60 Hz
+xlim([20 50]);  % limit x-axis to frequencies between 20 and 60 Hz
 xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
 legend({'original', 'fractal', 'oscillatory = spectrum / fractal'}, 'location', 'best');
 

@@ -8,6 +8,10 @@ clear
 close all
 clc
 
+%critical variables to edit
+%select whether to use simulated or real data
+SIM_DATA = 1; %1 for simulated data %0 for real data
+
 %setup paths
 SCRIPTPATH = cd;
 
@@ -20,7 +24,16 @@ else
 end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
-INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+switch SIM_DATA
+    case 0
+        INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+        disp('Real data used!')
+    case 1
+        INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_simulated\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+        warning('Simulated data used!')
+    otherwise
+        error('error')
+end
 OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
@@ -92,7 +105,13 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
     for subj = 1:length(dircont_subj) %loop over subjects
         tic;
         %get current ID
-        SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
+        switch SIM_DATA
+            case 0
+                SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
+            case 1
+                SUBJ = erase(dircont_subj(subj).name, '.set');
+        end
+
         %import data
         %start eeglab
         [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -100,11 +119,12 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
         EEG = pop_loadset('filename',dircont_subj(subj).name,'filepath',INPATH);
         %sanity check
         %check if ID matches dataset
-        subj_check = strcmp(SUBJ, erase(EEG.setname, '_coherence_preprocessed'));
-        %rename dataset
-        EEG.setname = [SUBJ '_talk_listen'];
-        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
-
+        switch SIM_DATA
+            case 0
+                subj_check = strcmp(SUBJ, erase(EEG.setname, '_coherence_preprocessed'));
+            case 1
+                subj_check = strcmp(SUBJ, EEG.setname);
+        end
         %rename dataset
         EEG.setname = [SUBJ '_talk_listen'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
@@ -271,22 +291,40 @@ check_done = 'OK'
 time_vector = wpli_listen.time;
 freq_vector = wpli_listen.freq;
 figure;
-imagesc(time_vector, freq_vector, wpli_listen_extracted);
+imagesc(time_vector, freq_vector, squeeze(mean(wpli_listen_GRANDAVERAGE.wpli_debiasedspctrm,1)));
 axis xy;
 xlabel('Zeit (s)');
 ylabel('Frequenz (Hz)');
 title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (listen)');
 colorbar;
-caxis([0, max(max(squeeze(mean(wpli_listen.wpli_debiasedspctrm, 1))))]);
+% % caxis([0, max(max(wpli_listen_extracted_AVERAGE_PAIRS))]);
+caxis([0 0.5]);
+
 
 time_vector = wpli_talk.time;
 freq_vector = wpli_talk.freq;
 figure;
-imagesc(time_vector, freq_vector,wpli_talk_extracted);
+imagesc(time_vector, freq_vector,squeeze(mean(wpli_talk_GRANDAVERAGE.wpli_debiasedspctrm,1)));
 axis xy;
 xlabel('Zeit (s)');
 ylabel('Frequenz (Hz)');
 title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (talk)');
 colorbar;
-caxis([0, max(max(squeeze(mean(wpli_talk.wpli_debiasedspctrm, 1))))]);
+% % caxis([0, max(max(wpli_listen_extracted_AVERAGE_PAIRS))]);
+caxis([0 0.5]);
+
+
+time_vector = wpli_talk.time;
+freq_vector = wpli_talk.freq;
+figure;
+imagesc(time_vector, freq_vector,squeeze(mean(wpli_talk_GRANDAVERAGE.wpli_debiasedspctrm,1))- ...
+    squeeze(mean(wpli_talk_GRANDAVERAGE.wpli_debiasedspctrm,1)));
+axis xy;
+xlabel('Zeit (s)');
+ylabel('Frequenz (Hz)');
+title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (difference)');
+colorbar;
+% % caxis([0, max(max(wpli_listen_extracted_AVERAGE_PAIRS))]);
+caxis([0 0.1]);
+
 

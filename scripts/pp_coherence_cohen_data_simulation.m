@@ -1,7 +1,7 @@
 % pp_wPLI_analysis.m
 %
 % Data simulation for sanity-check of coherence analysis
-% Data can be only noise or contain simulated coherence 
+% Data can be only noise or contain simulated coherence
 %
 % Originally by Dr. Micheal X Cohen
 % Cohen, MX (2014). Effects of time lag and frequency matching on
@@ -13,331 +13,192 @@ clear
 close all
 clc
 
-%add function path
-addpath("C:/Users/timdr/OneDrive/Uni_Oldenburg/3_Semester\Module/Pratical_Project/Analysis/neucodis/functions")
+%setup paths
+SCRIPTPATH = cd;
 
-%select whether random noise or coherence should be simulated
-noise_yn = 1; %0 for noise data, 1 for simulated coherence at 10Hz
-
-%% setup
-
-%center frequency in Hz
-centfreq = 10;
-%mean phase difference between two dipoles (state in ms, converted later to radians)
-phasedif_ms = 5; % 5 or 25
-
-%simulationType: 1 (equal stationary frequencies)
-%                2 (unequal stationary frequencies)
-%                3 (nonstationary frequencies)
-simulationType = 2;
-
-%Dispersion of frequency nonstationarity, in Hz. In the paper it was
-% set to 2 or 4. Values between 1 and 5 are reasonable. It has an
-% effect only when stimulationType is set to 3.
-freqDist = 2;
-
-%number of trials
-ntrials = 300;
-
-%initial setup and load in necessary files
-
-%mat file containing leadfield and channel locations
-load lfchans
-
-%sampling rate
-srate = 500;
-
-%time for simulation (in seconds)
-time  = (-1:1/srate:2)*1000;
-phasedif = 2*pi*centfreq*phasedif_ms/1000;
-
-%time points to save from final results, and baseline for power normalization
-times2save = -400:50:600; % in ms
-baselinetimerange = [ -400 -200 ];
-
-ntime  = length(time);
-nchans = length(chanlocs);
-
-%indices of dipole locations (probably best not to change these)
-dipoleOCC =   94;
-dipolePFC = 1720;
-
-%use X, Y, or Z oriented dipole (1, 2, or 3, respectively).
-%in the paper, Z was used.
-whichOrientation = 3;
-
-%in electrode labels; see {chanlocs.labels}
-electrodes2use = { 'Fz';'Pz' };
-
-%convert channel labels to indices
-elecs2use = zeros(size(electrodes2use));
-for i=1:length(electrodes2use)
-    elecs2use(i) = find(strcmpi(electrodes2use{i},{chanlocs.labels}));
+%sanity check
+%check if paths are correct
+if regexp(SCRIPTPATH, regexptranslate('wildcard','*neucodis\scripts')) == 1
+    disp('Path OK')
+else
+    error('Path not OK')
 end
 
-%to see the scalp dipole projections, use the following code
-%topoplot(squeeze(lf.Gain(:,whichOrientation,dipolePFC)),chanlocs);
+MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
+INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_simulated\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
+addpath(FUNPATH);
 
-%intialize output matrices
-simulatedEEG = zeros(nchans,ntime,ntrials); %simulated electrode data
-sourceTimeSeries = zeros(ntime,2,ntrials); %data at source dipoles
+%variables to edit
+SIM_COH = 0; %1 for simulated coherence %0 for noise data, 
+COH_START = 0.1 %in s %only has an effect if SIM_COH = 1
 
-%setup time indexing
-times2saveidx = dsearchn(time',times2save');
-baseidx = dsearchn(time',baselinetimerange');
+%load participant and extract number of trials to create simulated dataset equivalent to the original data
+%get directory content
+dircont_subj = dir(fullfile(INPATH, 'P*'));
 
-%% simulate data (noise+sine waves)
+%initialize sanity check variables
+ok_subj = {};
 
-for triali=1:ntrials
+for subj = 1:length(dircont_subj) %loop over subjects
+    tic;
+    %get current ID
+    SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
+    %import data
+    %start eeglab
+    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
+    %import dataset
+    EEG = pop_loadset('filename',dircont_subj(subj).name,'filepath',INPATH);
+    %sanity check
+    %check if ID matches dataset
+    subj_check = strcmp(SUBJ, erase(EEG.setname, '_coherence_preprocessed'));
+    %extract neeeded information
+    %time vector
+    time = EEG.times;
+    %sample rate
+    srate = EEG.srate;
+    %number of trials
+    ntrials = size(EEG.data,3);
+    %event data
+    event = EEG.event;
+    %epoch data
+    epoch = EEG.epoch;
 
-    %data comprise all noise
-    data = randn(ntime,size(lf.Gain,3))./20;
+    % % clear EEG
 
-    if noise_yn == 1
 
-        %specify frequency
-        switch simulationType
-            case 1
-                %case 1: both dipoles oscillate at centfreq Hz
-                trialFreq1 = centfreq;
-                trialFreq2 = centfreq;
-                [freqmod1,freqmod2,k1,k2] = deal(0); % see case 3
-            case 2
-                %case 2: one dipole oscillates faster; both oscillators are stationary
-                trialFreq1 = centfreq;
-                trialFreq2 = centfreq*1.2;
-                [freqmod1,freqmod2,k1,k2] = deal(0); % see case 3
-            case 3
-                %case 3: Both oscillators are nonstationary
-                trialFreq1 = centfreq;
-                trialFreq2 = centfreq;
 
-                %time-varying frequency modulation
-                freqmod1 = interp(ceil(freqDist*rand(1,round(ntime/40)))-.5-(freqDist/2),41); freqmod1(ntime+1:end) = [];
-                freqmod2 = interp(ceil(freqDist*rand(1,round(ntime/40)))-.5-(freqDist/2),41); freqmod2(ntime+1:end) = [];
 
-                %frequency coefficients for generating arbitrary 'chirp' signal
-                k1 = (centfreq/srate)*2*pi/trialFreq1;
-                k2 = (centfreq/srate)*2*pi/trialFreq2; %was max()
+    %% setup
+
+    %center frequency in Hz
+    centfreq = 35;
+    %mean phase difference between two dipoles (state in ms, converted later to radians)
+    phasedif_ms = 5; % 5 or 25
+
+    %simulationType: 1 (equal stationary frequencies)
+    %                2 (unequal stationary frequencies)
+    %                3 (nonstationary frequencies)
+    simulationType = 1;
+
+    %Dispersion of frequency nonstationarity, in Hz. In the paper it was
+    % set to 2 or 4. Values between 1 and 5 are reasonable. It has an
+    % effect only when stimulationType is set to 3.
+    freqDist = 2;
+
+    %number of trials
+    ntrials = ntrials;
+
+    %initial setup and load in necessary files
+
+    %mat file containing leadfield and channel locations
+    load lfchans
+
+    %sampling rate
+    srate = srate;
+
+    %time for simulation (in seconds)
+    time  = time;
+    phasedif = 2*pi*centfreq*phasedif_ms/1000;
+    ntime  = length(time);
+    nchans = length(chanlocs);
+
+    %indices of dipole locations (probably best not to change these)
+    dipoleOCC =   94;
+    dipolePFC = 1720;
+
+    %use X, Y, or Z oriented dipole (1, 2, or 3, respectively).
+    %in the paper, Z was used.
+    whichOrientation = 3;
+
+    %to see the scalp dipole projections, use the following code
+    %topoplot(squeeze(lf.Gain(:,whichOrientation,dipolePFC)),chanlocs);
+
+    %intialize output matrices
+    simulatedEEG = zeros(nchans,ntime,ntrials); %simulated electrode data
+    sourceTimeSeries = zeros(ntime,2,ntrials); %data at source dipoles
+
+    %% simulate data (noise+sine waves)
+
+    for triali=1:ntrials
+
+        %data comprise all noise
+        data = randn(ntime,size(lf.Gain,3))./20;
+
+        if SIM_COH == 1
+
+            %specify frequency
+            switch simulationType
+                case 1
+                    %case 1: both dipoles oscillate at centfreq Hz
+                    trialFreq1 = centfreq;
+                    trialFreq2 = centfreq;
+                    [freqmod1,freqmod2,k1,k2] = deal(0); % see case 3
+                case 2
+                    %case 2: one dipole oscillates faster; both oscillators are stationary
+                    trialFreq1 = centfreq;
+                    trialFreq2 = centfreq*1.2;
+                    [freqmod1,freqmod2,k1,k2] = deal(0); % see case 3
+                case 3
+                    %case 3: Both oscillators are nonstationary
+                    trialFreq1 = centfreq;
+                    trialFreq2 = centfreq;
+
+                    %time-varying frequency modulation
+                    freqmod1 = interp(ceil(freqDist*rand(1,round(ntime/40)))-.5-(freqDist/2),41); freqmod1(ntime+1:end) = [];
+                    freqmod2 = interp(ceil(freqDist*rand(1,round(ntime/40)))-.5-(freqDist/2),41); freqmod2(ntime+1:end) = [];
+
+                    %frequency coefficients for generating arbitrary 'chirp' signal
+                    k1 = (centfreq/srate)*2*pi/trialFreq1;
+                    k2 = (centfreq/srate)*2*pi/trialFreq2; %was max()
+            end
+
+            %gaussian window used for tapering sine waves
+            gausWindow = exp( (-((time/1000)-0.1).^2)/.1 ); %coherence after ~100ms
+
+            %create signals
+            data(:,dipolePFC) = data(:,dipolePFC)' + sin(2*pi.*trialFreq1.*(time/1000) + k1*cumsum(freqmod1) + rand*.1*pi         ) .* gausWindow;
+            tempts            = data(:,dipolePFC)' + sin(2*pi.*trialFreq2.*(time/1000) + k2*cumsum(freqmod2) + rand*.1*pi+phasedif) .* gausWindow;
+            data(:,dipoleOCC) = data(:,dipoleOCC)' + tempts.*gausWindow;
+
+        elseif SIM_COH == 0
+
+        else
+            error('Specifiy whether data should be noise (0) or contain simulated coherence (1)')
         end
 
-        %gaussian window used for tapering sine waves
-        gausWindow = exp( (-((time/1000)-0.1).^2)/.1 ); %coherence after ~100ms
+        %simulated EEG data
+        simulatedEEG(:,:,triali) = (data*squeeze(lf.Gain(:,whichOrientation,:))')';
 
-        %create signals
-        data(:,dipolePFC) = data(:,dipolePFC)' + sin(2*pi.*trialFreq1.*(time/1000) + k1*cumsum(freqmod1) + rand*.1*pi         ) .* gausWindow;
-        tempts            = data(:,dipolePFC)' + sin(2*pi.*trialFreq2.*(time/1000) + k2*cumsum(freqmod2) + rand*.1*pi+phasedif) .* gausWindow;
-        data(:,dipoleOCC) = data(:,dipoleOCC)' + tempts.*gausWindow;
-
-    elseif noise_yn == 0
-
-    else
-        error('Specifiy whether data should be noise (0) or contain simulated coherence (1)')
+        %get actual source time series
+        sourceTimeSeries(:,:,triali) = data(:,[dipolePFC dipoleOCC]);
     end
 
-    %simulated EEG data
-    simulatedEEG(:,:,triali) = (data*squeeze(lf.Gain(:,whichOrientation,:))')';
+    %also compute laplacian
+    simulatedLap = laplacian_perrinX(simulatedEEG,[chanlocs.X],[chanlocs.Y],[chanlocs.Z]);
+    %average reref (leadfield assumes average reference)
+    simulatedEEG = bsxfun(@minus,simulatedEEG,mean(simulatedEEG,1));
 
-    %get actual source time series
-    sourceTimeSeries(:,:,triali) = data(:,[dipolePFC dipoleOCC]);
+    %convert simulated data to eeglab format
+    % % eeglab;
+    EEG.data = simulatedEEG;
+    EEG.times = time;
+    EEG.srate = srate;
+    EEG.chanlocs = chanlocs;
+    EEG.event = event;
+    EEG.epoch = epoch;
+    EEG.nbchan = size(EEG.data, 1);
+    EEG.trials = ntrials;
+    EEG.pnts = size(EEG.data, 2);
+
+    %save dataset
+    EEG.setname = [SUBJ '_simulated'];
+    [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
+    EEG = pop_saveset(EEG, 'filename',[SUBJ '_simulated.set'],'filepath', OUTPATH);
+
 end
 
-%also compute laplacian
-simulatedLap = laplacian_perrinX(simulatedEEG,[chanlocs.X],[chanlocs.Y],[chanlocs.Z]);
-%average reref (leadfield assumes average reference)
-simulatedEEG = bsxfun(@minus,simulatedEEG,mean(simulatedEEG,1));
+close all
 
-%convert simulated data to eeglab format
-EEG.data = simulatedEEG;
-EEG.times = time;
-EEG.srate = srate;
-EEG.chanlocs = chanlocs;
 
-clearvars -except EEG
-
-%% end data simulation part of script
-
-%% IGNORE
-
-% % %% begin wavelet convolution part of script
-% % 
-% % %% initial parameters for time-frequency analysis
-% % 
-% % % seeded phase synchronization (set to empty ("{}") for no analyses)
-% % electrodes4seeded_synch = { chanlocs(elecs2use(1)).labels , chanlocs(elecs2use(2)).labels };
-% % 
-% % % wavelet parameters
-% % min_freq =  2;
-% % max_freq = 40;
-% % num_frex = 25;
-% % wavelet_cycle_range = [ 3 12 ];
-% % 
-% % frex = logspace(log10(min_freq),log10(max_freq),num_frex);
-% % 
-% % 
-% % % gaussian width and time
-% % s = logspace(log10(wavelet_cycle_range(1)),log10(wavelet_cycle_range(2)),num_frex)./(2*pi.*frex);
-% % t = -2:1/srate:2;
-% % 
-% % % fft and convolution details
-% % Ltapr  =  length(t);
-% % Ldata  =  prod(ntime*ntrials);
-% % Lconv1 =  Ldata+Ltapr-1;
-% % Lconv  =  pow2(nextpow2( Lconv1 ));
-% % 
-% % wavelets = zeros(num_frex,length(t));
-% % for fi=1:num_frex
-% %     wavelets(fi,:) = exp(2*1i*pi*frex(fi).*t).*exp(-t.^2./(2*s(fi)^2));
-% % end
-% % 
-% % % initialize output and hidden-layer TF matrices
-% % tf    = zeros(nchans+2,num_frex,length(times2saveidx),2);
-% % allphasevals = zeros(nchans,num_frex,length(times2save),ntrials,2);
-% % synchOverTrials = zeros(2,length(electrodes4seeded_synch),nchans,num_frex,length(times2saveidx),2);
-% % allAS = zeros(2,num_frex,ntime,ntrials,2);
-% % 
-% % %% run convolution
-% % 
-% % % loop around channels
-% % for chani=1:nchans+2
-% % 
-% %     % FFT of data (channel or true dipoles)
-% %     if chani<=nchans
-% %         EEGfft = fft(reshape(simulatedEEG(chani,:,:),1,[]),Lconv);
-% %         Lapfft = fft(reshape(simulatedLap(chani,:,:),1,[]),Lconv);
-% %     else
-% %         [EEGfft,Lapfft] = deal(fft(reshape(sourceTimeSeries(:,mod(chani,nchans),:),1,[]),Lconv));
-% %     end
-% % 
-% % 
-% %     % loop over frequencies and complete convolution
-% %     for fi=1:num_frex
-% % 
-% %         %% Average reference
-% %         % convolve and get analytic signal (as)
-% %         as = ifft(EEGfft.*fft(wavelets(fi,:),Lconv),Lconv);
-% %         as = as(1:Lconv1);
-% %         as = reshape(as(floor((Ltapr-1)/2):end-1-ceil((Ltapr-1)/2)),ntime,ntrials);
-% % 
-% %         % enter into TF matrix
-% %         temppow = mean(abs(as).^2,2);
-% %         tf(chani,fi,:,1) = 10*log10( temppow(times2saveidx)/mean(temppow(baseidx(1):baseidx(2))) );
-% % 
-% %         % save phase values
-% %         if chani<=nchans
-% %             allphasevals(chani,fi,:,:,1) = as(times2saveidx,:);
-% %         end
-% % 
-% %         % all values from all time points
-% %         if chani==elecs2use(1)
-% %             allAS(1,fi,:,:,1) = as;
-% %         elseif chani==elecs2use(2)
-% %             allAS(2,fi,:,:,1) = as;
-% %         end
-% % 
-% %         %% Laplacian
-% %         % convolve and get analytic signal (as)
-% %         as = ifft(Lapfft.*fft(wavelets(fi,:),Lconv),Lconv);
-% %         as = as(1:Lconv1);
-% %         as = reshape(as(floor((Ltapr-1)/2):end-1-ceil((Ltapr-1)/2)),ntime,ntrials);
-% % 
-% %         % enter into TF matrix
-% %         temppow = mean(abs(as).^2,2);
-% %         tf(chani,fi,:,2) = 10*log10( temppow(times2saveidx)/mean(temppow(baseidx(1):baseidx(2))) );
-% % 
-% %         % save phase values
-% %         if chani<=nchans
-% %             allphasevals(chani,fi,:,:,2) = as(times2saveidx,:);
-% %         end
-% % 
-% %         % all values from all time points
-% %         if chani==elecs2use(1)
-% %             allAS(1,fi,:,:,2) = as;
-% %         elseif chani==elecs2use(2)
-% %             allAS(2,fi,:,:,2) = as;
-% %         end
-% % 
-% %     end % end frequency loop
-% % end % end channel loop
-% % 
-% % %% compute phase connectivity over trials
-% % 
-% % for chanx=1:length(electrodes4seeded_synch)
-% % 
-% %     % ISPC (average reference and laplacian)
-% %     synchOverTrials(1,chanx,:,:,:,1) = mean(exp(1i* bsxfun(@minus,angle(allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,1)),angle(allphasevals(:,:,:,:,1))) ),4);
-% %     synchOverTrials(1,chanx,:,:,:,2) = mean(exp(1i* bsxfun(@minus,angle(allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,2)),angle(allphasevals(:,:,:,:,2))) ),4);
-% % 
-% % 
-% %     % wPLI (average reference and laplacian)
-% %     cdd = bsxfun(@times,allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,1),conj(allphasevals(:,:,:,:,1)));
-% %     cdi = imag(cdd);
-% %     synchOverTrials(2,chanx,:,:,:,1) = mean( abs( mean( abs(cdi).*sign(cdi) ,4) )./mean(abs(cdi),4) ,4);
-% % 
-% %     cdd = bsxfun(@times,allphasevals(strcmpi(electrodes4seeded_synch{chanx},{chanlocs.labels}),:,:,:,2),conj(allphasevals(:,:,:,:,2)));
-% %     cdi = imag(cdd);
-% %     synchOverTrials(2,chanx,:,:,:,2) = mean( abs( mean( abs(cdi).*sign(cdi) ,4) )./mean(abs(cdi),4) ,4);
-% % end
-% % 
-% % % NaN's cause electrode data shifts in the eeglab topoplot function
-% % synchOverTrials(isnan(synchOverTrials))=0;
-% % 
-% % %% plot data
-% % 
-% % times2plot = dsearchn(times2save',[200 800]');
-% % freq2plot  = dsearchn(frex',centfreq);
-% % 
-% % clim = .8;
-% % 
-% % figure(1), clf, colormap hot
-% % subplot(221)
-% % topoplot(squeeze(mean(mean(abs(synchOverTrials(1,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
-% % title('seeded connectivity, average reference')
-% % 
-% % subplot(222)
-% % topoplot(squeeze(mean(mean(abs(synchOverTrials(1,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),2)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
-% % title('seeded connectivity, Laplacian')
-% % 
-% % subplot(223)
-% % contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,1))),40,'linecolor','none')
-% % set(gca,'clim',[0 clim])
-% % hold on
-% % toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-% % plot(times2save,toplot*30+10,'w','linew',2)
-% % plot(get(gca,'xlim'),[10 10],'w--')
-% % 
-% % subplot(224)
-% % contourf(times2save,frex,abs(squeeze(synchOverTrials(1,1,elecs2use(2),:,:,2))),40,'linecolor','none')
-% % set(gca,'clim',[0 clim])
-% % hold on
-% % toplot = squeeze(mean(abs(synchOverTrials(1,1,elecs2use(2),freq2plot-1:freq2plot+1,:,2)),4));
-% % plot(times2save,toplot*30+10,'w','linew',2)
-% % plot(get(gca,'xlim'),[10 10],'w--')
-% % xlabel('Time (ms)'), ylabel('Frequency (Hz)')
-% % 
-% % 
-% % figure(2), clf, colormap hot
-% % subplot(221)
-% % topoplot(squeeze(mean(mean(abs(synchOverTrials(2,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),1)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
-% % title('seeded connectivity, average reference')
-% % 
-% % subplot(222)
-% % topoplot(squeeze(mean(mean(abs(synchOverTrials(2,1,:,freq2plot-1:freq2plot+1,times2plot(1):times2plot(2),2)),5),4)),chanlocs,'maplimits',[0 clim],'plotrad',.63,'numcontour',0,'style','map','electrodes','off','emarker2',{elecs2use '.' 'g' 8 1});
-% % title('seeded connectivity, Laplacian')
-% % 
-% % subplot(223)
-% % contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,1))),40,'linecolor','none')
-% % hold on
-% % toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-% % plot(times2save,toplot*30+10,'w','linew',2)
-% % plot(get(gca,'xlim'),[10 10],'w--')
-% % set(gca,'clim',[0 clim])
-% % 
-% % subplot(224)
-% % contourf(times2save,frex,abs(squeeze(synchOverTrials(2,1,elecs2use(2),:,:,2))),40,'linecolor','none')
-% % hold on
-% % toplot = squeeze(mean(abs(synchOverTrials(2,1,elecs2use(2),freq2plot-1:freq2plot+1,:,1)),4));
-% % plot(times2save,toplot*30+10,'w','linew',2)
-% % plot(get(gca,'xlim'),[10 10],'w--')
-% % set(gca,'clim',[0 clim])
-% % xlabel('Time (ms)'), ylabel('Frequency (Hz)')
