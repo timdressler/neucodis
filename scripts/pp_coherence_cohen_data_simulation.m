@@ -31,8 +31,8 @@ FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
 %variables to edit
-SIM_COH = 0; %1 for simulated coherence %0 for noise data, 
-COH_START = 0.1 %in s %only has an effect if SIM_COH = 1
+SIM_COH = 1; %1 for simulated coherence %0 for noise data, 
+COH_START = -0.2; %in s %only has an effect if SIM_COH = 1
 
 %load participant and extract number of trials to create simulated dataset equivalent to the original data
 %get directory content
@@ -155,7 +155,7 @@ for subj = 1:length(dircont_subj) %loop over subjects
             end
 
             %gaussian window used for tapering sine waves
-            gausWindow = exp( (-((time/1000)-0.1).^2)/.1 ); %coherence after ~100ms
+            gausWindow = exp( (-((time/1000)-COH_START).^2)/.01 ); %WATCHOUT %.01 was originally .1, thought to control the time range of coherence
 
             %create signals
             data(:,dipolePFC) = data(:,dipolePFC)' + sin(2*pi.*trialFreq1.*(time/1000) + k1*cumsum(freqmod1) + rand*.1*pi         ) .* gausWindow;
@@ -197,8 +197,17 @@ for subj = 1:length(dircont_subj) %loop over subjects
     [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
     EEG = pop_saveset(EEG, 'filename',[SUBJ '_simulated.set'],'filepath', OUTPATH);
 
+    subj_time = toc;
+        ok_subj{subj,1} = SUBJ;
+        ok_subj{subj,2} = subj_check;
+        ok_subj{subj,3} = subj_time;
+
 end
 
 close all
+
+%display sanity check variables
+ok_subj
+check_done = 'OK'
 
 
