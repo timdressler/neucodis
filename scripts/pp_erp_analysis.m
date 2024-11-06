@@ -111,7 +111,7 @@ writetable(all_ERP_table,fullfile(OUTPATH, 'erp_analysis.csv'))
 ok_subj
 check_done = 'OK'
 
-%% Plot 
+%% Plot ERP
 
 %set colors 
 main_blue = '#004F9F';

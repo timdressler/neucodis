@@ -30,6 +30,7 @@ EPO_FROM = -0.8;
 EPO_TILL = 0.7;
 CHAN = 'Cz';
 EVENTS = {'talk', 'listen'};
+LCF = 1;
 
 %get directory content
 dircont_subj = dir(fullfile(INPATH, 'P*'));
@@ -92,7 +93,7 @@ for subj = 1:length(dircont_subj)
         %merge datasets
         EEG = pop_mergeset( ALLEEG, [1 2], 0);
         %1Hz highpass
-
+        EEG = pop_eegfiltnew(EEG, 'locutoff',LCF);
         %epoching
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM  EPO_TILL], 'newname', 'Merged datasets epochs', 'epochinfo', 'yes');
         EEG.setname = [SUBJ '_talk_listen_raw'];

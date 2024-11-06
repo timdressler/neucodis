@@ -65,7 +65,6 @@ for subj = 1:length(dircont_subj) %loop over subjects
     %epoch data
     epoch = EEG.epoch;
 
-    % % clear EEG
 
 
 
@@ -198,9 +197,9 @@ for subj = 1:length(dircont_subj) %loop over subjects
     EEG = pop_saveset(EEG, 'filename',[SUBJ '_simulated.set'],'filepath', OUTPATH);
 
     subj_time = toc;
-        ok_subj{subj,1} = SUBJ;
-        ok_subj{subj,2} = subj_check;
-        ok_subj{subj,3} = subj_time;
+    ok_subj{subj,1} = SUBJ;
+    ok_subj{subj,2} = subj_check;
+    ok_subj{subj,3} = subj_time;
 
 end
 

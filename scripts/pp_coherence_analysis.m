@@ -286,45 +286,90 @@ end
 %display sanity check variables
 ok_subj
 check_done = 'OK'
+switch SIM_DATA
+    case 1
+        warning('Simulated data has been used')
+    case 0
+        disp('Real data has been used')
+end
 
 %% Plot wPLI
-time_vector = wpli_listen.time;
-freq_vector = wpli_listen.freq;
+set(0,'DefaultTextInterpreter','none') 
+close all
+
+clear pairs
+for pairs = 1:length(all_pairs)
+    %plot wPLI listen condition
+    time_vector = all_wpli(pairs).listen_GA.time;
+    freq_vector = all_wpli(pairs).listen_GA.freq;
+    figure;
+    imagesc(time_vector, freq_vector, squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)));
+    axis xy;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI values for listen condition - ' all_wpli(pairs).name]);
+    colorbar;
+    caxis([0 0.5]);
+
+    %plot wPLI talk condition
+     time_vector = all_wpli(pairs).talk_GA.time;
+    freq_vector = all_wpli(pairs).talk_GA.freq;
+    figure;
+    imagesc(time_vector, freq_vector, squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)));
+    axis xy;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI values for talk condition - ' all_wpli(pairs).name]);
+    colorbar;
+    caxis([0 0.5]);
+
+    %plot wPLI difference between talk and listen condition
+     time_vector = all_wpli(pairs).listen_GA.time;
+    freq_vector = all_wpli(pairs).listen_GA.freq;
+    figure;
+    imagesc(time_vector, freq_vector,squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)) - ...
+        squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)));
+    axis xy;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI difference values for talk vs. listen condition - ' all_wpli(pairs).name]);
+    colorbar;
+    caxis([-0.3 0.3]);
+end
+
+%% Plot Cluster-Based Permutation Test
+
+
+time = all_wpli(1).talk_GA.time;           % Time vector
+freq = all_wpli(1).talk_GA.freq;           % Frequency vector
+sig_clusters = squeeze(all_wpli(1).comparison.mask);  % Significance mask
+talk_GA_extracted = squeeze(mean(all_wpli(1).talk_GA.wpli_debiasedspctrm,1));
+listen_GA_extracted = squeeze(mean(all_wpli(1).listen_GA.wpli_debiasedspctrm,1));
+effect = talk_GA_extracted - talk_GA_extracted;
+
+% Plot the TF map
 figure;
-imagesc(time_vector, freq_vector, squeeze(mean(wpli_listen_GRANDAVERAGE.wpli_debiasedspctrm,1)));
-axis xy;
-xlabel('Zeit (s)');
-ylabel('Frequenz (Hz)');
-title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (listen)');
+imagesc(time, freq, effect);
+axis xy;  % Ensure the y-axis (frequency) is oriented correctly
 colorbar;
-% % caxis([0, max(max(wpli_listen_extracted_AVERAGE_PAIRS))]);
-caxis([0 0.5]);
+xlabel('Time (s)');
+ylabel('Frequency (Hz)');
+title('wPLI Difference Time-Frequency Plot with Significant Clusters');
+
+% Customize colormap and color limits for wPLI
+caxis([-0.5, 0.5]);  % Adjust this based on wPLI difference range
+colormap("parula");   % Using a perceptually uniform colormap
+
+hold on;
+
+% Overlay significant clusters using contour
+contour(time, freq, sig_clusters, 1, 'LineColor', 'r', 'LineWidth', 2);
+
+hold off;
 
 
-time_vector = wpli_talk.time;
-freq_vector = wpli_talk.freq;
-figure;
-imagesc(time_vector, freq_vector,squeeze(mean(wpli_talk_GRANDAVERAGE.wpli_debiasedspctrm,1)));
-axis xy;
-xlabel('Zeit (s)');
-ylabel('Frequenz (Hz)');
-title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (talk)');
-colorbar;
-% % caxis([0, max(max(wpli_listen_extracted_AVERAGE_PAIRS))]);
-caxis([0 0.5]);
+%%%
 
-
-time_vector = wpli_talk.time;
-freq_vector = wpli_talk.freq;
-figure;
-imagesc(time_vector, freq_vector,squeeze(mean(wpli_talk_GRANDAVERAGE.wpli_debiasedspctrm,1))- ...
-    squeeze(mean(wpli_talk_GRANDAVERAGE.wpli_debiasedspctrm,1)));
-axis xy;
-xlabel('Zeit (s)');
-ylabel('Frequenz (Hz)');
-title('wPLI Heatmap über Zeit und Frequenz (Wavelet) (difference)');
-colorbar;
-% % caxis([0, max(max(wpli_listen_extracted_AVERAGE_PAIRS))]);
-caxis([0 0.1]);
-
+any(all_wpli(1).comparison.mask, 'all')
+disp(any(all_wpli(1).comparison.mask(:)))
 
