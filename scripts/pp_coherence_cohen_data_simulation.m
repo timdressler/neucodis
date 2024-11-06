@@ -65,10 +65,6 @@ for subj = 1:length(dircont_subj) %loop over subjects
     %epoch data
     epoch = EEG.epoch;
 
-
-
-
-
     %% setup
 
     %center frequency in Hz
@@ -161,6 +157,9 @@ for subj = 1:length(dircont_subj) %loop over subjects
             tempts            = data(:,dipolePFC)' + sin(2*pi.*trialFreq2.*(time/1000) + k2*cumsum(freqmod2) + rand*.1*pi+phasedif) .* gausWindow;
             data(:,dipoleOCC) = data(:,dipoleOCC)' + tempts.*gausWindow;
 
+
+    
+
         elseif SIM_COH == 0
 
         else
@@ -208,5 +207,15 @@ close all
 %display sanity check variables
 ok_subj
 check_done = 'OK'
+
+
+
+%simulate coherence for all events, then select only talk
+EEG = pop_selectevent( EEG, 'latency','-2<=2','type',{'talk'},'deleteevents','off','deleteepochs','on','invertepochs','off');
+%simulate no coherence for all events, then select only listen
+%merge datasets
+
+%if COH statement nach ausßen, 3 conditions: no coherence, coherence for
+%talk but not listen and coherence for both
 
 
