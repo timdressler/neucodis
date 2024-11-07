@@ -25,6 +25,10 @@ OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
+%sanity check
+%check if folders exist
+pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
+
 %variables to edit
 CHAN = 'Cz';
 ERP_FROM = 50;

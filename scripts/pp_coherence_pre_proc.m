@@ -26,6 +26,10 @@ OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc'); %place 'd
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions');
 addpath(FUNPATH);
 
+%sanity check
+%check if folders exist
+pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
+
 %variables to edit
 EPO_FROM = -0.8;
 EPO_TILL = 0.7;

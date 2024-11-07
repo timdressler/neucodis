@@ -26,6 +26,10 @@ OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_erp_proc'); %place 'data' f
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions');
 addpath(FUNPATH);
 
+%sanity check
+%check if folders exist
+pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
+
 %variables to edit
 EPO_FROM = -0.25;
 EPO_TILL = 0.750;

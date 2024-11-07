@@ -38,6 +38,10 @@ OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
+%sanity check
+%check if folders exist
+pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
+
 %variables to edit
 WPLI_BL_FROM = -0.4;
 WPLI_BL_TILL = -0.3;
@@ -289,6 +293,7 @@ check_done = 'OK'
 switch SIM_DATA
     case 1
         warning('Simulated data has been used')
+        warning(EEG.sim)
     case 0
         disp('Real data has been used')
 end
@@ -327,8 +332,9 @@ for pairs = 1:length(all_pairs)
      time_vector = all_wpli(pairs).listen_GA.time;
     freq_vector = all_wpli(pairs).listen_GA.freq;
     figure;
-    imagesc(time_vector, freq_vector,squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)) - ...
-        squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)));
+    imagesc(time_vector, freq_vector, ...
+        squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)) - ...
+        squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)));
     axis xy;
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
@@ -340,12 +346,12 @@ end
 %% Plot Cluster-Based Permutation Test
 
 
-time = all_wpli(1).talk_GA.time;           % Time vector
-freq = all_wpli(1).talk_GA.freq;           % Frequency vector
+time = all_wpli(4).talk_GA.time;           % Time vector
+freq = all_wpli(4).talk_GA.freq;           % Frequency vector
 sig_clusters = squeeze(all_wpli(1).comparison.mask);  % Significance mask
-talk_GA_extracted = squeeze(mean(all_wpli(1).talk_GA.wpli_debiasedspctrm,1));
-listen_GA_extracted = squeeze(mean(all_wpli(1).listen_GA.wpli_debiasedspctrm,1));
-effect = talk_GA_extracted - talk_GA_extracted;
+talk_GA_extracted = squeeze(mean(all_wpli(4).talk_GA.wpli_debiasedspctrm,1));
+listen_GA_extracted = squeeze(mean(all_wpli(4).listen_GA.wpli_debiasedspctrm,1));
+effect = talk_GA_extracted - listen_GA_extracted;
 
 % Plot the TF map
 figure;
