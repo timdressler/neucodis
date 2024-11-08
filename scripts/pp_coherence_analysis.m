@@ -53,13 +53,13 @@ TF_F_TILL = 50;
 TF_T_FROM = -0.4;
 TF_T_TILL = 0.2;
 %selection of electrodes (left)
-FRONTAL_L = {'F5', 'F3', 'FC3', 'FC1'};
-TEMPORAL_L = {'T7', 'C5', 'FC5', 'FT7'};
-OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P3'};
+FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
+TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
+OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P1'};
 %selection of electrodes (right)
-FRONTAL_R = {'F6', 'F4', 'FC4', 'FC2'};
-TEMPORAL_R = {'T8', 'C6', 'FC6', 'FT8'};
-OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P4'};
+FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
+TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
+OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
 
 %sanity check
 %check if number of electrodes is the same for each lobe (left)
@@ -387,8 +387,8 @@ for pairs = 1:length(all_pairs)
             if neg_cluster_mat(i, j) == 0 %negative clusters
                 %set color to white for zero points in the mask matrix
                 TF_RGB(i, j, :) = white_color;
-                %set transparency to 60% for zero points in the mask matrix
-                alpha_mask(i, j) = 0.6;
+                %set transparency to 15% for zero points in the mask matrix
+                alpha_mask(i, j) = 0.15;
             end
         end
     end
@@ -417,8 +417,8 @@ for pairs = 1:length(all_pairs)
             if pos_cluster_mat(i, j) == 0
                 %set color to white for zero points in the mask matrix
                 TF_RGB(i, j, :) = white_color;
-                %set transparency to 60% for zero points in the mask matrix
-                alpha_mask(i, j) = 0.6;
+                %set transparency to 15% for zero points in the mask matrix
+                alpha_mask(i, j) = 0.15;
             end
         end
     end

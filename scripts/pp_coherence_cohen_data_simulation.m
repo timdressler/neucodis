@@ -203,8 +203,8 @@ switch SIM_COH
             ntime  = length(time);
             nchans = length(chanlocs);
             %indices of dipole locations (probably best not to change these)
-            dipoleOCC =   94;
-            dipolePFC = 1720;
+            dipoleOCC =   94; %94
+            dipolePFC = 1720; %1720
             %use X, Y, or Z oriented dipole (1, 2, or 3, respectively).
             %in the paper, Z was used.
             whichOrientation = 3;
