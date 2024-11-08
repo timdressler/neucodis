@@ -112,9 +112,6 @@ all_ERP_table = table(all_ERP(:,6),all_ERP(:,1), all_ERP(:,2), all_ERP(:,3), ...
 %export table
 writetable(all_ERP_table,fullfile(OUTPATH, 'erp_analysis.csv'))
 
-ok_subj
-check_done = 'OK'
-
 %% Plot ERP
 
 %set colors 
@@ -159,7 +156,9 @@ hold off
 set(gca,'XTick',-250:50:750)
 
 
-
+%display sanity check variables
+ok_subj
+check_done = 'OK'
 
 
 

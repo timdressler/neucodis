@@ -8,6 +8,9 @@ clear
 close all
 clc
 
+%set seed
+rng(42)
+
 %critical variables to edit
 %select whether to use simulated or real data
 SIM_DATA = 1; %1 for simulated data %0 for real data
@@ -235,19 +238,20 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
     all_wpli(pairs).talk_GA = wpli_talk_GRANDAVERAGE;
     all_wpli(pairs).listen_GA = wpli_listen_GRANDAVERAGE;
 
-    % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    %setup cluster-based permutation test
     cfg = [];
-    cfg.method            = 'montecarlo';           % use the Monte Carlo Method to calculate the significance probability
-    cfg.statistic         = 'depsamplesT';        % use the independent samples T-statistic as a measure to evaluate the effect at the sample level
+    cfg.method            = 'montecarlo';
+    cfg.statistic         = 'depsamplesT';
     cfg.correctm          = 'cluster';
-    cfg.clusteralpha      = 0.05;                   % alpha level of the sample-specific test statistic that will be used for thresholding
+    cfg.clusteralpha      = 0.05;                   %alpha level of the sample-specific test statistic that will be used for thresholding
     cfg.clustertail       = 0;
-    cfg.clusterstatistic  = 'maxsum';               % test statistic that will be evaluated under the permutation distribution.
-    cfg.alpha             = 0.05;                   % alpha level of the permutation test
-    cfg.numrandomization  = 1000;                   % number of draws from the permutation distribution
-    cfg.ivar              = 1;                      % the index of the independent variable in the design matrix
-    cfg.neighbours        = [];                     % there are no spatial neighbours, only in time and frequency
-    cfg.tail              = 0;                      % -1, 1 or 0 (default = 0); one-sided or two-sided test
+    cfg.clusterstatistic  = 'maxsum';               %test statistic that will be evaluated under the permutation distribution
+    cfg.alpha             = 0.05;                   %alpha level of the permutation test
+    cfg.numrandomization  = 1000;                   %number of draws from the permutation distribution
+    cfg.ivar              = 1;                      %the index of the independent variable in the design matrix
+    cfg.neighbours        = [];                     %there are no spatial neighbours, only in time and frequency
+    cfg.tail              = 0;                      %two-sided test
     cfg.parameter = 'wpli_debiasedspctrm';
 
     subj_design = length(dircont_subj);
@@ -264,7 +268,6 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
     cfg.design   = design;
     cfg.uvar     = 1;
     cfg.ivar     = 2;
-    % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     %sanity check
     %check dimensions of wPLI structure
@@ -276,7 +279,7 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             ok_dim = 0;
     end
 
-    %cluster test
+    %cluster-based permutation test
     all_wpli(pairs).comparison = ft_freqstatistics(cfg,all_wpli(pairs).talk_GA,all_wpli(pairs).listen_GA);
 
     %sanity checks
@@ -285,6 +288,166 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
         ok_subj{temp,4} = all_wpli(pairs).name{1};
         ok_subj{temp,5} = ok_dim;
     end
+end
+
+%% Plot wPLI and cluster-based permutation test
+set(0,'DefaultTextInterpreter','none')
+close all
+
+clear pairs
+for pairs = 1:length(all_pairs)
+    %extract needed values
+    time = all_wpli(pairs).talk_GA.time;           %time vector
+    freq = all_wpli(pairs).talk_GA.freq;           %frequency vector
+    sig_clusters = squeeze(all_wpli(1).comparison.mask);  % Significance mask
+    talk_GA_extracted = squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)); %grand average wPLI values (talk condition)
+    listen_GA_extracted = squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)); %grand average wPLI values (listen condition)
+    effect = talk_GA_extracted - listen_GA_extracted; %wPLI difference between conditions
+    stat = all_wpli(pairs).comparison; %cluster-based permutation test statistics
+
+    %get significant clusters
+    %positive clusters
+    sig_pos_cluster = [];
+    for clust = 1:length(stat.posclusters)
+        if stat.posclusters(clust).prob < 0.05
+            sig_pos_cluster(end+1) = clust;
+        end
+    end
+    %positive clusters
+    sig_neg_cluster = [];
+    for clust = 1:length(stat.negclusters)
+        if stat.negclusters(clust).prob < 0.05
+            sig_neg_cluster(end+1) = clust;
+        end
+    end
+
+    %get cluster locations
+    %positive clusters
+    pos_cluster_mat = squeeze(stat.posclusterslabelmat); %contains all clusters
+    for tf = 1:numel(pos_cluster_mat) %removes all non-significant clusters
+        if any(sig_pos_cluster == pos_cluster_mat(tf))
+            %%pos_cluster_mat(tf) = 1;
+        else
+            pos_cluster_mat(tf) = 0;
+        end
+    end
+    %negative clusters
+    neg_cluster_mat = squeeze(stat.negclusterslabelmat); %contains all clusters
+    for tf = 1:numel(neg_cluster_mat)
+        if any(sig_neg_cluster == neg_cluster_mat(tf))
+            %%neg_cluster_mat(tf) = 1;
+        else
+            neg_cluster_mat(tf) = 0;
+        end
+    end
+
+    figure;
+    %plot wPLI listen condition
+    subplot(221)
+    imagesc(time, freq, listen_GA_extracted);
+    axis xy;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI values for listen condition - ' all_wpli(pairs).name]);
+    colorbar;
+    caxis([0 0.5]);
+
+    %plot wPLI talk condition
+    subplot(222)
+    imagesc(time, freq, talk_GA_extracted);
+    axis xy;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI values for talk condition - ' all_wpli(pairs).name]);
+    colorbar;
+    caxis([0 0.5]);
+
+    %plot wPLI difference between talk and listen condition with overlay (negative clusters)
+    subplot(223)
+    imagesc(time, freq, effect);
+    caxis([-0.3 0.3])
+    axis xy;
+    colormap jet;
+    colorbar;
+    hold on;
+    %prepare the overlay color and alpha mask
+    TF_RGB = ind2rgb(im2uint8(mat2gray(effect)), jet);
+    white_color = [1, 1, 1]; %RGB for white
+    alpha_mask = ones(size(pos_cluster_mat));
+
+    for i = 1:size(effect, 1)
+        for j = 1:size(effect, 2)
+            if neg_cluster_mat(i, j) == 0 %negative clusters
+                %set color to white for zero points in the mask matrix
+                TF_RGB(i, j, :) = white_color;
+                %set transparency to 70% for zero points in the mask matrix
+                alpha_mask(i, j) = 0.7;
+            end
+        end
+    end
+
+    h = imagesc(time, freq, TF_RGB);
+    set(h, 'AlphaData', alpha_mask); % Apply the alpha mask to control transparency
+    hold off;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI difference values for talk vs. listen condition (negative clusters) - ' all_wpli(pairs).name]);
+
+
+    %plot wPLI difference between talk and listen condition with overlay (positive clusters)
+    subplot(224)
+    imagesc(time, freq, effect);
+    caxis([-0.3 0.3])
+    axis xy;
+    colormap jet;
+    colorbar;
+    hold on;
+    %prepare the overlay color and alpha mask
+    TF_RGB = ind2rgb(im2uint8(mat2gray(effect)), jet);
+    white_color = [1, 1, 1]; %RGB for white
+    alpha_mask = ones(size(pos_cluster_mat)); %positive clusters
+
+    for i = 1:size(effect, 1)
+        for j = 1:size(effect, 2)
+            if pos_cluster_mat(i, j) == 0
+                %set color to white for zero points in the mask matrix
+                TF_RGB(i, j, :) = white_color;
+                %set transparency to 70% for zero points in the mask matrix
+                alpha_mask(i, j) = 0.7;
+            end
+        end
+    end
+
+    h = imagesc(time, freq, TF_RGB);
+    set(h, 'AlphaData', alpha_mask); % Apply the alpha mask to control transparency
+    hold off;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['wPLI difference values for talk vs. listen condition (positive clusters) - ' all_wpli(pairs).name]);
+
+    %add overall title
+    sgtitle(all_wpli(pairs).name)
+
+    %plot significant clusters
+    %positive clusters
+    figure('Position', [100, 100, 1400, 600]);
+    subplot(121)
+    imagesc(time, freq, pos_cluster_mat);
+    axis xy;
+    colorbar;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['Positive Clusters ' all_wpli(pairs).name]);
+    clim([0 1])
+    %negative clusters
+    subplot(122)
+    imagesc(time, freq, neg_cluster_mat);
+    axis xy;
+    colorbar;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['Negative Clusters ' all_wpli(pairs).name]);
+    clim([0 1])
 end
 
 %display sanity check variables
@@ -298,84 +461,9 @@ switch SIM_DATA
         disp('Real data has been used')
 end
 
-%% Plot wPLI
-set(0,'DefaultTextInterpreter','none') 
-close all
-
-clear pairs
-for pairs = 1:length(all_pairs)
-    %plot wPLI listen condition
-    time_vector = all_wpli(pairs).listen_GA.time;
-    freq_vector = all_wpli(pairs).listen_GA.freq;
-    figure;
-    imagesc(time_vector, freq_vector, squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)));
-    axis xy;
-    xlabel('Time (s)');
-    ylabel('Frequency (Hz)');
-    title(['wPLI values for listen condition - ' all_wpli(pairs).name]);
-    colorbar;
-    caxis([0 0.5]);
-
-    %plot wPLI talk condition
-     time_vector = all_wpli(pairs).talk_GA.time;
-    freq_vector = all_wpli(pairs).talk_GA.freq;
-    figure;
-    imagesc(time_vector, freq_vector, squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)));
-    axis xy;
-    xlabel('Time (s)');
-    ylabel('Frequency (Hz)');
-    title(['wPLI values for talk condition - ' all_wpli(pairs).name]);
-    colorbar;
-    caxis([0 0.5]);
-
-    %plot wPLI difference between talk and listen condition
-     time_vector = all_wpli(pairs).listen_GA.time;
-    freq_vector = all_wpli(pairs).listen_GA.freq;
-    figure;
-    imagesc(time_vector, freq_vector, ...
-        squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)) - ...
-        squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)));
-    axis xy;
-    xlabel('Time (s)');
-    ylabel('Frequency (Hz)');
-    title(['wPLI difference values for talk vs. listen condition - ' all_wpli(pairs).name]);
-    colorbar;
-    caxis([-0.3 0.3]);
-end
-
-%% Plot Cluster-Based Permutation Test
 
 
-time = all_wpli(4).talk_GA.time;           % Time vector
-freq = all_wpli(4).talk_GA.freq;           % Frequency vector
-sig_clusters = squeeze(all_wpli(1).comparison.mask);  % Significance mask
-talk_GA_extracted = squeeze(mean(all_wpli(4).talk_GA.wpli_debiasedspctrm,1));
-listen_GA_extracted = squeeze(mean(all_wpli(4).listen_GA.wpli_debiasedspctrm,1));
-effect = talk_GA_extracted - listen_GA_extracted;
-
-% Plot the TF map
-figure;
-imagesc(time, freq, effect);
-axis xy;  % Ensure the y-axis (frequency) is oriented correctly
-colorbar;
-xlabel('Time (s)');
-ylabel('Frequency (Hz)');
-title('wPLI Difference Time-Frequency Plot with Significant Clusters');
-
-% Customize colormap and color limits for wPLI
-caxis([-0.5, 0.5]);  % Adjust this based on wPLI difference range
-colormap("parula");   % Using a perceptually uniform colormap
-
-hold on;
-
-% Overlay significant clusters using contour
-contour(time, freq, sig_clusters, 1, 'LineColor', 'r', 'LineWidth', 2);
-
-hold off;
 
 
-%%%
 
-any(all_wpli(1).comparison.mask, 'all')
-disp(any(all_wpli(1).comparison.mask(:)))
 
