@@ -53,22 +53,30 @@ TF_F_TILL = 50;
 TF_T_FROM = -0.4;
 TF_T_TILL = 0.2;
 %selection of electrodes (left)
-FRONTAL_L = {'F3', 'F5', 'F7', 'Fp1'};
-TEMPORAL_L = {'T7', 'TP7', 'P7', 'FC5'};
-OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
+FRONTAL_L = {'F5', 'F3', 'FC3', 'FC1'};
+TEMPORAL_L = {'T7', 'C5', 'FC5', 'FT7'};
+OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P3'};
 %selection of electrodes (right)
-FRONTAL_R = {'F2', 'F6', 'F8', 'Fp2'};
-TEMPORAL_R = {'T8', 'TP8', 'P8', 'FC6'};
-OCCIPITAL_R = {'PO8', 'POz', 'Oz', 'O2'};
+FRONTAL_R = {'F6', 'F4', 'FC4', 'FC2'};
+TEMPORAL_R = {'T8', 'C6', 'FC6', 'FT8'};
+OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P4'};
 
 %sanity check
 %check if number of electrodes is the same for each lobe (left)
 switch length(FRONTAL_L) == length(TEMPORAL_L) && length(FRONTAL_L) == length(OCCIPITAL_L)
     case true
-        disp('Electrodes OK')
+        disp('Electrodes L OK')
         num_ele = length(FRONTAL_L);
     otherwise
-        error('Electrodes not OK')
+        error('Electrodes L not OK')
+end
+%check if number of electrodes is the same for each lobe (right)
+switch length(FRONTAL_R) == length(TEMPORAL_R) && length(FRONTAL_R) == length(OCCIPITAL_R)
+    case true
+        disp('Electrodes R OK')
+        num_ele = length(FRONTAL_L);
+    otherwise
+        error('Electrodes R not OK')
 end
 
 %setup electrode pairs
@@ -248,7 +256,7 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
     cfg.clustertail       = 0;
     cfg.clusterstatistic  = 'maxsum';               %test statistic that will be evaluated under the permutation distribution
     cfg.alpha             = 0.05;                   %alpha level of the permutation test
-    cfg.numrandomization  = 1000;                   %number of draws from the permutation distribution
+    cfg.numrandomization  = 'all'                   %number of draws from the permutation distribution
     cfg.ivar              = 1;                      %the index of the independent variable in the design matrix
     cfg.neighbours        = [];                     %there are no spatial neighbours, only in time and frequency
     cfg.tail              = 0;                      %two-sided test
@@ -343,7 +351,7 @@ for pairs = 1:length(all_pairs)
 
     figure;
     %plot wPLI listen condition
-    subplot(221)
+    subplot(321)
     imagesc(time, freq, listen_GA_extracted);
     axis xy;
     xlabel('Time (s)');
@@ -353,7 +361,7 @@ for pairs = 1:length(all_pairs)
     caxis([0 0.5]);
 
     %plot wPLI talk condition
-    subplot(222)
+    subplot(322)
     imagesc(time, freq, talk_GA_extracted);
     axis xy;
     xlabel('Time (s)');
@@ -363,11 +371,10 @@ for pairs = 1:length(all_pairs)
     caxis([0 0.5]);
 
     %plot wPLI difference between talk and listen condition with overlay (negative clusters)
-    subplot(223)
+    subplot(323)
     imagesc(time, freq, effect);
-    caxis([-0.3 0.3])
+    caxis([-0.5 0.5])
     axis xy;
-    colormap jet;
     colorbar;
     hold on;
     %prepare the overlay color and alpha mask
@@ -380,8 +387,8 @@ for pairs = 1:length(all_pairs)
             if neg_cluster_mat(i, j) == 0 %negative clusters
                 %set color to white for zero points in the mask matrix
                 TF_RGB(i, j, :) = white_color;
-                %set transparency to 70% for zero points in the mask matrix
-                alpha_mask(i, j) = 0.7;
+                %set transparency to 60% for zero points in the mask matrix
+                alpha_mask(i, j) = 0.6;
             end
         end
     end
@@ -393,13 +400,11 @@ for pairs = 1:length(all_pairs)
     ylabel('Frequency (Hz)');
     title(['wPLI difference values for talk vs. listen condition (negative clusters) - ' all_wpli(pairs).name]);
 
-
     %plot wPLI difference between talk and listen condition with overlay (positive clusters)
-    subplot(224)
+    subplot(324)
     imagesc(time, freq, effect);
-    caxis([-0.3 0.3])
+    caxis([-0.5 0.5])
     axis xy;
-    colormap jet;
     colorbar;
     hold on;
     %prepare the overlay color and alpha mask
@@ -412,8 +417,8 @@ for pairs = 1:length(all_pairs)
             if pos_cluster_mat(i, j) == 0
                 %set color to white for zero points in the mask matrix
                 TF_RGB(i, j, :) = white_color;
-                %set transparency to 70% for zero points in the mask matrix
-                alpha_mask(i, j) = 0.7;
+                %set transparency to 60% for zero points in the mask matrix
+                alpha_mask(i, j) = 0.6;
             end
         end
     end
@@ -425,22 +430,9 @@ for pairs = 1:length(all_pairs)
     ylabel('Frequency (Hz)');
     title(['wPLI difference values for talk vs. listen condition (positive clusters) - ' all_wpli(pairs).name]);
 
-    %add overall title
-    sgtitle(all_wpli(pairs).name)
-
     %plot significant clusters
-    %positive clusters
-    figure('Position', [100, 100, 1400, 600]);
-    subplot(121)
-    imagesc(time, freq, pos_cluster_mat);
-    axis xy;
-    colorbar;
-    xlabel('Time (s)');
-    ylabel('Frequency (Hz)');
-    title(['Positive Clusters ' all_wpli(pairs).name]);
-    clim([0 1])
     %negative clusters
-    subplot(122)
+    subplot(325)
     imagesc(time, freq, neg_cluster_mat);
     axis xy;
     colorbar;
@@ -448,6 +440,18 @@ for pairs = 1:length(all_pairs)
     ylabel('Frequency (Hz)');
     title(['Negative Clusters ' all_wpli(pairs).name]);
     clim([0 1])
+    %positive clusters
+    subplot(326)
+    imagesc(time, freq, pos_cluster_mat);
+    axis xy;
+    colorbar;
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    title(['Positive Clusters ' all_wpli(pairs).name]);
+    clim([0 1])
+   
+    %add overall title
+    sgtitle(all_wpli(pairs).name)
 end
 
 %display sanity check variables

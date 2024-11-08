@@ -36,7 +36,8 @@ pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
 
 %variables to edit
 SIM_COH = 1; %1 for simulated coherence (only in talk condition) %2 for simulated coherence (in both conditions) %0 for noise data
-COH_START = -0.2; %in s %only has an effect if SIM_COH = 1
+COH_START = 0.1; %in s %only has an effect if SIM_COH = 1
+COH_GAUS = 0.02; %set the gaussian tapering (i.e. width of the simulated coherence) %was originally set to 0.1
 
 %load participant and extract number of trials to create simulated dataset equivalent to the original data
 %get directory content
@@ -241,12 +242,11 @@ switch SIM_COH
                         k2 = (centfreq/srate)*2*pi/trialFreq2;
                 end
                 %gaussian window used for tapering sine waves
-                gausWindow = exp( (-((time/1000)-COH_START).^2)/.01 ); %WATCHOUT %.01 was originally .1, thought to control the time range of coherence
+                gausWindow = exp( (-((time/1000)-COH_START).^2)/COH_GAUS ); 
                 %create signals
                 data(:,dipolePFC) = data(:,dipolePFC)' + sin(2*pi.*trialFreq1.*(time/1000) + k1*cumsum(freqmod1) + rand*.1*pi         ) .* gausWindow;
                 tempts            = data(:,dipolePFC)' + sin(2*pi.*trialFreq2.*(time/1000) + k2*cumsum(freqmod2) + rand*.1*pi+phasedif) .* gausWindow;
                 data(:,dipoleOCC) = data(:,dipoleOCC)' + tempts.*gausWindow;
-
                 %simulated EEG data
                 simulatedEEG(:,:,triali) = (data*squeeze(lf.Gain(:,whichOrientation,:))')';
                 %get actual source time series
@@ -459,7 +459,7 @@ switch SIM_COH
                         k2 = (centfreq/srate)*2*pi/trialFreq2;
                 end
                 %gaussian window used for tapering sine waves
-                gausWindow = exp( (-((time/1000)-COH_START).^2)/.01 ); %WATCHOUT %.01 was originally .1, thought to control the time range of coherence
+                gausWindow = exp( (-((time/1000)-COH_START).^2)/COH_GAUS); 
                 %create signals
                 data(:,dipolePFC) = data(:,dipolePFC)' + sin(2*pi.*trialFreq1.*(time/1000) + k1*cumsum(freqmod1) + rand*.1*pi         ) .* gausWindow;
                 tempts            = data(:,dipolePFC)' + sin(2*pi.*trialFreq2.*(time/1000) + k2*cumsum(freqmod2) + rand*.1*pi+phasedif) .* gausWindow;
