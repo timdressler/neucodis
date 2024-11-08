@@ -144,7 +144,7 @@ switch SIM_COH
 
             %sanity checks
             subj_time = toc;
-            ok_subj{subj,1} = SUBJ;
+            ok_subj{subj,1} = [SUBJ '_simulated'];
             ok_subj{subj,2} = subj_check;
             ok_subj{subj,3} = subj_time;
         end
@@ -365,7 +365,7 @@ switch SIM_COH
 
             %sanity checks
             subj_time = toc;
-            ok_subj{subj,1} = SUBJ;
+            ok_subj{subj,1} = [SUBJ '_simulated'];
             ok_subj{subj,2} = subj_check;
             ok_subj{subj,3} = subj_time;
         end
@@ -493,7 +493,7 @@ switch SIM_COH
 
             %sanity checks
             subj_time = toc;
-            ok_subj{subj,1} = SUBJ;
+            ok_subj{subj,1} = [SUBJ '_simulated'];
             ok_subj{subj,2} = subj_check;
             ok_subj{subj,3} = subj_time;
         end

@@ -7,6 +7,7 @@ function pp_check_folder_TD(varargin)
 %
 % Inputs:
 %   varargin - any number of folder paths as strings
+% Tim Dressler, 07.11.2024
 
 for i = 1:numel(varargin)
     folderPath = varargin{i};
@@ -17,15 +18,15 @@ for i = 1:numel(varargin)
         if lower(answer) == 'y'
             try
                 mkdir(folderPath);
-                fprintf('Folder "%s" was successfully created.\n', folderPath);
+                fprintf('Folder "%s" was successfully created\n', folderPath);
             catch
-                fprintf('Error: Could not create folder "%s".\n', folderPath);
+                fprintf('Error: Could not create folder "%s"\n', folderPath);
             end
         else
-            fprintf('Folder "%s" was not created.\n', folderPath);
+            fprintf('Folder "%s" was not created\n', folderPath);
         end
     else
-        %folder already exists
+        fprintf('Folder "%s" exists\n', folderPath);
     end
 end
 end
