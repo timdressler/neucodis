@@ -1,6 +1,37 @@
-% pp_wpli_analysis.m
+% pp_coherence_analysis.m
 %
-% Description
+% Perform coherence analysis.
+% Using preprocessed data or simulated data.
+% Preprocessing done with pp_coherence_pre_proc.m.
+% Simulation done with pp_coherence_data_simulation.m
+% Using talk & listen conditions.
+% Plots grand average coherence over all subjects.
+%
+% Analysis contains the following steps
+    % Specifies frontal, temporal and occiptial electrodes
+    % Forms fronto-temporal -and fronto-occipital electrode pairs
+    % Calculates wPLI (Vinck et al., 2011) for each electrode pairs for talk- and listen conditions 
+    % Averages wPLI values for over electrode pairs 
+        % resulting in two wPLI matrices (talk- and listen condition) for
+        % fronto-temporal pairs and two wPLI matrices (talk- and listen condition) 
+        % for fronto-occipital pairs
+    % Perfoms cluster-based permutation test for fronto-temporal and fronto-occipital pairs to identify difference between talk- and listen condition
+    % Plots results as time-frequency plots with significant clusters highlighted
+%
+% Inspired by Canales-Johnson et al. (2021)
+%
+% Literature
+    % Canales-Johnson, A., Lanfranco, R. C., Morales, J. P., Martínez-Pernía, D., Valdés, J., 
+        % Ezquerro-Nassar, A., Rivera-Rei, Á., Ibanez, A., Chennu, S., Bekinschtein, T. A., Huepe, D., &
+        % Noreika, V. (2021). 
+        % In your phase: Neural phase synchronisation underlies visual imagery of faces. 
+        % Scientific Reports, 11 (1), 2401. https://doi.org/10.1038/s41598-021-81336-y.
+   % Maris, E., & Oostenveld, R. (2007). 
+        % Nonparametric statistical testing of eeg- and meg-data.
+        % Journal of Neuroscience Methods, 164 (1), 177–190. https://doi.org/10.1016/j.jneumeth.2007.03.024.
+   % Vinck, M., Oostenveld, R., van Wingerden, M., Battaglia, F., & Pennartz, C. M. (2011). 
+        % An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. 
+        % NeuroImage, 55 (4), 1548–1565. https://doi.org/10.1016/j.neuroimage.2011.01.055.
 %
 % Tim Dressler, 11.09.2024
 
@@ -261,14 +292,14 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
     cfg.method            = 'montecarlo';
     cfg.statistic         = 'depsamplesT';
     cfg.correctm          = 'cluster';
-    cfg.clusteralpha      = 0.05;                   %alpha level of the sample-specific test statistic that will be used for thresholding
+    cfg.clusteralpha      = 0.05; %alpha level of the sample-specific test statistic that will be used for thresholding
     cfg.clustertail       = 0;
-    cfg.clusterstatistic  = 'maxsum';               %test statistic that will be evaluated under the permutation distribution
-    cfg.alpha             = 0.05;                   %alpha level of the permutation test
-    cfg.numrandomization  = 'all'                   %number of draws from the permutation distribution
-    cfg.ivar              = 1;                      %the index of the independent variable in the design matrix
-    cfg.neighbours        = [];                     %there are no spatial neighbours, only in time and frequency
-    cfg.tail              = 0;                      %two-sided test
+    cfg.clusterstatistic  = 'maxsum'; %test statistic that will be evaluated under the permutation distribution
+    cfg.alpha             = 0.05; %alpha level of the permutation test
+    cfg.numrandomization  = 'all'; %number of draws from the permutation distribution
+    cfg.ivar              = 1; %the index of the independent variable in the design matrix
+    cfg.neighbours        = []; %there are no spatial neighbours, only in time and frequency
+    cfg.tail              = 0; %two-sided test
     cfg.parameter = 'wpli_debiasedspctrm';
 
     subj_design = length(dircont_subj);
@@ -314,8 +345,8 @@ close all
 clear pairs
 for pairs = 1:length(all_pairs)
     %extract needed values
-    time = all_wpli(pairs).talk_GA.time;           %time vector
-    freq = all_wpli(pairs).talk_GA.freq;           %frequency vector
+    time = all_wpli(pairs).talk_GA.time; %time vector
+    freq = all_wpli(pairs).talk_GA.freq; %frequency vector
     sig_clusters = squeeze(all_wpli(1).comparison.mask);  % Significance mask
     talk_GA_extracted = squeeze(mean(all_wpli(pairs).talk_GA.wpli_debiasedspctrm,1)); %grand average wPLI values (talk condition)
     listen_GA_extracted = squeeze(mean(all_wpli(pairs).listen_GA.wpli_debiasedspctrm,1)); %grand average wPLI values (listen condition)

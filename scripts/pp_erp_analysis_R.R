@@ -1,9 +1,11 @@
 #Practical Project Tim Dreßler
-#supervised by Prof. Dr. Herrmann & Prof. Dr. Hildebrandt
+#Supervised by Prof. Dr. Herrmann & Prof. Dr. Hildebrandt
 
 #Neuronal Markers of Corollary Discharge
 
 #Oct24
+
+#Performs ERP analyis and plots results.
 
 #-------------------------------------Set up------------------------------------
 #load packages

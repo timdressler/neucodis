@@ -1,9 +1,50 @@
 % pp_erp_pre_proc.m
 %
-% Preproccessing pipeline for eeg-data, preceding an erp analysis.
+% Perform ERP preprocessing.
+% Using raw data.
+% Using talk & listen conditions.
+% Preprocessing includes the following steps
 %
-% Adapted from Moon et al. (2023)
-% Tim Dressler, 11.09.2024
+    % Loads data for talk condition (C_0001)
+    % Removes not needed channels
+    % Renames the events
+    % Applies band-pass filter
+    % Performs PREP pipeline (Bigdely-Shamlo et al., 2015)
+    % Loads data for listen condition (C_0005)
+    % Removes not needed channels
+    % Renames the events
+    % Applies band-pass filter
+    % Performs PREP pipeline (Bigdely-Shamlo et al., 2015)
+    %
+    % Merges datasets
+    %
+    % Performs ICA-specific processing 
+        % Loads raw datasets for talk & listen condition
+        % Merges datasets
+        % Applies band-pass filter
+        % Resamples dataset 
+        % Calculates ICA weights
+        %
+    % Applies ICA to original data
+    % Marks and rejects bad components using the IC Label Plugin (Pion-Tonachini et al., 2019)
+    % Applies band-pass filter
+    % Epochs data 
+    % Performs baseline correction
+    % Reject bad epochs using threshold and probability
+    %
+    % Stores dataset
+%
+% Excludes subjects with more the one file per condition.
+%
+% Literature
+    % Bigdely-Shamlo N, Mullen T, Kothe C, Su K-M and Robbins KA (2015).
+        % The PREP pipeline: standardized preprocessing for large-scale EEG analysis
+        % Front. Neuroinform. 9:16. doi: 10.3389/fninf.2015.00016
+    % Pion-Tonachini, L., Kreutz-Delgado, K., & Makeig, S. (2019). 
+        % ICLabel: An automated electroencephalographic independent component classifier, dataset, and website. 
+        % NeuroImage, 198, 181-197.
+%
+% Tim Dressler, 26.10.2024
 
 clear
 close all

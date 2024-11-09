@@ -1,6 +1,11 @@
 % pp_gamma_analysis.m
 %
-% Description
+% Plot ERSPs and Topoplots.
+% Using preprocessed data.
+% Preprocessing done with pp_coherence_pre_proc.m.
+% Using talk & listen conditions.
+% Plots ERSPs for each subject.
+% Plots grand average ERSP & grand average Topoplot over all subjects.
 %
 % Tim Dressler, 02.11.2024
 

@@ -1,6 +1,11 @@
 % pp_erp_analysis.m
 %
-% Description
+% Perform ERP analysis.
+% Using preprocessed data.
+% Preprocessing done with pp_erp_pre_proc.m.
+% Using talk & listen conditions.
+% Plots grand average ERP over all subjects.
+% Exports ERP properties for further analysis in R (see pp_erp_analysis_R.R)
 %
 % Tim Dressler, 11.09.2024
 

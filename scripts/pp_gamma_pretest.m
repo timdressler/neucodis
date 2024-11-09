@@ -1,9 +1,9 @@
 % pp_gamma_pretest.m
 %
-% Pretest with the goal of identifying the presence (or non-presence) of
-% gamma (and theta) activity. Using pre-processed data.
-% ICA preprocessing done by Suong Welp.
-% All Conditions merged
+% Pretest to identify the presence (or non-presence) of gamma activity. 
+% Using pre-processed data.
+% ICA preprocessing done by Suong Welp. Further Preprocessing done in this script.
+% All Conditions merged.
 % Only for one subject. 125 and 136 chosen for preliminary analysis.
 %
 % Tim Dressler, 12.08.2024

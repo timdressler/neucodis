@@ -1,13 +1,16 @@
-% pp_wPLI_analysis.m
+% pp_coherence_data_simulation.m
 %
-% Data simulation for sanity-check of coherence analysis
-% Data can be only noise or contain simulated coherence
+% Data simulation for sanity-check of coherence analysis.
+% Data can be only noise or contain simulated coherence.
 %
-% Originally by Dr. Micheal X Cohen
-% Cohen, MX (2014). Effects of time lag and frequency matching on
-% phase-based connectivity. Journal of Neuroscience Methods.
+% Adapted from Cohen (2015)
 %
-% Adapted from Tim Dressler, 19.09.2024
+% Literature
+    % Cohen, M. X. (2015). 
+        % Effects of time lag and frequency matching on phase-based connectivity.
+        % Journal of Neuroscience Methods, 250, 137–146. https://doi.org/10.1016/j.jneumeth.2014.09.005
+%
+% Adapted by Tim Dressler, 19.09.2024
 
 clear
 close all

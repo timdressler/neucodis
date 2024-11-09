@@ -1,8 +1,13 @@
 % pp_fooof_analysis.m
 %
-% add Description
+% Perform FOOOF Analysis.
+% Using raw data.
+% Preprocessing done in this script.
+% Using talk & listen conditions.
+% Plots FOOOF analysis for each subject.
+% Plots grand average FOOOF analysis over all subjects.
 %
-% Tim Dressler, 11.09.2024
+% Tim Dressler, 01.11.2024
 
 clear
 close all
