@@ -52,14 +52,23 @@ TF_F_FROM = 25;
 TF_F_TILL = 50;
 TF_T_FROM = -0.4;
 TF_T_TILL = 0.2;
+% % %selection of electrodes (left)
+% % FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
+% % TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
+% % OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P1'};
+% % %selection of electrodes (right)
+% % FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
+% % TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
+% % OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
+
 %selection of electrodes (left)
-FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
-TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
-OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P1'};
+FRONTAL_L = {'F3', 'F5', 'F7', 'Fp1'};
+TEMPORAL_L = {'T7', 'TP7', 'P7', 'FC5'};
+OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
 %selection of electrodes (right)
-FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
-TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
-OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
+FRONTAL_R = {'F2', 'F6', 'F8', 'Fp2'};
+TEMPORAL_R = {'T8', 'TP8', 'P8', 'FC6'};
+OCCIPITAL_R = {'PO8', 'POz', 'Oz', 'O2'};
 
 %sanity check
 %check if number of electrodes is the same for each lobe (left)

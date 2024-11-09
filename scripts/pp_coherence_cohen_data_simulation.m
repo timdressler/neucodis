@@ -13,6 +13,9 @@ clear
 close all
 clc
 
+%set seed
+rng(42)
+
 %setup paths
 SCRIPTPATH = cd;
 
@@ -36,7 +39,7 @@ pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
 
 %variables to edit
 SIM_COH = 1; %1 for simulated coherence (only in talk condition) %2 for simulated coherence (in both conditions) %0 for noise data
-COH_START = 0.1; %in s %only has an effect if SIM_COH = 1
+COH_START = -0.1; %in s %only has an effect if SIM_COH = 1
 COH_GAUS = 0.02; %set the gaussian tapering (i.e. width of the simulated coherence) %was originally set to 0.1
 
 %load participant and extract number of trials to create simulated dataset equivalent to the original data
