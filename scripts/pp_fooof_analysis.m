@@ -26,7 +26,7 @@ end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH,'data\raw_data\pp_data_main_raw'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\analysis_data\fooof_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions');
 addpath(FUNPATH);
 
@@ -164,6 +164,8 @@ for subj = 1:length(dircont_subj)
 
         sgtitle(['FOOOF Analysis for Subject ' SUBJ])
 
+        saveas(gcf,fullfile(OUTPATH, ['subj_' SUBJ '_fooof_analysis.png']))
+
         %store values
         all_original_freq(:,:,subj) = original.freq;
         all_original_powspctrm(:,:,subj) = original.powspctrm;
@@ -202,7 +204,6 @@ plot(oscillatory_freq_GRANDAVERAGE, log(oscillatory_powspctrm_GRANDAVERAGE));
 xlim([20 50]);  % limit x-axis to frequencies between 20 and 60 Hz
 xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
 legend({'original', 'fractal', 'oscillatory = spectrum - fractal'}, 'location', 'best');
-
 title('mixed signal');
 
 subplot(1,2,2); hold on;
@@ -212,13 +213,18 @@ plot(oscillatory_alt_freq_GRANDAVERAGE, log(oscillatory_alt_powspctrm_GRANDAVERA
 xlim([20 50]);  % limit x-axis to frequencies between 20 and 60 Hz
 xlabel('Frequency (Hz)'); ylabel('log-power'); grid on;
 legend({'original', 'fractal', 'oscillatory = spectrum / fractal'}, 'location', 'best');
-
 title('oscillatory = spectrum / fractal');
 
 sgtitle('Grand Average FOOOF Analysis')
 
+saveas(gcf,fullfile(OUTPATH, 'grand_average_fooof_analysis.png'))
 
 %display sanity check variables
-marked_subj
-ok_subj
+ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
+writetable(ok_subj,fullfile(OUTPATH, '_fooof_analysis_ok_subj.xlsx'))
+
+marked_subj = cell2table(marked_subj', 'VariableNames',{'subj'})
+writetable(marked_subj,fullfile(OUTPATH, '_fooof_analysis_marked_subj.xlsx'))
+
 check_done = 'OK'
+save(fullfile(OUTPATH, '_fooof_analysis_data.mat'), 'check_done')

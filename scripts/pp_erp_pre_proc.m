@@ -231,7 +231,7 @@ for subj = 1:length(dircont_subj)
             case true
                 disp('epoch latency variable OK')
             case false
-                error('ERROR: problem with epoch latency variable, more that 2 or less than one event per epoch')
+                warning([SUBJ ': problem with epoch latency variable, more that 2 or less than one event per epoch'])
         end
 
         %baseline removal 
@@ -278,9 +278,13 @@ for subj = 1:length(dircont_subj)
 end
 
 %display sanity check variables
-marked_subj
-ok_subj
-all(all_epo_lats_OK_ALL)
-check_done = 'OK'
+ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
+writetable(ok_subj,fullfile(OUTPATH, '_erp_pre_proc_ok_subj.xlsx'))
 
-%%eeglab redraw
+marked_subj = cell2table(marked_subj', 'VariableNames',{'subj'})
+writetable(marked_subj,fullfile(OUTPATH, '_erp_pre_proc_marked_subj.xlsx'))
+
+epo_ok = all(all_epo_lats_OK_ALL)
+check_done = 'OK'
+save(fullfile(OUTPATH, '_erp_pre_proc_data.mat'), 'check_done', 'epo_ok', 'all_epo_lats_OK_ALL')
+

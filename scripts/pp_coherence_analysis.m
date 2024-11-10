@@ -68,7 +68,7 @@ switch SIM_DATA
     otherwise
         error('error')
 end
-OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\analysis_data\coherence_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
@@ -149,7 +149,6 @@ end
 dircont_subj = dir(fullfile(INPATH, 'P*'));
 
 %initialize sanity check variables
-marked_subj = {};
 ok_subj = {};
 
 clear pairs
@@ -492,6 +491,9 @@ for pairs = 1:length(all_pairs)
    
     %add overall title
     sgtitle(all_wpli(pairs).name)
+
+    saveas(gcf,fullfile(OUTPATH, [all_wpli(pairs).name{1} '_wpli_analysis.png']))
+
 end
 
 %display sanity check variables
@@ -505,7 +507,12 @@ switch SIM_DATA
         disp('Real data has been used')
 end
 
+%display sanity check variables
+ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','subj_check_ID','time', 'pair', 'dim_check_wpli'})
+writetable(ok_subj,fullfile(OUTPATH, '_coherence_analysis_ok_subj.xlsx'))
 
+check_done = 'OK'
+save(fullfile(OUTPATH, '_coherence_analysis_data.mat'), 'check_done', 'SIM_DATA', 'all_pairs', 'all_wpli')
 
 
 

@@ -26,7 +26,7 @@ end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\analysis_data\gamma_analysis\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
@@ -85,6 +85,7 @@ for subj = 1:length(dircont_subj) %loop over subjects
     xlabel('Time (ms)');
     ylabel('Frequency (Hz)');
     title(['ERSP for Subject ' SUBJ]);
+    saveas(gcf,fullfile(OUTPATH, ['subj_' SUBJ '_ersp.png']))
 
     %compute ERSPs over all electrodes TF-topoplots
     for elec = 1:EEG.nbchan
@@ -135,12 +136,18 @@ colorbar;
 xlabel('Time (ms)');
 ylabel('Frequency (Hz)');
 title('Grand Average ERSP');
+saveas(gcf,fullfile(OUTPATH, 'grand_average_ersp.png'))
 
 %topoplot ERSP
 figure;
 tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
     'timefreqs', [58 36; 70 48; 70 38; 60 43], 'chanlocs', EEG.chanlocs, 'showchan', chani)
+sgtitle('Grand Average Topoplots')
+saveas(gcf,fullfile(OUTPATH, 'grand_average_topoplots.png'))
 
 %display sanity check variables
-ok_subj
+ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
+writetable(ok_subj,fullfile(OUTPATH, '_gamma_analysis_ok_subj.xlsx'))
+
 check_done = 'OK'
+save(fullfile(OUTPATH, '_gamma_analysis_data.mat'), 'check_done')

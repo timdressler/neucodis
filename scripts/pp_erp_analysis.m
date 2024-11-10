@@ -26,7 +26,7 @@ end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_erp_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\analysis_data\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+OUTPATH = fullfile(MAINPATH, 'data\analysis_data\erp_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
@@ -160,10 +160,15 @@ hold off
 
 set(gca,'XTick',-250:50:750)
 
+saveas(gcf,fullfile(OUTPATH, 'grand_average_erp.png'))
+
 
 %display sanity check variables
-ok_subj
+ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','subj_check_ID','time'})
+writetable(ok_subj,fullfile(OUTPATH, '_erp_analysis_ok_subj.xlsx'))
+
 check_done = 'OK'
+save(fullfile(OUTPATH, '_erp_analysis_data.mat'), 'check_done')
 
 
 

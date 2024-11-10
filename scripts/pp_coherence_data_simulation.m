@@ -509,6 +509,11 @@ end
 
 close all
 
+
 %display sanity check variables
-ok_subj
+ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','subj_check_ID','time'})
+writetable(ok_subj,fullfile(OUTPATH, '_coherence_data_simulation_ok_subj.xlsx'))
+
 check_done = 'OK'
+save(fullfile(OUTPATH, '_coherence_data_simulation_data.mat'), 'check_done', 'SIM_COH', 'COH_START', 'COH_GAUS')
+
