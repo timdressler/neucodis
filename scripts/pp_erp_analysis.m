@@ -13,6 +13,8 @@ clear
 close all
 clc
 
+set(0,'DefaultTextInterpreter','none')
+
 %setup paths
 SCRIPTPATH = cd;
 
@@ -46,11 +48,16 @@ dircont_subj = dir(fullfile(INPATH, 'P*'));
 %initialize sanity check variables
 ok_subj = {};
 
+%setup progress bar
+wb = waitbar(0,'starting pp_erp_analysis.m');
+
 r = 1;
 for subj = 1:length(dircont_subj) %loop over subjects
     tic;
     %get current ID
     SUBJ = erase(dircont_subj(subj).name, '_erp_preprocessed.set');
+    %update progress bar
+    waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_erp_analysis.m'])
     %import data
     %start eeglab
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -170,19 +177,5 @@ writetable(ok_subj,fullfile(OUTPATH, '_erp_analysis_ok_subj.xlsx'))
 check_done = 'OK'
 save(fullfile(OUTPATH, '_erp_analysis_data.mat'), 'check_done')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+close(wb)
 

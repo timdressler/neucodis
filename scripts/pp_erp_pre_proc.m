@@ -50,6 +50,8 @@ clear
 close all
 clc
 
+set(0,'DefaultTextInterpreter','none')
+
 %setup paths
 SCRIPTPATH = cd;
 
@@ -96,11 +98,15 @@ marked_subj = {};
 ok_subj = {};
 all_epo_lats_OK_ALL = [];
 
-%% load and merge data
+%setup progress bar
+wb = waitbar(0,'starting pp_erp_pre_proc.m');
+
 clear subj
 for subj = 1:length(dircont_subj)
     %get current ID
     SUBJ = dircont_subj(subj).name;
+    %update progress bar
+    waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_erp_pre_proc.m'])
     %check number of condition files
     dircont_cond1 = dir(fullfile(INPATH, [SUBJ '/*C_0001*.vhdr']));
     dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005*.vhdr']));
@@ -287,4 +293,7 @@ writetable(marked_subj,fullfile(OUTPATH, '_erp_pre_proc_marked_subj.xlsx'))
 epo_ok = all(all_epo_lats_OK_ALL)
 check_done = 'OK'
 save(fullfile(OUTPATH, '_erp_pre_proc_data.mat'), 'check_done', 'epo_ok', 'all_epo_lats_OK_ALL')
+
+close(wb)
+
 

@@ -13,6 +13,8 @@ clear
 close all
 clc
 
+set(0,'DefaultTextInterpreter','none')
+
 %setup paths
 SCRIPTPATH = cd;
 
@@ -48,10 +50,15 @@ dircont_subj = dir(fullfile(INPATH, 'P*'));
 marked_subj = {};
 ok_subj = {};
 
+%setup progress bar
+wb = waitbar(0,'starting pp_fooof_analysis.m');
+
 clear subj
 for subj = 1:length(dircont_subj)
     %get current ID
     SUBJ = dircont_subj(subj).name;
+    %update progress bar
+    waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_fooof_analysis.m'])
     %check number of condition files
     dircont_cond1 = dir(fullfile(INPATH, [SUBJ '/*C_0001*.vhdr']));
     dircont_cond2 = dir(fullfile(INPATH, [SUBJ '/*C_0005*.vhdr']));
@@ -228,3 +235,5 @@ writetable(marked_subj,fullfile(OUTPATH, '_fooof_analysis_marked_subj.xlsx'))
 
 check_done = 'OK'
 save(fullfile(OUTPATH, '_fooof_analysis_data.mat'), 'check_done')
+
+close(wb)

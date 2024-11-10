@@ -39,6 +39,8 @@ clear
 close all
 clc
 
+set(0,'DefaultTextInterpreter','none')
+
 %set seed
 rng(42)
 
@@ -154,6 +156,8 @@ ok_subj = {};
 clear pairs
 r = 1;
 for pairs = 1:length(all_pairs) %loop over electrode pair-sets
+    %setup progress bar
+    wb = waitbar(0,['starting pp_coherence_analysis.m (pair: ' all_pairs(pairs).name ')']);
     r_start = r;
     clear subj subj_time subj_check
     for subj = 1:length(dircont_subj) %loop over subjects
@@ -165,7 +169,8 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             case 1
                 SUBJ = erase(dircont_subj(subj).name, '.set');
         end
-
+        %update progress bar
+        waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_coherence_analysis.m (pair: ' all_pairs(pairs).name ')'])
         %import data
         %start eeglab
         [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -272,7 +277,6 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
         end
     end
 
-
     %get grand average over all subjects
     cfg = [];
     cfg.keepindividual = 'yes';
@@ -335,7 +339,10 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
         ok_subj{temp,4} = all_wpli(pairs).name{1};
         ok_subj{temp,5} = ok_dim;
     end
+    close(wb)
 end
+
+
 
 %% Plot wPLI and cluster-based permutation test
 set(0,'DefaultTextInterpreter','none')
@@ -513,8 +520,4 @@ writetable(ok_subj,fullfile(OUTPATH, '_coherence_analysis_ok_subj.xlsx'))
 
 check_done = 'OK'
 save(fullfile(OUTPATH, '_coherence_analysis_data.mat'), 'check_done', 'SIM_DATA', 'all_pairs', 'all_wpli')
-
-
-
-
 

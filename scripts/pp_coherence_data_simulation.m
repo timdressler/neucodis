@@ -54,11 +54,15 @@ ok_subj = {};
 
 switch SIM_COH
     case 0 %noise data
+        %setup progress bar
+        wb = waitbar(0,'starting pp_coherence_data_simulation.m');
         for subj = 1:length(dircont_subj) %loop over subjects
             %general setup
             tic;
             %get current ID
             SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
+            %update progress bar
+            waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_coherence_data_simulation.m'])
             %import data
             %start eeglab
             [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -157,12 +161,15 @@ switch SIM_COH
         end
 
     case 1 %simulated coherence (only in talk condition)
+        %setup progress bar
+        wb = waitbar(0,'starting pp_coherence_data_simulation.m');
         for subj = 1:length(dircont_subj) %loop over subjects
             %general setup
             tic;
             %get current ID
             SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
-
+            %update progress bar
+            waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_coherence_data_simulation.m'])
             %simulate talk trials (with coherence)
             %import data
             %start eeglab
@@ -376,12 +383,15 @@ switch SIM_COH
             ok_subj{subj,3} = subj_time;
         end
     case 2 %simulated coherence (in both conditions)
-
+        %setup progress bar
+        wb = waitbar(0,'starting pp_coherence_data_simulation.m');
         for subj = 1:length(dircont_subj) %loop over subjects
             %general setup
             tic;
             %get current ID
             SUBJ = erase(dircont_subj(subj).name, '_coherence_preprocessed.set');
+            %update progress bar
+            waitbar(subj/length(dircont_subj),wb, [SUBJ ' pp_coherence_data_simulation.m'])
             %import data
             %start eeglab
             [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -516,4 +526,6 @@ writetable(ok_subj,fullfile(OUTPATH, '_coherence_data_simulation_ok_subj.xlsx'))
 
 check_done = 'OK'
 save(fullfile(OUTPATH, '_coherence_data_simulation_data.mat'), 'check_done', 'SIM_COH', 'COH_START', 'COH_GAUS')
+
+close(wb)
 
