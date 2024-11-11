@@ -59,7 +59,7 @@ if (grepl("neucodis/scripts", SCRIPTPATH)) {
   stop("Path not OK")  
 }
 MAINPATH <- gsub("neucodis/scripts", "", SCRIPTPATH)
-INPATH <- file.path(MAINPATH, "data", "analysis_data")
+INPATH <- file.path(MAINPATH, "data", "analysis_data/erp_analysis")
 OUTPATH <- file.path(MAINPATH, "data", "analysis_data")
 
 setwd(INPATH)
