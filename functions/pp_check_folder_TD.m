@@ -1,12 +1,13 @@
 function pp_check_folder_TD(varargin)
 % pp_check_folder_TD checks if the specified folder paths exist.
-% If a path does not exist, the function prompts the user to create it.
+% If a path does not exist, the function creates it.
 %
 % Usage:
 %   pp_check_folder_TD('Path1', 'Path2', ...)
 %
 % Inputs:
 %   varargin - any number of folder paths as strings
+%
 % Tim Dressler, 07.11.2024
 
 for i = 1:numel(varargin)
