@@ -232,8 +232,8 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             %convert latencies to samples
             [~, wpli_bl_start_sam] = min(abs(wpli_talk.time-WPLI_BL_FROM));
             [~, wpli_bl_end_sam] = min(abs(wpli_talk.time-WPLI_BL_TILL));
-            %baseline correction
-            % % wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
+            %baseline correction %CHECK
+            wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
             %connectivity analysis for listen condition
             wpli_listen = ft_connectivityanalysis(cfg_conn, freq_listen);
             %extract wpli values
@@ -403,6 +403,7 @@ for pairs = 1:length(all_pairs)
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
     title(['wPLI values for listen condition - ' all_wpli(pairs).name]);
+    colormap parula
     colorbar;
     caxis([0 0.5]);
 
@@ -413,6 +414,7 @@ for pairs = 1:length(all_pairs)
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
     title(['wPLI values for talk condition - ' all_wpli(pairs).name]);
+    colormap parula
     colorbar;
     caxis([0 0.5]);
 
@@ -421,20 +423,24 @@ for pairs = 1:length(all_pairs)
     imagesc(time, freq, effect);
     caxis([-0.5 0.5])
     axis xy;
+    colormap parula
     colorbar;
     hold on;
     %prepare the overlay color and alpha mask
-    TF_RGB = ind2rgb(im2uint8(mat2gray(effect)), jet);
+    TF_RGB = nan([size(effect) 3]);
     white_color = [1, 1, 1]; %RGB for white
-    alpha_mask = ones(size(pos_cluster_mat));
+    alpha_mask = ones(size(neg_cluster_mat)); %negative clusters
 
     for i = 1:size(effect, 1)
         for j = 1:size(effect, 2)
-            if neg_cluster_mat(i, j) == 0 %negative clusters
+            if neg_cluster_mat(i, j) == 0
                 %set color to white for zero points in the mask matrix
                 TF_RGB(i, j, :) = white_color;
                 %set transparency to 15% for zero points in the mask matrix
-                alpha_mask(i, j) = 0.15;
+                alpha_mask(i, j) = 0.5;
+            elseif ~neg_cluster_mat(i,j) == 0
+                TF_RGB(i, j, :) = white_color;
+                alpha_mask(i, j) = 0; %set mask to transparent for significant clusters
             end
         end
     end
@@ -451,10 +457,11 @@ for pairs = 1:length(all_pairs)
     imagesc(time, freq, effect);
     caxis([-0.5 0.5])
     axis xy;
+    colormap parula
     colorbar;
     hold on;
     %prepare the overlay color and alpha mask
-    TF_RGB = ind2rgb(im2uint8(mat2gray(effect)), jet);
+    TF_RGB = nan([size(effect) 3]);
     white_color = [1, 1, 1]; %RGB for white
     alpha_mask = ones(size(pos_cluster_mat)); %positive clusters
 
@@ -464,7 +471,10 @@ for pairs = 1:length(all_pairs)
                 %set color to white for zero points in the mask matrix
                 TF_RGB(i, j, :) = white_color;
                 %set transparency to 15% for zero points in the mask matrix
-                alpha_mask(i, j) = 0.15;
+                alpha_mask(i, j) = 0.5;
+            elseif ~pos_cluster_mat(i,j) == 0
+                TF_RGB(i, j, :) = white_color;
+                alpha_mask(i, j) = 0; %set mask to transparent for significant clusters
             end
         end
     end
@@ -504,8 +514,6 @@ for pairs = 1:length(all_pairs)
 end
 
 %display sanity check variables
-ok_subj
-check_done = 'OK'
 switch SIM_DATA
     case 1
         warning('Simulated data has been used')
