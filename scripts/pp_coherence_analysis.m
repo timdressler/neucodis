@@ -233,7 +233,7 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             [~, wpli_bl_start_sam] = min(abs(wpli_talk.time-WPLI_BL_FROM));
             [~, wpli_bl_end_sam] = min(abs(wpli_talk.time-WPLI_BL_TILL));
             %baseline correction %CHECK
-            wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
+            % % wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
             %connectivity analysis for listen condition
             wpli_listen = ft_connectivityanalysis(cfg_conn, freq_listen);
             %extract wpli values
@@ -405,7 +405,7 @@ for pairs = 1:length(all_pairs)
     title(['wPLI values for listen condition - ' all_wpli(pairs).name]);
     colormap parula
     colorbar;
-    caxis([0 0.5]);
+    caxis([-0.5 0.5]);
 
     %plot wPLI talk condition
     subplot(322)
@@ -416,7 +416,7 @@ for pairs = 1:length(all_pairs)
     title(['wPLI values for talk condition - ' all_wpli(pairs).name]);
     colormap parula
     colorbar;
-    caxis([0 0.5]);
+    caxis([-0.5 0.5]);
 
     %plot wPLI difference between talk and listen condition with overlay (negative clusters)
     subplot(323)
