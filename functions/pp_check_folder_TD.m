@@ -14,19 +14,14 @@ for i = 1:numel(varargin)
     if ~exist(folderPath)
         fprintf('The folder "%s" does not exist.\n', folderPath);
         %ask whether to create the folder
-        answer = input('Would you like to create this folder? (y/n): ', 's');
-        if lower(answer) == 'y'
-            try
-                mkdir(folderPath);
-                fprintf('Folder "%s" was successfully created\n', folderPath);
-            catch
-                fprintf('Error: Could not create folder "%s"\n', folderPath);
-            end
-        else
-            fprintf('Folder "%s" was not created\n', folderPath);
+        try
+            mkdir(folderPath);
+            fprintf('Folder "%s" was successfully created\n', folderPath);
+        catch
+            fprintf('Error: Could not create folder "%s"\n', folderPath);
         end
     else
         fprintf('Folder "%s" exists\n', folderPath);
     end
 end
-end
+
