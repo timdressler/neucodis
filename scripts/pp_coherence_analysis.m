@@ -405,6 +405,8 @@ for pairs = 1:length(all_pairs)
     title(['wPLI values for listen condition - ' all_wpli(pairs).name]);
     colormap parula
     colorbar;
+    cb=colorbar;
+    cb.Title.String = "dwPLI";
     caxis([-0.5 0.5]);
 
     %plot wPLI talk condition
@@ -416,6 +418,8 @@ for pairs = 1:length(all_pairs)
     title(['wPLI values for talk condition - ' all_wpli(pairs).name]);
     colormap parula
     colorbar;
+    cb=colorbar;
+    cb.Title.String = "dwPLI";
     caxis([-0.5 0.5]);
 
     %plot wPLI difference between talk and listen condition with overlay (negative clusters)
@@ -425,6 +429,8 @@ for pairs = 1:length(all_pairs)
     axis xy;
     colormap parula
     colorbar;
+    cb=colorbar;
+    cb.Title.String = "dwPLI difference";
     hold on;
     %prepare the overlay color and alpha mask
     TF_RGB = nan([size(effect) 3]);
@@ -459,6 +465,8 @@ for pairs = 1:length(all_pairs)
     axis xy;
     colormap parula
     colorbar;
+    cb=colorbar;
+    cb.Title.String = "dwPLI difference";
     hold on;
     %prepare the overlay color and alpha mask
     TF_RGB = nan([size(effect) 3]);
@@ -491,7 +499,8 @@ for pairs = 1:length(all_pairs)
     subplot(325)
     imagesc(time, freq, neg_cluster_mat);
     axis xy;
-    colorbar;
+    cb=colorbar;
+    cb.Title.String = "Significant (T/F)";
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
     title(['Negative Clusters ' all_wpli(pairs).name]);
@@ -500,7 +509,8 @@ for pairs = 1:length(all_pairs)
     subplot(326)
     imagesc(time, freq, pos_cluster_mat);
     axis xy;
-    colorbar;
+    cb=colorbar;
+    cb.Title.String = "Significant (T/F)";
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
     title(['Positive Clusters ' all_wpli(pairs).name]);
@@ -509,6 +519,7 @@ for pairs = 1:length(all_pairs)
     %add overall title
     sgtitle(all_wpli(pairs).name)
 
+    set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
     saveas(gcf,fullfile(OUTPATH, [all_wpli(pairs).name{1} '_wpli_analysis.png']))
 
 end

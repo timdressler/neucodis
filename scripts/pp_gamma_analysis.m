@@ -90,9 +90,13 @@ for subj = 1:length(dircont_subj) %loop over subjects
     ylim([15 60])
     axis xy;
     colorbar;
+    cb=colorbar; %CHECK %correct?
+    cb.Title.String = "ERSP (dB)";
     xlabel('Time (ms)');
     ylabel('Frequency (Hz)');
     title(['ERSP for Subject ' SUBJ]);
+
+    set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
     saveas(gcf,fullfile(OUTPATH, ['subj_' SUBJ '_ersp.png']))
 
     %compute ERSPs over all electrodes TF-topoplots
@@ -141,9 +145,13 @@ axis xy;
 xlim([-400 300])
 ylim([15 60])
 colorbar;
+cb=colorbar; %CHECK %correct?
+cb.Title.String = "ERSP (dB)";
 xlabel('Time (ms)');
 ylabel('Frequency (Hz)');
 title('Grand Average ERSP');
+
+set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'grand_average_ersp.png'))
 
 %topoplot ERSP
@@ -151,6 +159,8 @@ figure;
 tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
     'timefreqs', [58 36; 70 48; 70 38; 60 43], 'chanlocs', EEG.chanlocs, 'showchan', chani)
 sgtitle('Grand Average Topoplots')
+
+set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'grand_average_topoplots.png'))
 
 %display sanity check variables

@@ -167,6 +167,7 @@ hold off
 
 set(gca,'XTick',-250:50:750)
 
+set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'grand_average_erp.png'))
 
 
