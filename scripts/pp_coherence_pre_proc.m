@@ -290,12 +290,9 @@ end
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
 writetable(ok_subj,fullfile(OUTPATH, '_coherence_pre_proc_ok_subj.xlsx'))
 
-marked_subj = cell2table(marked_subj', 'VariableNames',{'subj'})
-writetable(marked_subj,fullfile(OUTPATH, '_coherence_pre_proc_marked_subj.xlsx'))
-
 epo_ok = all(all_epo_lats_OK_ALL)
 check_done = 'OK'
-save(fullfile(OUTPATH, '_coherence_pre_proc_data.mat'), 'check_done', 'epo_ok', 'all_epo_lats_OK_ALL')
+save(fullfile(OUTPATH, '_coherence_pre_proc_data.mat'), 'check_done', 'epo_ok', 'all_epo_lats_OK_ALL', 'marked_subj')
 
 close(wb)
 
