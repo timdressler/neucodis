@@ -1,5 +1,5 @@
 function [varargout] = pp_fastfft_TD(data,srate,channel,varargin)
-%pp_fastfft_TD Performs fast fft on epoched data (total EROs)
+% pp_fastfft_TD - Performs fast fft on epoched data (total EROs)
 %   my_fastfft2(data, srate, channel, 'wins', 2, 'overlap', 0.5, 'fig', 0)
 % DISCONTINUED
 try

@@ -1,6 +1,5 @@
 function pp_check_folder_TD(varargin)
-% pp_check_folder_TD checks if the specified folder paths exist.
-% If a path does not exist, the function creates it.
+% pp_check_folder_TD checks if the specified folder paths exist. If a path does not exist, the function creates it.
 %
 % Usage:
 %   pp_check_folder_TD('Path1', 'Path2', ...)

@@ -77,6 +77,8 @@ addpath(FUNPATH);
 %sanity check
 %check if folders exist
 pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
+%move current files to archive folder
+pp_clean_up_folder_TD(OUTPATH)
 
 %variables to edit
 WPLI_BL_FROM = -0.4;
