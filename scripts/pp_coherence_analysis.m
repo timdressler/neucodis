@@ -8,30 +8,30 @@
 % Plots grand average coherence over all subjects.
 %
 % Analysis contains the following steps
-    % Specifies frontal, temporal and occiptial electrodes
-    % Forms fronto-temporal -and fronto-occipital electrode pairs
-    % Calculates wPLI (Vinck et al., 2011) for each electrode pairs for talk- and listen conditions 
-    % Averages wPLI values for over electrode pairs 
-        % resulting in two wPLI matrices (talk- and listen condition) for
-        % fronto-temporal pairs and two wPLI matrices (talk- and listen condition) 
-        % for fronto-occipital pairs
-    % Perfoms cluster-based permutation test for fronto-temporal and fronto-occipital pairs to identify difference between talk- and listen condition
-    % Plots results as time-frequency plots with significant clusters highlighted
+% Specifies frontal, temporal and occiptial electrodes
+% Forms fronto-temporal -and fronto-occipital electrode pairs
+% Calculates wPLI (Vinck et al., 2011) for each electrode pairs for talk- and listen conditions
+% Averages wPLI values for over electrode pairs
+% resulting in two wPLI matrices (talk- and listen condition) for
+% fronto-temporal pairs and two wPLI matrices (talk- and listen condition)
+% for fronto-occipital pairs
+% Perfoms cluster-based permutation test for fronto-temporal and fronto-occipital pairs to identify difference between talk- and listen condition
+% Plots results as time-frequency plots with significant clusters highlighted
 %
 % Inspired by Canales-Johnson et al. (2021)
 %
 % Literature
-    % Canales-Johnson, A., Lanfranco, R. C., Morales, J. P., Martínez-Pernía, D., Valdés, J., 
-        % Ezquerro-Nassar, A., Rivera-Rei, Á., Ibanez, A., Chennu, S., Bekinschtein, T. A., Huepe, D., &
-        % Noreika, V. (2021). 
-        % In your phase: Neural phase synchronisation underlies visual imagery of faces. 
-        % Scientific Reports, 11 (1), 2401. https://doi.org/10.1038/s41598-021-81336-y.
-   % Maris, E., & Oostenveld, R. (2007). 
-        % Nonparametric statistical testing of eeg- and meg-data.
-        % Journal of Neuroscience Methods, 164 (1), 177–190. https://doi.org/10.1016/j.jneumeth.2007.03.024.
-   % Vinck, M., Oostenveld, R., van Wingerden, M., Battaglia, F., & Pennartz, C. M. (2011). 
-        % An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. 
-        % NeuroImage, 55 (4), 1548–1565. https://doi.org/10.1016/j.neuroimage.2011.01.055.
+% Canales-Johnson, A., Lanfranco, R. C., Morales, J. P., Martínez-Pernía, D., Valdés, J.,
+% Ezquerro-Nassar, A., Rivera-Rei, Á., Ibanez, A., Chennu, S., Bekinschtein, T. A., Huepe, D., &
+% Noreika, V. (2021).
+% In your phase: Neural phase synchronisation underlies visual imagery of faces.
+% Scientific Reports, 11 (1), 2401. https://doi.org/10.1038/s41598-021-81336-y.
+% Maris, E., & Oostenveld, R. (2007).
+% Nonparametric statistical testing of eeg- and meg-data.
+% Journal of Neuroscience Methods, 164 (1), 177–190. https://doi.org/10.1016/j.jneumeth.2007.03.024.
+% Vinck, M., Oostenveld, R., van Wingerden, M., Battaglia, F., & Pennartz, C. M. (2011).
+% An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias.
+% NeuroImage, 55 (4), 1548–1565. https://doi.org/10.1016/j.neuroimage.2011.01.055.
 %
 % Tim Dressler, 11.09.2024
 
@@ -46,7 +46,7 @@ rng(42)
 
 %critical variables to edit
 %select whether to use simulated or real data
-SIM_DATA = 1; %1 for simulated data %0 for real data
+SIM_DATA = 0; %1 for simulated data %0 for real data
 
 %setup paths
 SCRIPTPATH = cd;
@@ -61,7 +61,7 @@ end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 switch SIM_DATA
-    case 0
+    case 0 
         INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
         disp('Real data used!')
     case 1
@@ -87,23 +87,30 @@ TF_F_FROM = 25;
 TF_F_TILL = 50;
 TF_T_FROM = -0.4;
 TF_T_TILL = 0.2;
-% % %selection of electrodes (left)
-% % FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
-% % TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
-% % OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P1'};
-% % %selection of electrodes (right)
-% % FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
-% % TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
-% % OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
 
-%selection of electrodes (left)
-FRONTAL_L = {'F3', 'F5', 'F7', 'Fp1'};
-TEMPORAL_L = {'T7', 'TP7', 'P7', 'FC5'};
-OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
-%selection of electrodes (right)
-FRONTAL_R = {'F2', 'F6', 'F8', 'Fp2'};
-TEMPORAL_R = {'T8', 'TP8', 'P8', 'FC6'};
-OCCIPITAL_R = {'PO8', 'POz', 'Oz', 'O2'};
+%selection of electrodes 
+%because how the dipoles are simulated in the generated data it makes sense to use a different set of electrodes for testing the scripts with simulated data
+switch SIM_DATA
+    case 1 %use for simulated data
+        %selection of electrodes (left)
+        FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
+        TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
+        OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P1'};
+
+        %selection of electrodes (right)
+        FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
+        TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
+        OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
+    case 0 %use for real data
+        %selection of electrodes (left)
+        FRONTAL_L = {'F3', 'F5', 'F7', 'Fp1'};
+        TEMPORAL_L = {'T7', 'TP7', 'P7', 'FC5'};
+        OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
+        %selection of electrodes (right)
+        FRONTAL_R = {'F2', 'F6', 'F8', 'Fp2'};
+        TEMPORAL_R = {'T8', 'TP8', 'P8', 'FC6'};
+        OCCIPITAL_R = {'PO8', 'POz', 'Oz', 'O2'};
+end
 
 %sanity check
 %check if number of electrodes is the same for each lobe (left)
@@ -517,7 +524,7 @@ for pairs = 1:length(all_pairs)
     ylabel('Frequency (Hz)');
     title(['Positive Clusters ' all_wpli(pairs).name]);
     clim([0 1])
-   
+
     %add overall title
     sgtitle(all_wpli(pairs).name)
 
