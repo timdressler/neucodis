@@ -94,13 +94,13 @@ TF_T_TILL = 0.2;
 switch SIM_DATA
     case 0 %use for real data
         %selection of electrodes (left)
-        FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
-        TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
+        FRONTAL_L = {'F7', 'F5', 'F3', 'FC5'};
+        TEMPORAL_L = {'T7', 'TP7', 'P7', 'CP5'};
         OCCIPITAL_L = {'O1', 'PO3', 'PO7', 'P1'};
 
         %selection of electrodes (right)
-        FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
-        TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
+        FRONTAL_R = {'F8', 'F6', 'F4', 'FC6'};
+        TEMPORAL_R = {'T8', 'TP8', 'P8', 'CP6'};
         OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
     case 1 %use for simulated data
         %selection of electrodes (left)
