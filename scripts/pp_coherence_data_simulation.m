@@ -521,6 +521,7 @@ end
 
 close all
 
+%% End of processing
 
 %display sanity check variables
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','subj_check_ID','time'})

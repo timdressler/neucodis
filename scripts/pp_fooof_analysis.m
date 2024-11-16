@@ -228,6 +228,8 @@ sgtitle('Grand Average FOOOF Analysis')
 
 saveas(gcf,fullfile(OUTPATH, 'grand_average_fooof_analysis.png'))
 
+%% End of processing
+
 %display sanity check variables
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
 writetable(ok_subj,fullfile(OUTPATH, '_fooof_analysis_ok_subj.xlsx'))

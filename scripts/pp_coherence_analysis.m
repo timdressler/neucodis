@@ -61,7 +61,7 @@ end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 switch SIM_DATA
-    case 0 
+    case 0
         INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
         disp('Real data used!')
     case 1
@@ -88,7 +88,7 @@ TF_F_TILL = 50;
 TF_T_FROM = -0.4;
 TF_T_TILL = 0.2;
 
-%selection of electrodes 
+%selection of electrodes
 %because how the dipoles are simulated in the generated data it makes sense to use a different set of electrodes for testing the scripts with simulated data
 switch SIM_DATA
     case 1 %use for simulated data
@@ -532,6 +532,20 @@ for pairs = 1:length(all_pairs)
     saveas(gcf,fullfile(OUTPATH, [all_wpli(pairs).name{1} '_wpli_analysis.png']))
 
 end
+
+%% Plot used channel
+
+all_chans_used = [FRONTAL_L, FRONTAL_R, TEMPORAL_L, TEMPORAL_R, OCCIPITAL_L, OCCIPITAL_R];
+for chan = 1:length(all_chans_used)
+    all_chans_used_ID(chan) = find(strcmp(all_chans_used(chan), {EEG.chanlocs.labels}));
+end
+
+figure; topoplot([],EEG.chanlocs, 'style', 'blank','plotchans',all_chans_used_ID,  'electrodes', 'labelpoint', 'chaninfo', EEG.chaninfo);
+
+set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
+saveas(gcf,fullfile(OUTPATH, '_used_chan_wpli_analysis.png'))
+
+%% End of processing
 
 %display sanity check variables
 switch SIM_DATA

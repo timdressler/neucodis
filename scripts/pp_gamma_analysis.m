@@ -165,6 +165,8 @@ sgtitle('Grand Average Topoplots')
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'grand_average_topoplots.png'))
 
+%% End of processing
+
 %display sanity check variables
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
 writetable(ok_subj,fullfile(OUTPATH, '_gamma_analysis_ok_subj.xlsx'))

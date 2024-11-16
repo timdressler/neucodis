@@ -285,6 +285,8 @@ for subj = 1:length(dircont_subj)
     all_epo_lats_OK_ALL(end+1) = all_epo_lats_OK;
 end
 
+%% End of processing
+
 %display sanity check variables
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
 writetable(ok_subj,fullfile(OUTPATH, '_erp_pre_proc_ok_subj.xlsx'))

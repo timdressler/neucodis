@@ -172,6 +172,7 @@ set(gca,'XTick',-250:50:750)
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'grand_average_erp.png'))
 
+%% End of processing
 
 %display sanity check variables
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','subj_check_ID','time'})
