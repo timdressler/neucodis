@@ -64,13 +64,14 @@ switch SIM_DATA
     case 0
         INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
         disp('Real data used!')
+        OUTPATH = fullfile(MAINPATH, 'data\analysis_data\coherence_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
     case 1
         INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_simulated\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+        OUTPATH = fullfile(MAINPATH, 'data\analysis_data\coherence_analysis_sim'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
         warning('Simulated data used!')
     otherwise
         error('error')
 end
-OUTPATH = fullfile(MAINPATH, 'data\analysis_data\coherence_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
@@ -91,7 +92,7 @@ TF_T_TILL = 0.2;
 %selection of electrodes
 %because how the dipoles are simulated in the generated data it makes sense to use a different set of electrodes for testing the scripts with simulated data
 switch SIM_DATA
-    case 1 %use for simulated data
+    case 0 %use for real data
         %selection of electrodes (left)
         FRONTAL_L = {'F7', 'F5', 'FT7', 'FC5'};
         TEMPORAL_L = {'CP3', 'CP5', 'P5', 'P3'};
@@ -101,13 +102,13 @@ switch SIM_DATA
         FRONTAL_R = {'F8', 'F6', 'FT8', 'FC6'};
         TEMPORAL_R = {'CP4', 'CP6', 'P6', 'P4'};
         OCCIPITAL_R = {'O2', 'PO4', 'PO8', 'P2'};
-    case 0 %use for real data
+    case 1 %use for simulated data
         %selection of electrodes (left)
         FRONTAL_L = {'F3', 'F5', 'F7', 'Fp1'};
         TEMPORAL_L = {'T7', 'TP7', 'P7', 'FC5'};
         OCCIPITAL_L = {'PO7', 'POz', 'Oz', 'O1'};
         %selection of electrodes (right)
-        FRONTAL_R = {'F2', 'F6', 'F8', 'Fp2'};
+        FRONTAL_R = {'F4', 'F6', 'F8', 'Fp2'};
         TEMPORAL_R = {'T8', 'TP8', 'P8', 'FC6'};
         OCCIPITAL_R = {'PO8', 'POz', 'Oz', 'O2'};
 end
@@ -357,6 +358,8 @@ end
 set(0,'DefaultTextInterpreter','none')
 close all
 
+scale_lim = 0.05;
+
 clear pairs
 for pairs = 1:length(all_pairs)
     %extract needed values
@@ -416,7 +419,7 @@ for pairs = 1:length(all_pairs)
     colorbar;
     cb=colorbar;
     cb.Title.String = "dwPLI";
-    caxis([-0.5 0.5]);
+    caxis([-scale_lim scale_lim]);
 
     %plot wPLI talk condition
     subplot(322)
@@ -429,12 +432,12 @@ for pairs = 1:length(all_pairs)
     colorbar;
     cb=colorbar;
     cb.Title.String = "dwPLI";
-    caxis([-0.5 0.5]);
+    caxis([-scale_lim scale_lim]);
 
     %plot wPLI difference between talk and listen condition with overlay (negative clusters)
     subplot(323)
     imagesc(time, freq, effect);
-    caxis([-0.5 0.5])
+    caxis([-scale_lim scale_lim])
     axis xy;
     colormap parula
     colorbar;
@@ -470,7 +473,7 @@ for pairs = 1:length(all_pairs)
     %plot wPLI difference between talk and listen condition with overlay (positive clusters)
     subplot(324)
     imagesc(time, freq, effect);
-    caxis([-0.5 0.5])
+    caxis([-scale_lim scale_lim])
     axis xy;
     colormap parula
     colorbar;
