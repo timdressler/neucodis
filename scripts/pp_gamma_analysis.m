@@ -140,6 +140,7 @@ all_ersp = cat(3, all_ersp{:});
 ersp_GRANDAVERAGE = mean(all_ersp, 3);
 allersp_GRANDAVERAGE = mean(all_allersp,4);
 
+%% Grand Average Plots
 %plot grand average ERSP
 figure;
 imagesc(ersp_times, ersp_freqs, ersp_GRANDAVERAGE);
