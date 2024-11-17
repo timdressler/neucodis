@@ -159,7 +159,7 @@ saveas(gcf,fullfile(OUTPATH, 'grand_average_ersp.png'))
 %topoplot ERSP
 figure;
 tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
-    'timefreqs', [58 36; 70 48; 70 38; 60 43], 'chanlocs', EEG.chanlocs, 'showchan', chani)
+    'timefreqs', [58 36; 60 38; 70 38; 60 43], 'chanlocs', EEG.chanlocs, 'showchan', chani)
 sgtitle('Grand Average Topoplots')
 
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
@@ -172,6 +172,6 @@ ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
 writetable(ok_subj,fullfile(OUTPATH, '_gamma_analysis_ok_subj.xlsx'))
 
 check_done = 'OK'
-save(fullfile(OUTPATH, '_gamma_analysis_data.mat'), 'check_done')
+save(fullfile(OUTPATH, '_gamma_analysis_data.mat'), 'check_done', 'allersp_GRANDAVERAGE', 'alltimes', 'allfreqs', 'EEG', 'chani')
 
 close(wb)
