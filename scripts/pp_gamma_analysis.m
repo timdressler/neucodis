@@ -148,7 +148,7 @@ axis xy;
 xlim([-400 300])
 ylim([15 60])
 colorbar;
-cb=colorbar; %CHECK %correct?
+cb=colorbar; 
 cb.Title.String = "ERSP (dB)";
 xlabel('Time (ms)');
 ylabel('Frequency (Hz)');
@@ -174,5 +174,8 @@ writetable(ok_subj,fullfile(OUTPATH, '_gamma_analysis_ok_subj.xlsx'))
 
 check_done = 'OK'
 save(fullfile(OUTPATH, '_gamma_analysis_data.mat'), 'check_done', 'allersp_GRANDAVERAGE', 'alltimes', 'allfreqs', 'EEG', 'chani')
+save(fullfile(OUTPATH, '_gamma_analysis_plot_data.mat'), 'allersp_GRANDAVERAGE', 'alltimes', 'allfreqs', 'EEG', 'chani', ...
+    'ersp_times', 'ersp_freqs', 'ersp_GRANDAVERAGE')
+
 
 close(wb)

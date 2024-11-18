@@ -565,5 +565,7 @@ writetable(ok_subj,fullfile(OUTPATH, '_coherence_analysis_ok_subj.xlsx'))
 
 check_done = 'OK'
 save(fullfile(OUTPATH, '_coherence_analysis_data.mat'), 'check_done', 'SIM_DATA', 'all_pairs', 'all_wpli')
-save(fullfile(OUTPATH, '_coherence_analysis_plot_data.mat'), 'SIM_DATA', 'all_pairs', 'all_wpli', 'all_chans_used', 'EEG', 'all_chans_used_ID')
+
+save(fullfile(OUTPATH, '_coherence_analysis_plot_data.mat'), 'SIM_DATA', 'all_pairs', ...
+    'all_wpli', 'all_chans_used', 'EEG', 'all_chans_used_ID')
 

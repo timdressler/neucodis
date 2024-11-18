@@ -181,5 +181,10 @@ writetable(ok_subj,fullfile(OUTPATH, '_erp_analysis_ok_subj.xlsx'))
 check_done = 'OK'
 save(fullfile(OUTPATH, '_erp_analysis_data.mat'), 'check_done')
 
+save(fullfile(OUTPATH, '_erp_analysis_plot_data.mat'), 'grandaverage_ERP_talk', ...
+    'grandaverage_ERP_listen', 'EEG', ...
+    'all_ERP_listen', 'all_ERP_talk')
+
+
 close(wb)
 
