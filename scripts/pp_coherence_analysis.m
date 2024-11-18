@@ -46,7 +46,7 @@ rng(42)
 
 %critical variables to edit
 %select whether to use simulated or real data
-SIM_DATA = 1; %1 for simulated data %0 for real data
+SIM_DATA = 0; %1 for simulated data %0 for real data
 
 %setup paths
 SCRIPTPATH = cd;
