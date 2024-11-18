@@ -234,11 +234,8 @@ saveas(gcf,fullfile(OUTPATH, 'grand_average_fooof_analysis.png'))
 ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','time'})
 writetable(ok_subj,fullfile(OUTPATH, '_fooof_analysis_ok_subj.xlsx'))
 
-marked_subj = cell2table(marked_subj', 'VariableNames',{'subj'})
-writetable(marked_subj,fullfile(OUTPATH, '_fooof_analysis_marked_subj.xlsx'))
-
 check_done = 'OK'
-save(fullfile(OUTPATH, '_fooof_analysis_data.mat'), 'check_done')
+save(fullfile(OUTPATH, '_fooof_analysis_data.mat'), 'check_done', 'marked_subj')
 
 save(fullfile(OUTPATH, '_fooof_analysis_plot_data.mat'), 'orignial_freq_GRANDAVERAGE', ...
     'original_powspctrm_GRANDAVERAGE', 'fractal_freq_GRANDAVERAGE', 'fractal_powspctrm_GRANDAVERAGE', ...
