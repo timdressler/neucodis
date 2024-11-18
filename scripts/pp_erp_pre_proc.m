@@ -118,7 +118,7 @@ for subj = 1:length(dircont_subj)
         [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
         %preprocessing dataset C_0001
         %load raw dataset (C_0001)
-        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); %CHECK %channel locations already there
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); 
         %remove not needed channels
         EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
         %rename events
