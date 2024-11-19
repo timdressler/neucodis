@@ -218,10 +218,10 @@ for subj = 1:length(dircont_subj)
         EEG = pop_iclabel(EEG, 'default');
         EEG = pop_icflag(EEG, [0 0.2;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1;0.9 1]);
         EEG = pop_subcomp( EEG, [], 0);
-        %20-55Hz bandpass
+        %1-30Hz bandpass
         EEG = pop_eegfiltnew(EEG, 'locutoff',LCF_2,'hicutoff',HCF_2,'plotfreqz',0);
         %rereference to average of mastoids
-        % % EEG = pop_reref( EEG, [31 32] ); %CHECK %schon average?
+        % % EEG = pop_reref( EEG, [31 32] ); 
         %baseline epoching 
         EEG = pop_epoch( EEG, EVENTS, [EPO_FROM_BL        EPO_TILL_BL], 'epochinfo', 'yes');
     
