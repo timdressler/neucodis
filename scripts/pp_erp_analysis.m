@@ -161,7 +161,7 @@ xlim([-250 750])
 ylim([y_lim_upper y_lim_lower])
 xlabel('Time [ms]')
 title('ERPs for all Conditions')
-ylabel('Amplitude []')
+ylabel('Amplitude [µV]')
 p(1+size(all_ERP_listen,3)+size(all_ERP_talk,3)+2) = ...
     fill([50 150 150 50], [y_lim_upper y_lim_upper y_lim_lower y_lim_lower], light_blue, 'FaceAlpha',0.1, 'EdgeColor','none');
 legend(p([1 end-3 end-2 end-1]), 'talk - indiviual', 'listen - individual', 'talk - grand average', 'listen - grand average')
