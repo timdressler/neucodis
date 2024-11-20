@@ -185,6 +185,6 @@ save(fullfile(OUTPATH, '_erp_analysis_plot_data.mat'), 'grandaverage_ERP_talk', 
     'grandaverage_ERP_listen', 'EEG', ...
     'all_ERP_listen', 'all_ERP_talk')
 
-
 close(wb)
+close all
 

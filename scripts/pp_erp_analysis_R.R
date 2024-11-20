@@ -87,14 +87,14 @@ P1 <- df_erp %>%
   scale_fill_manual(values = c(colors$main_blue, colors$main_red)) +
   scale_x_discrete(labels = c('talk' = 'talk', 'listen' = 'listen')) +
   scale_y_continuous(n.breaks = 15) +
-  labs(x = NULL, y = "Amplitude") +
+  labs(x = NULL, y = "Amplitude [µV]") +
   theme_classic() +
   theme(axis.text.x = element_text(size = 12)) +
   theme(axis.text.y = element_text(size = 12)) +
   theme(axis.title.x = element_text(size = 12)) +
   theme(axis.title.y = element_text(size = 12)) +
   theme(legend.position="none") +
-  geom_signif(comparisons=list(c("talk", "listen")), annotations="WATCHOUT",
+  geom_signif(comparisons=list(c("talk", "listen")), annotations="***",
               y_position = 1, tip_length = 0.02,  vjust=0.4) 
 P1
 
@@ -123,7 +123,7 @@ P2 <- df_erp %>%
   theme(axis.title.x = element_text(size = 12)) +
   theme(axis.title.y = element_text(size = 12)) +
   theme(legend.position="none") +
-  geom_signif(comparisons=list(c("talk", "listen")), annotations="WATCHOUT",
+  geom_signif(comparisons=list(c("talk", "listen")), annotations="n.s.",
               y_position = 130, tip_length = 0.02,  vjust=0.4) 
 P2
 

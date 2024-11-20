@@ -42,6 +42,9 @@ OUTPATH = fullfile(MAINPATH, 'data\plots\erp_analysis'); %place 'data' folder in
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
 
+%variables to edit
+CHAN = 'Cz';
+
 %sanity check
 %check if folders exist
 pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
@@ -49,12 +52,14 @@ pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
 pp_clean_up_folder_TD(OUTPATH)
 
 %load data
-load _erp_analysis_plot_data.mat
+load(fullfile(INPATH, '_erp_analysis_plot_data.mat'))
 
 %preparations
+%get channel ID
+chani = find(strcmp({EEG.chanlocs.labels}, CHAN));
 %get values for dynamic plot limits
-y_lim_upper = min([min(all_ERP_talk(chani,:,:), [], 'all') min(all_ERP_listen(chani,:,:), [], 'all')])-0.4;
-y_lim_lower = max([max(all_ERP_talk(chani,:,:), [], 'all') max(all_ERP_listen(chani,:,:), [], 'all')])+0.4;
+y_lim_upper = min([min(grandaverage_ERP_talk(chani,:))  min(grandaverage_ERP_listen(chani,:)) ])-1;
+y_lim_lower = max([max(grandaverage_ERP_talk(chani,:))  max(grandaverage_ERP_listen(chani,:)) ])+1;
 
 %create plot
 close all
