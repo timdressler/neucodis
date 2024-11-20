@@ -46,7 +46,7 @@ EVENTS = {'talk', 'listen'};
 
 %get directory content
 dircont_subj_erp = dir(fullfile(INPATH_ERP, 'P*'));
-dircont_subj_coh = dir(fullfile(INPATH_ERP, 'P*'));
+dircont_subj_coh = dir(fullfile(INPATH_COH, 'P*'));
 
 %check if both directories contain the same subjects
 same_subj_length = length(dircont_subj_erp) == length(dircont_subj_coh); %the script also checks if subjects are the same (not only the number of subjects), see below
