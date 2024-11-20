@@ -60,7 +60,7 @@ wb = waitbar(0,'starting pp_erp_analysis.m');
 for subj = 1:length(dircont_subj_erp) %loop over subjects
     tic;
     %get current ID
-    SUBJ_ERP = erase(dircont_subj_erp(subj).name, '_coherence_preprocessed.set'); %CHECK %change back
+    SUBJ_ERP = erase(dircont_subj_erp(subj).name, '_erp_preprocessed.set'); 
     SUBJ_COH = erase(dircont_subj_coh(subj).name, '_coherence_preprocessed.set');
     if ~strcmp(SUBJ_ERP, SUBJ_COH)
         error('subjects do not match')
