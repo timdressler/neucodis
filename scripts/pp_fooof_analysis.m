@@ -6,6 +6,7 @@
 % Using talk & listen conditions.
 % Plots FOOOF analysis for each subject.
 % Plots grand average FOOOF analysis over all subjects.
+% Warning: This script uses all subjects, not only the ones with minimum 50 trials. 
 %
 % Tim Dressler, 01.11.2024
 

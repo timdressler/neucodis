@@ -201,7 +201,7 @@ pp_check_folder_TD(CLEANDATAPATH)
 pp_clean_up_folder_TD(CLEANDATAPATH)
 
 %get all files 
-all_files = dir(fullfile(ALLDATAPATH, '*.set')); % Adjust extension if needed
+all_files = dir(fullfile(ALLDATAPATH, '*.set')); 
 
 %loop through each file and check for matches
 for i = 1:length(all_files)
@@ -214,6 +214,8 @@ for i = 1:length(all_files)
         end
     end
 end
+
+length_clean_erp = length(dir(fullfile(CLEANDATAPATH, '*.set')));
 
 %coherence-preprocessed data
 subjects = ok_num_trials_subj;
@@ -228,7 +230,7 @@ pp_check_folder_TD(CLEANDATAPATH)
 pp_clean_up_folder_TD(CLEANDATAPATH)
 
 %get all files 
-all_files = dir(fullfile(ALLDATAPATH, '*.set')); % Adjust extension if needed
+all_files = dir(fullfile(ALLDATAPATH, '*.set')); 
 
 %loop through each file and check for matches
 for i = 1:length(all_files)
@@ -242,6 +244,18 @@ for i = 1:length(all_files)
     end
 end
 
+length_clean_coh = length(dir(fullfile(CLEANDATAPATH, '*.set')));
+
+%sanity check
+%check whether the clean data folders contain as many files as indentified clean subjects
+ok_final_dircont_length = length_clean_erp == length_clean_coh && length_clean_erp == length(ok_num_trials_subj);
+switch ok_final_dircont_length
+    case 1
+        disp('all directories OK')
+    otherwise
+        error('number of files not matching')
+end
+
 %% End of processing
 
 %display sanity check variables
@@ -249,7 +263,7 @@ ok_subj = cell2table(ok_subj, 'VariableNames',{'subj','subj_check_ID_erp','subj_
 writetable(ok_subj,fullfile(OUTPATH, '_subj_sanity_ok_subj.xlsx'))
 
 check_done = 'OK'
-save(fullfile(OUTPATH, '_subj_sanity_data.mat'), 'check_done', 'check_table', 'ok_num_trials_subj')
+save(fullfile(OUTPATH, '_subj_sanity_data.mat'), 'check_done', 'check_table', 'ok_num_trials_subj', 'ok_final_dircont_length')
 
 close(wb)
 close all

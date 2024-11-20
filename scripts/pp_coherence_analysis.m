@@ -62,7 +62,7 @@ end
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 switch SIM_DATA
     case 0
-        INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+        INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc_clean\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
         disp('Real data used!')
         OUTPATH = fullfile(MAINPATH, 'data\analysis_data\coherence_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
     case 1

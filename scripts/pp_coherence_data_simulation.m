@@ -31,7 +31,7 @@ else
 end
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
-INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+INPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_coherence_proc_clean\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 OUTPATH = fullfile(MAINPATH, 'data\proc_data\pp_data_simulated\'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
 FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
 addpath(FUNPATH);
