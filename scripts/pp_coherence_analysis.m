@@ -252,7 +252,7 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             [~, wpli_bl_start_sam] = min(abs(wpli_talk.time-WPLI_BL_FROM));
             [~, wpli_bl_end_sam] = min(abs(wpli_talk.time-WPLI_BL_TILL));
             %baseline correction
-            wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
+            wpli_listen_extracted = wpli_listen_extracted - mean(wpli_listen_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
             %store wPLI values over all pairs
             wpli_talk_extracted_ALL_PAIRS(:,:,elec_pair) = wpli_talk_extracted;
             wpli_listen_extracted_ALL_PAIRS(:,:,elec_pair) = wpli_listen_extracted;
