@@ -90,7 +90,7 @@ rm(df_sample)
 #erp data
 #select needed columns
 df_erp_diff <- df_erp %>%
-  select(1,6,7,8)
+  select(1,2,3,6,7,8)
 
 #change format
 df_erp_diff <- df_erp_diff %>%
@@ -177,21 +177,18 @@ P2 <- df_erp %>%
 P2
 
 #--------------------------------Sample_analysis--------------------------------
-
-describe(df_erp[,2:3])
-
 #gender
-table(df_erp$sex)
-prop.table(table(df_erp$sex))
+table(df_erp_diff$sex)
+prop.table(table(df_erp_diff$sex))
 #PLOT: gender
-barplot(table(df_erp$sex))
+barplot(table(df_erp_diff$sex))
 
 #age
-describe(df_erp$age)
-mean(df_erp$age)
-IQR(df_erp$age)
+mean(df_erp_diff$age)
+sd(df_erp_diff$age)
+IQR(df_erp_diff$age)
 #PLOT: age
-df_erp %>%
+df_erp_diff %>%
   ggplot(aes(y=age)) +
   geom_boxplot() +
   theme_ggstatsplot()

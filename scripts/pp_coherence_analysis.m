@@ -46,7 +46,7 @@ rng(42)
 
 %critical variables to edit
 %select whether to use simulated or real data
-SIM_DATA = 1; %1 for simulated data %0 for real data
+SIM_DATA = 0; %1 for simulated data %0 for real data
 
 %setup paths
 SCRIPTPATH = cd;
@@ -242,8 +242,8 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             %convert latencies to samples
             [~, wpli_bl_start_sam] = min(abs(wpli_talk.time-WPLI_BL_FROM));
             [~, wpli_bl_end_sam] = min(abs(wpli_talk.time-WPLI_BL_TILL));
-            %baseline correction %CHECK
-            % % wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
+            %baseline correction 
+            wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
             %connectivity analysis for listen condition
             wpli_listen = ft_connectivityanalysis(cfg_conn, freq_listen);
             %extract wpli values
@@ -252,7 +252,7 @@ for pairs = 1:length(all_pairs) %loop over electrode pair-sets
             [~, wpli_bl_start_sam] = min(abs(wpli_talk.time-WPLI_BL_FROM));
             [~, wpli_bl_end_sam] = min(abs(wpli_talk.time-WPLI_BL_TILL));
             %baseline correction
-            % % wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
+            wpli_talk_extracted = wpli_talk_extracted - mean(wpli_talk_extracted(:,wpli_bl_start_sam:wpli_bl_end_sam),2);
             %store wPLI values over all pairs
             wpli_talk_extracted_ALL_PAIRS(:,:,elec_pair) = wpli_talk_extracted;
             wpli_listen_extracted_ALL_PAIRS(:,:,elec_pair) = wpli_listen_extracted;
