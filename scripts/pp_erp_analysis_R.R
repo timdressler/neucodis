@@ -59,25 +59,70 @@ if (grepl("neucodis/scripts", SCRIPTPATH)) {
   stop("Path not OK")  
 }
 MAINPATH <- gsub("neucodis/scripts", "", SCRIPTPATH)
-INPATH <- file.path(MAINPATH, "data", "analysis_data/erp_analysis")
 OUTPATH <- file.path(MAINPATH, "data", "analysis_data")
 
-setwd(INPATH)
+setwd(OUTPATH)
+
+#-----------------------------------Load Data-----------------------------------
+
+#load raw main data
+df_erp <- read.csv(file.path(MAINPATH, "data/analysis_data/erp_analysis/erp_analysis.csv"))
+
+#load raw sample data
+df_sample <- read_excel(file.path(MAINPATH, "data/raw_data/pp_sample_data/pp_sample_data.xlsx"))
+
+#create/modify needed dataframes
+#sample data
+#select needed columns
+df_sample <- df_sample %>%
+  select(1,3,4)
+
+#rename columns
+colnames(df_sample) <- c("subj", "age", "sex")
+
+#match erp dataframe with sample data dateframe
+df_sample$subj <- paste0('P', df_sample$subj)
+df_erp <- merge(df_sample, df_erp, by = "subj") 
+
+#remove raw sample dataframe
+rm(df_sample)
+
+#erp data
+#select needed columns
+df_erp_diff <- df_erp %>%
+  select(1,6,7,8)
+
+#change format
+df_erp_diff <- df_erp_diff %>%
+  pivot_wider(
+    names_from = cond,
+    names_sep = ".",
+    values_from = c(erp_amp, erp_lat)
+  )
+
+#calculate difference scores for amplitude and latency
+df_erp_diff <- df_erp_diff %>%
+  mutate(erp_amp_diff = erp_amp.listen - erp_amp.talk)
+
+df_erp_diff <- df_erp_diff %>%
+  mutate(erp_lat_diff = erp_lat.listen - erp_lat.talk)
 
 #---------------------------------N100 Analysis---------------------------------
-
-#load data
-df_erp <- read.csv(file.path(INPATH, "erp_analysis.csv"))
 
 #ERP1.0
 #T Test (N100 Amplitude ~ Condition)
 #check if condition (talk/no talk) has an effect on the N100 amplitude
-t.test(data = df_erp, erp_amp ~ cond, paired = TRUE) #
+t.test(data = df_erp, erp_amp ~ cond, paired = TRUE) 
+
 df_erp %>% 
   cohens_d(erp_amp ~ cond, paired = TRUE) 
 
 psych::describeBy(df_erp$erp_amp,
                   group = df_erp$cond)
+
+#assumptions
+#normal distribution of difference scores
+shapiro.test(df_erp_diff$erp_amp_diff) #n.s.
 
 #PLOT: N100 amplitude by condition
 P1 <- df_erp %>%
@@ -108,6 +153,10 @@ df_erp %>%
 psych::describeBy(df_erp$erp_lat,
                   group = df_erp$cond)
 
+#assumptions
+#normal distribution of difference scores
+shapiro.test(df_erp_diff$erp_lat_diff) #n.s.
+
 #PLOT: N100 latency by condition
 P2 <- df_erp %>%
   ggplot(aes(x = cond, y = erp_lat, fill = cond)) +
@@ -129,8 +178,23 @@ P2
 
 #--------------------------------Sample_analysis--------------------------------
 
+describe(df_erp[,2:3])
 
+#gender
+table(df_erp$sex)
+prop.table(table(df_erp$sex))
+#PLOT: gender
+barplot(table(df_erp$sex))
 
+#age
+describe(df_erp$age)
+mean(df_erp$age)
+IQR(df_erp$age)
+#PLOT: age
+df_erp %>%
+  ggplot(aes(y=age)) +
+  geom_boxplot() +
+  theme_ggstatsplot()
 
 
 
