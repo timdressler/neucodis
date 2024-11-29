@@ -70,7 +70,7 @@ for subj = 1:length(dircont_subj)
         %start eeglab
         [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
         %load raw dataset (C_0001)
-        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); %CHECK %channel locations already there
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); 
         %select channel
         EEG = pop_select( EEG, 'channel',{CHAN});
         %rename events
@@ -94,7 +94,7 @@ for subj = 1:length(dircont_subj)
         EEG.setname = [SUBJ '_talk_raw'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         %load raw dataset (C_0005)
-        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); %CHECK %channel locations already there
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); 
         %select channel
         EEG = pop_select( EEG, 'channel',{CHAN});
         %rename events

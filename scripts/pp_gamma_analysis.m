@@ -92,7 +92,7 @@ for subj = 1:length(dircont_subj) %loop over subjects
     ylim([15 60])
     axis xy;
     colorbar;
-    cb=colorbar; %CHECK %correct?
+    cb=colorbar;
     cb.Title.String = "ERSP (dB)";
     xlabel('Time (ms)');
     ylabel('Frequency (Hz)');

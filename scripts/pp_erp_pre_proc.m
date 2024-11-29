@@ -155,7 +155,7 @@ for subj = 1:length(dircont_subj)
 
         %preprocessing dataset C_0005
         %load raw dataset (C_0005)
-        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); %CHECK %channel locations already there
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); 
         %remove not needed channels
         EEG = pop_select( EEG, 'rmchannel',{'heogl','heogr','ml','mr', 'Lip'});
         %rename events
@@ -190,10 +190,10 @@ for subj = 1:length(dircont_subj)
 
         %ICA preprocessing
         %reload and merge raw data
-        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); %CHECK %channel locations already there
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0001.vhdr'], [], []); 
         EEG.setname = [SUBJ '_talk_raw_before_ICA'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
-        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); %CHECK %channel locations already there
+        EEG = pop_loadbv(fullfile(INPATH, SUBJ), ['av_' SUBJ '_C_0005.vhdr'], [], []); 
         EEG.setname = [SUBJ '_listen_raw_before_ICA'];
         [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
         EEG = pop_mergeset( ALLEEG, [1 2], 0);
