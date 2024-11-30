@@ -78,7 +78,8 @@ for subj = 1:length(dircont_subj) %loop over subjects
     %compute ERSP
     [ersp,itc,powbase,times,freqs,erspboot,itcboot] = pop_newtimef(EEG, ...
         1, chani, [EEG.xmin EEG.xmax]*1000, [3 0.5], 'maxfreq', 60, 'padratio', 16, ...
-        'plotphase', 'off', 'timesout', 60, 'alpha', .05, 'plotersp','off', 'plotitc','off');
+        'plotphase', 'off', 'timesout', 60, 'alpha', .05, 'plotersp','off', 'plotitc','off', ...
+        'baseline',[-400 -300]);
     %store ERSP values
     all_ersp{subj} = ersp;
     %store time and frequency vectors
@@ -105,7 +106,8 @@ for subj = 1:length(dircont_subj) %loop over subjects
     for elec = 1:EEG.nbchan
         [ersp,itc,powbase,times,freqs,erspboot,itcboot] = pop_newtimef(EEG, ...
             1, elec, [EEG.xmin EEG.xmax]*1000, [3 0.5], 'maxfreq', 60, 'padratio', 16, ...
-            'plotphase', 'off', 'timesout', 60, 'alpha', .05, 'plotersp','off', 'plotitc','off');
+            'plotphase', 'off', 'timesout', 60, 'alpha', .05, 'plotersp','off', 'plotitc','off', ...
+            'baseline',[-400 -300]);
         %create empty arrays if first electrode
         if elec == 1
             allersp = zeros([ size(ersp) EEG.nbchan]);
