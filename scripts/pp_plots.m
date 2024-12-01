@@ -100,7 +100,7 @@ pp_clean_up_folder_TD(OUTPATH)
 
 
 
-%% Plot 3, TF-Plot with topographies
+%% Plot 3 & 4, TF-Plot with topographies & TF-topographies
 
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
 INPATH = fullfile(MAINPATH, 'data\analysis_data\gamma_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
@@ -120,10 +120,11 @@ eeglab nogui
 %load data
 load(fullfile(INPATH, '_gamma_analysis_plot_data.mat'))
 
-%create plot
+%create plot (Plot 3)
 figure;
 tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
-    'timefreqs', [-130 45; 45 45; 45 40], 'chanlocs', EEG.chanlocs, 'showchan', chani);
+    'timefreqs', [-130 45; 45 45; 45 40], 'chanlocs', EEG.chanlocs, 'showchan', chani, 'limits', ...
+    [-400 200 15 60 -1 1]);
 sgtitle('Grand Average Topoplots');
 colormap(parula);
 
@@ -131,6 +132,13 @@ colormap(parula);
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'pp_fig3_grand_average_tf_topo.png'))
 
-
-
+%create plot (Plot 4)
+figure;
+tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), 'chanlocs', ...
+    EEG.chanlocs, 'showchan', chani, ...
+    'plotscalponly', [45 45]);
+cb = colorbar;
+colormap(parula);
+clim([-1 1])
+title(cb, 'Amplitude [dB]')
 

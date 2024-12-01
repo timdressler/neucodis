@@ -6,6 +6,7 @@
 % Using talk & listen conditions.
 % Plots ERSPs for each subject.
 % Plots grand average ERSP & grand average Topoplot over all subjects.
+% Using a baseline period of -400ms to -300ms (matched from coherence analysis).
 %
 % Tim Dressler, 02.11.2024
 
@@ -40,11 +41,6 @@ pp_clean_up_folder_TD(OUTPATH)
 
 %variables to edit
 CHAN = 'Cz';
-EVENTS = {'talk', 'listen'};
-TF_FROM = -400;
-TF_TILL = 500;
-TF_BL_FROM = -200;
-TF_BL_TILL = -100;
 
 %get directory content
 dircont_subj = dir(fullfile(INPATH, 'P*'));
