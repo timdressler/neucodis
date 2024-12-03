@@ -1,5 +1,6 @@
 % pp_plots.m
 %
+% Creates multiple plots for potential use for the poster/publication.
 % Creates the plot shown on the poster/in the publication.
 % Using analysis data.
 %
@@ -53,6 +54,10 @@ pp_clean_up_folder_TD(OUTPATH)
 
 %load data
 load(fullfile(INPATH, '_erp_analysis_plot_data.mat'))
+%remove not needed channel
+grandaverage_ERP_talk(20,:) = [];
+grandaverage_ERP_listen(20,:) = [];
+EEG = pop_select( EEG, 'rmchannel',{'IO'});
 
 %preparations
 %get channel ID
@@ -62,6 +67,7 @@ y_lim_upper = min([min(grandaverage_ERP_talk(chani,:))  min(grandaverage_ERP_lis
 y_lim_lower = max([max(grandaverage_ERP_talk(chani,:))  max(grandaverage_ERP_listen(chani,:)) ])+1;
 
 %create plot
+%create main plot
 close all
 figure;
 plot(EEG.times, grandaverage_ERP_talk(chani,:),'color', main_red, 'LineWidth',2);
@@ -69,6 +75,7 @@ hold on
 plot(EEG.times, grandaverage_ERP_listen(chani,:),'color', main_blue, 'LineWidth',2);
 xlim([-250 750])
 ylim([y_lim_upper y_lim_lower])
+% % xlim([-100 400])
 xlabel('Time [ms]')
 ylabel('Amplitude [µV]')
 title('ERP for talk and listen condition')
@@ -77,6 +84,26 @@ legend('talk - grand average', 'listen - grand average')
 hold off
 
 set(gca,'XTick',-250:50:750)
+
+%add topoplot
+%get limit values
+cb_lim_lower = min([mean(grandaverage_ERP_listen(:,301:401),2), mean(grandaverage_ERP_talk(:,301:401),2)],[],'all');
+cb_lim_upper = max([mean(grandaverage_ERP_listen(:,301:401),2), mean(grandaverage_ERP_talk(:,301:401),2)],[],'all');
+%create topoplot
+axes('Position',[.69 .16 .2 .2])
+box on
+topoplot(mean(grandaverage_ERP_talk(:,301:401),2), EEG.chanlocs, 'emarker2', {chani,'o','r',5,1}) %WATCHOUT 
+title('N1 talk', 'Position', [0, 0.6, 0])
+colormap("parula")
+colorbar
+clim([cb_lim_lower cb_lim_upper])
+
+axes('Position',[.45 .16 .2 .2])
+box on
+topoplot(mean(grandaverage_ERP_listen(:,301:401),2), EEG.chanlocs, 'emarker2', {chani,'o','r',5,1}) %WATCHOUT 
+title('N1 listen', 'Position', [0, 0.6, 0])
+colormap("parula")
+clim([cb_lim_lower cb_lim_upper])
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
@@ -128,7 +155,7 @@ tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
 sgtitle('Grand Average Topoplots');
 colormap(parula);
 
-%save plot
+%save plot (Plot 3)
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'pp_fig3_grand_average_tf_topo.png'))
 
@@ -142,3 +169,9 @@ colormap(parula);
 clim([-1 1])
 title(cb, 'Amplitude [dB]')
 
+%save plot (Plot 4)
+set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
+saveas(gcf,fullfile(OUTPATH, 'pp_fig4_grand_average_tf_topo.png'))
+
+%% Final Plots
+%run this section to produce the plots found on the poster/in the publication
