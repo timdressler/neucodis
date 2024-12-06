@@ -390,7 +390,7 @@ colormap(parula);
 clim([-1 1])
 title(cb, 'Amplitude [dB]')
 
-AddLetters2Plots({sub1, sub2, sub3, sub4}, {'A', 'B', 'C', 'D'})
+AddLetters2Plots({sub1, sub2, sub3, sub4}, {'A', 'B', 'C', 'D'},'HShift', -0.02, 'VShift', -0.05, 'Location','NorthWest')
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
