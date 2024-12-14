@@ -605,57 +605,57 @@ saveas(gcf,fullfile(OUTPATH, 'pp_plot_tf_topo.png'))
 
 %% Archive: Plot: TF-Plot with topographies and TF-topographies
 
-MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
-INPATH = fullfile(MAINPATH, 'data\analysis_data\gamma_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-OUTPATH = fullfile(MAINPATH, 'data\plots\gamma_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
-FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
-addpath(FUNPATH);
-
-%sanity check
-%check if folders exist
-pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
-%move current files to archive folder
-% % pp_clean_up_folder_TD(OUTPATH)
-
-%load data
-load(fullfile(INPATH, '_gamma_analysis_plot_data.mat'))
-
-%start eeglab
-eeglab nogui
-%remove not needed channel
-allersp_GRANDAVERAGE(:,:,20) = [];
-allfreqs(:,:,20) = [];
-alltimes(:,:,20) = [];
-ersp_GRANDAVERAGE(:,20) = [];
-EEG = pop_select( EEG, 'rmchannel',{'IO'});
-
-%create plot
+% % MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
+% % INPATH = fullfile(MAINPATH, 'data\analysis_data\gamma_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+% % OUTPATH = fullfile(MAINPATH, 'data\plots\gamma_analysis'); %place 'data' folder in the same folder as the 'neucodis' folder %don't change names
+% % FUNPATH = fullfile(MAINPATH, 'neucodis\functions\');
+% % addpath(FUNPATH);
+% % 
+% % %sanity check
+% % %check if folders exist
+% % pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
+% % %move current files to archive folder
+% % % % pp_clean_up_folder_TD(OUTPATH)
+% % 
+% % %load data
+% % load(fullfile(INPATH, '_gamma_analysis_plot_data.mat'))
+% % 
+% % %start eeglab
+% % eeglab nogui
+% % %remove not needed channel
+% % allersp_GRANDAVERAGE(:,:,20) = [];
+% % allfreqs(:,:,20) = [];
+% % alltimes(:,:,20) = [];
+% % ersp_GRANDAVERAGE(:,20) = [];
+% % EEG = pop_select( EEG, 'rmchannel',{'IO'});
+% % 
+% % %create plot
+% % % % close all
+% % figure;
+% % tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
+% %     'timefreqs', [-130 35; 45 35; 45 45], 'chanlocs', EEG.chanlocs, 'showchan', chani, 'limits', ...
+% %     [-400 200 15 60 -1 1]);
+% % % % sgtitle('Grand Average Topoplots');
+% % colormap(parula);
+% % 
+% % %save plot
+% % set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
+% % % % saveas(gcf,fullfile(OUTPATH, 'pp_fig3_grand_average_tf_topo.png'))
+% % 
+% % %create plot
+% % figure;
+% % tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), 'chanlocs', ...
+% %     EEG.chanlocs, 'showchan', chani, ...
+% %     'plotscalponly', [-130 35]);
+% % cb = colorbar;
+% % colormap(parula);
+% % clim([-1 1])
+% % title(cb, 'Amplitude [dB]')
+% % 
+% % %save plot
+% % set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
+% % % % saveas(gcf,fullfile(OUTPATH, 'pp_fig4_grand_average_tf_topo.png'))
+% % 
+% % 
+% % %end of processing
 % % close all
-figure;
-tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), ...
-    'timefreqs', [-130 35; 45 35; 45 45], 'chanlocs', EEG.chanlocs, 'showchan', chani, 'limits', ...
-    [-400 200 15 60 -1 1]);
-% % sgtitle('Grand Average Topoplots');
-colormap(parula);
-
-%save plot
-set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
-% % saveas(gcf,fullfile(OUTPATH, 'pp_fig3_grand_average_tf_topo.png'))
-
-%create plot
-figure;
-tftopo(allersp_GRANDAVERAGE,alltimes(:,:,1),allfreqs(:,:,1), 'chanlocs', ...
-    EEG.chanlocs, 'showchan', chani, ...
-    'plotscalponly', [-130 35]);
-cb = colorbar;
-colormap(parula);
-clim([-1 1])
-title(cb, 'Amplitude [dB]')
-
-%save plot
-set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
-% % saveas(gcf,fullfile(OUTPATH, 'pp_fig4_grand_average_tf_topo.png'))
-
-
-%end of processing
-close all
