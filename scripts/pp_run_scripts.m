@@ -9,3 +9,5 @@ pp_coherence_data_simulation
 pp_fooof_analysis
 
 check_all_done = 'OK'
+
+%processing done
