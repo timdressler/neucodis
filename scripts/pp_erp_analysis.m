@@ -39,9 +39,9 @@ pp_check_folder_TD(MAINPATH, INPATH, OUTPATH)
 pp_clean_up_folder_TD(OUTPATH)
 
 %variables to edit
-CHAN = 'Cz';
-ERP_FROM = 50;
-ERP_TILL = 150;
+CHAN = 'Cz'; %set to 'Cz' in original analysis
+ERP_FROM = 50; %set to 50 in original analysis
+ERP_TILL = 150; %set to 150 in original analysis
 EVENTS = {'talk', 'listen'};
 
 %get directory content
