@@ -514,6 +514,8 @@ title(cb, 'Amplitude [dB]' ,'Position', [0, 157, 0])
 %create TF plot
 sub1 = subplot(2,3,1:3);
 imagesc(ersp_times, ersp_freqs, ersp_GRANDAVERAGE)
+ylabel('Hz')
+xlabel('Time [ms]')
 hold on
 plot(ersp_times(time_idx1), ersp_freqs(freq_idx1), 'o', 'MarkerFaceColor','k')
 text(ersp_times(time_idx1)+5, ersp_freqs(freq_idx1), 'B','color', 'k')
@@ -535,71 +537,6 @@ AddLetters2Plots({sub1, sub2, sub3, sub4}, {'A', 'B', 'C', 'D'},'HShift', -0.02,
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'pp_plot_tf_topo.png'))
-
-%% Final Plots
-%run this section to produce the plots found on the poster/in the publication
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 %% Archive
 
