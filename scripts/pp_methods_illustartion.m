@@ -98,7 +98,7 @@ polarplot(polar_ax, theta, ones(1,100), 'k--'); % Unit circle
 %plot angular lines (spokes) and radial ticks
 polar_ax.ThetaTick = 0:45:360; 
 polar_ax.RLim = [0 1]; 
-polar_ax.RTick = [1]; 
+polar_ax.RTick = ['']; 
 
 %plot lines for each time point on the polar plot
 hold on;
@@ -169,6 +169,8 @@ grid off;
 lgd = legend({'F8', 'T8'});
 %%fontsize(lgd,26,'points')
 fontsize(font_size,"points")
+%add title 
+title('Trial 1');
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
@@ -187,19 +189,20 @@ polarplot(polar_ax, theta, ones(1,100), 'k--');
 %plot angular lines (spokes) and radial ticks
 polar_ax.ThetaTick = 0:45:360; %set angular ticks (you can adjust the step)
 polar_ax.RLim = [0 1]; %limit the radius to 1 (for the unit circle)
-polar_ax.RTick = [1]; %show radial tick only at 1 (unit circle)
+polar_ax.RTick = ['']; 
 
 %plot lines for each sine wave phase at the given time point
 hold on;
 polarplot(polar_ax, [0 phase1], [0 1], 'Color', main_blue, 'LineWidth', 2); % Phase of first wave
 polarplot(polar_ax, [0 phase2], [0 1], 'Color', main_yellow, 'LineWidth', 2); % Phase of second wave
-polarplot(polar_ax, [0 phase1-phase2], [0 1], 'Color', 'r', 'LineWidth', 2); % Phase of second wave
+phasediff1 = phase1-phase2;
+polarplot(polar_ax, [0 phasediff1], [0 1], 'Color', main_red, 'LineWidth', 2); % Phase differences
 
 %add legend
 lgd = legend({'', 'F8', 'T8', 'Difference'});
 %%fontsize(lgd,26,'points')
 %add title 
-title('Phase Angles of Both Signals and Phase Difference');
+title('Phase Angles and Phase Difference (Trial 1)');
 fontsize(font_size,"points")
 
 %save plot
@@ -254,6 +257,8 @@ grid off;
 %add legend
 lgd = legend({'F8', 'T8'});
 %%fontsize(lgd,26,'points')
+%add title 
+title('Trial 2');
 fontsize(font_size,"points")
 
 %save plot
@@ -273,24 +278,58 @@ polarplot(polar_ax, theta, ones(1,100), 'k--');
 %plot angular lines (spokes) and radial ticks
 polar_ax.ThetaTick = 0:45:360; %set angular ticks (you can adjust the step)
 polar_ax.RLim = [0 1]; %limit the radius to 1 (for the unit circle)
-polar_ax.RTick = [1]; %show radial tick only at 1 (unit circle)
+polar_ax.RTick = ['']; 
 
 %plot lines for each sine wave phase at the given time point
 hold on;
 polarplot(polar_ax, [0 phase1], [0 1], 'Color', main_blue, 'LineWidth', 2); % Phase of first wave
 polarplot(polar_ax, [0 phase2], [0 1], 'Color', main_yellow, 'LineWidth', 2); % Phase of second wave
-polarplot(polar_ax, [0 phase1-phase2], [0 1], 'Color', 'r', 'LineWidth', 2); % Phase of second wave
+phasediff2 = phase1-phase2;
+polarplot(polar_ax, [0 phasediff2], [0 1], 'Color', main_green, 'LineWidth', 2); % Phase differences
 
 %add legend
 lgd = legend({'', 'F8', 'T8', 'Difference'});
 %%fontsize(lgd,26,'points')
 %add title 
-title('Phase Angles of Both Signals and Phase Difference');
+title('Phase Angles and Phase Difference (Trial 2)');
 fontsize(font_size,"points")
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
 saveas(gcf,fullfile(OUTPATH, 'pp_plot_phasediff2_2.png'))
 
+%% Plot: Phase differences distribution (1)
 
+%create a polar axis for the phase plot
+figure;
+polar_ax = polaraxes;
+
+%create the unit circle using polarplot
+theta = linspace(0, 2*pi, 100);
+polarplot(polar_ax, theta, ones(1,100), 'k--'); 
+
+%plot angular lines (spokes) and radial ticks
+polar_ax.ThetaTick = 0:45:360; %set angular ticks (you can adjust the step)
+polar_ax.RLim = [0 1]; %limit the radius to 1 (for the unit circle)
+polar_ax.RTick = ['']; 
+
+%plot lines for each sine wave phase at the given time point
+hold on;
+polarplot(polar_ax, [0 phasediff1], [0 1], 'Color', main_red, 'LineWidth', 2); % Phase difference in Trial 1
+polarplot(polar_ax, [0 phasediff2], [0 1], 'Color', main_green, 'LineWidth', 2); % Phase difference in Trial 2
+%add some more phase differences
+for i = 1:40
+    rand_shift = 10 + randi(15) ./ 10;
+    polarplot(polar_ax, [0 phasediff1+rand_shift], [0 1], 'Color', 'k', 'LineWidth', 2);
+end
+%add legend
+%%lgd = legend({'', 'Phase Difference during Trial 1', 'Phase Difference during Trial 1', 'Phase Difference during Trial ...'});
+%%fontsize(lgd,26,'points')
+%add title 
+%%title('Distribution of Phase Differences across Trials');
+fontsize(font_size,"points")
+
+%save plot
+set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
+saveas(gcf,fullfile(OUTPATH, 'pp_plot_phasediff_distribution.png'))
 
