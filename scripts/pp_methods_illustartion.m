@@ -161,6 +161,7 @@ plot(t, s1,'Color', main_blue, 'LineWidth', 1.5); % Plot first sine wave
 hold on;
 plot(t, s2, 'Color', main_yellow, 'LineWidth', 1.5); % Plot second sine wave
 xline(t(idx), '--', 'Color', 'k', 'LineWidth',1.5)
+text(t(idx)+0.01, -0.8,'t = 250ms')
 xlabel('Time (s)');
 ylabel('Amplitude');
 grid off;
@@ -202,7 +203,7 @@ polarplot(polar_ax, [0 phasediff1], [0 1], 'Color', main_red, 'LineWidth', 2); %
 lgd = legend({'', 'F8', 'T8', 'Difference'});
 %%fontsize(lgd,26,'points')
 %add title 
-title('Phase Angles and Phase Difference (Trial 1)');
+title('Phase Angles & Phase Difference (Trial 1, t = 250ms)');
 fontsize(font_size,"points")
 
 %save plot
@@ -250,6 +251,7 @@ plot(t, s1,'Color', main_blue, 'LineWidth', 1.5); % Plot first sine wave
 hold on;
 plot(t, s2, 'Color', main_yellow, 'LineWidth', 1.5); % Plot second sine wave
 xline(t(idx), '--', 'Color', 'k', 'LineWidth',1.5)
+text(t(idx)+0.01, -0.8,'t = 250ms')
 xlabel('Time (s)');
 ylabel('Amplitude');
 grid off;
@@ -291,7 +293,7 @@ polarplot(polar_ax, [0 phasediff2], [0 1], 'Color', main_green, 'LineWidth', 2);
 lgd = legend({'', 'F8', 'T8', 'Difference'});
 %%fontsize(lgd,26,'points')
 %add title 
-title('Phase Angles and Phase Difference (Trial 2)');
+title('Phase Angles & Phase Difference (Trial 2, t = 250ms)');
 fontsize(font_size,"points")
 
 %save plot
