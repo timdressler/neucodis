@@ -116,7 +116,9 @@ clim([cb_lim_lower cb_lim_upper])
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
-saveas(gcf,fullfile(OUTPATH, 'pp_plot_erp_topo.png'))
+%%saveas(gcf,fullfile(OUTPATH, 'pp_plot_erp_topo.png'))
+exportgraphics(gcf,fullfile(OUTPATH, 'pp_plot_erp_topo.png'),'Resolution',1000)
+
 
 %% Plot: dwPLI difference between talk and listen condition (Fronto-Temporal pairs)
 
@@ -284,7 +286,8 @@ AddLetters2Plots('HShift', -0.02, 'VShift', -0.05, 'Location','NorthWest')
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
-saveas(gcf,fullfile(OUTPATH, 'pp_plot_dwpli_fronto_temporal.png'))
+%%saveas(gcf,fullfile(OUTPATH, 'pp_plot_dwpli_fronto_temporal.png'))
+exportgraphics(gcf,fullfile(OUTPATH, 'pp_plot_dwpli_fronto_temporal.png'),'Resolution',1000)
 
 % Plot: dwPLI difference between talk and listen condition (Fronto-Occipital pairs)
 
@@ -450,7 +453,8 @@ AddLetters2Plots('HShift', -0.02, 'VShift', -0.05, 'Location','NorthWest')
 
 %save plot
 set(gcf, 'Position', get(0, 'Screensize')-[0 0 300 150]);
-saveas(gcf,fullfile(OUTPATH, 'pp_plot_dwpli_fronto_occipital.png'))
+%%saveas(gcf,fullfile(OUTPATH, 'pp_plot_dwpli_fronto_occipital.png'))
+exportgraphics(gcf,fullfile(OUTPATH, 'pp_plot_dwpli_fronto_occipital.png'),'Resolution',1000)
 
 %% Plot: TF-Plot with topographies
 MAINPATH = erase(SCRIPTPATH, 'neucodis\scripts');
