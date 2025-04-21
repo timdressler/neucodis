@@ -8,4 +8,6 @@ The theory of internal forward models suggests that self-generated motor actions
 
 ## Poster
 
+![Image](https://github.com/user-attachments/assets/e6819ccf-f300-4e4e-b004-04bcd2754279)
+
 05.09.2024, Tim Dreßler, University of Oldenburg
