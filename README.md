@@ -1,4 +1,4 @@
-# neucodis
+# Neuronal Markers of Corollary Discharge
 
 Analysis-Code for the 'Neuronal Markers of Corollary Discharge' research project, conducted at the University of Oldenburg.
 
